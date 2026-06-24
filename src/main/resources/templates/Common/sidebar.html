@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"></head>
+<body>
+    <nav th:fragment="sidebar(activeTab)" class="d-none d-md-block bg-light sidebar">
+        <style>
+            .sidebar-sticky { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-x: hidden; overflow-y: auto; padding-top: 1rem; border-right: 1px solid #dee2e6; }
+            .nav-link-sb { color: #525960; font-size: 14px; padding: 8px 12px; margin-bottom: 4px; border-radius: 6px; transition: all 0.2s ease; display: block; text-decoration: none;}
+            .nav-link-sb:hover { color: #0c0d0e; background-color: #f1f2f3; transform: translateX(3px); }
+            .nav-link-sb.active { font-weight: 600; color: #0c0d0e; background-color: #e3e6e8; border-left: 3px solid #f48024; }
+            .sidebar-heading { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #6a737c; margin-top: 15px; margin-bottom: 5px; padding-left: 10px; }
+        </style>
+
+        <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+                <li class="sidebar-heading">Public</li>
+                
+                <li class="nav-item">
+                    <a th:href="@{/home}" class="nav-link-sb" th:classappend="${activeTab == 'home' ? 'active' : ''}">
+                        <i class="fa-solid fa-house me-2"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/tags}" class="nav-link-sb" th:classappend="${activeTab == 'tags' ? 'active' : ''}">
+                        <i class="fa-solid fa-tags me-2"></i> Tags
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/users}" class="nav-link-sb" th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                        <i class="fa-solid fa-users me-2"></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/bounties}" class="nav-link-sb" th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
+                        <i class="fa-solid fa-coins me-2"></i> Bounties
+                    </a>
+                </li>
+
+                <th:block sec:authorize="isAuthenticated()">
+                    <li class="sidebar-heading">Personal</li>
+                    <li class="nav-item">
+                        <a th:href="@{/profile}" class="nav-link-sb" th:classappend="${activeTab == 'profile' ? 'active' : ''}">
+                            <i class="fa-solid fa-user me-2"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/saves}" class="nav-link-sb" th:classappend="${activeTab == 'saves' ? 'active' : ''}">
+                            <i class="fa-solid fa-bookmark me-2"></i> Saves
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/recommended-questions}" class="nav-link-sb" th:classappend="${activeTab == 'recommended' ? 'active' : ''}">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Recommended
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/blog}" class="nav-link-sb" th:classappend="${activeTab == 'blog' ? 'active' : ''}">
+                            <i class="fa-solid fa-book-open me-2"></i> Dev Blog
+                        </a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>
