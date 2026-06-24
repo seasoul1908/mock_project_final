@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"></head>
+<body>
+    <footer th:fragment="footer" class="footer-devquery">
+        <style>
+            .footer-devquery { background-color: #242729; color: #ffffff; margin-top: 40px; padding: 25px 0 15px 0; border-top: 1px solid #34495e; }
+            .footer-content { max-width: 1264px; margin: 0 auto; padding: 0 20px; }
+            .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 15px; }
+            .footer-section h5 { color: #f48024; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
+            .footer-section ul { list-style: none; padding: 0; margin: 0; }
+            .footer-section ul li { margin-bottom: 6px; }
+            .footer-section ul li span { color: #ffffff; font-size: 13px; cursor: pointer; }
+            .footer-bottom { border-top: 1px solid #34495e; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+            .footer-logo { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+            .footer-copyright { font-size: 12px; color: #ffffff; }
+            .footer-social { display: flex; gap: 15px; }
+            .footer-social span { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background-color: #34495e; color: #ffffff; border-radius: 4px; font-size: 16px; cursor: pointer; }
+            @media (max-width: 768px) { .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } .footer-bottom { flex-direction: column; text-align: center; } .footer-social { justify-content: center; } }
+            @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; } }
+        </style>
+
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h5>Company</h5>
+                    <ul><li><span>About</span></li><li><span>Blog</span></li><li><span>Careers</span></li><li><span>Contact</span></li></ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Products</h5>
+                    <ul><li><span>DevQuery</span></li><li><span>Documentation</span></li><li><span>API Reference</span></li></ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Community</h5>
+                    <ul><li><span>Questions</span></li><li><span>Tags</span></li><li><span>Users</span></li><li><span>Badges</span></li></ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Resources</h5>
+                    <ul><li><span>Help Center</span></li><li><span>Privacy Policy</span></li><li><span>Terms of Service</span></li></ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-logo">
+                    <i class="fa-brands fa-stack-overflow fa-lg" style="color: #f48024;"></i>
+                    <span style="color: #f48024; font-weight: bold;">DevQuery</span>
+                </div>
+                <div class="footer-copyright">
+                    &copy; 2026 DevQuery. All rights reserved. | Made with <i class="fa-solid fa-heart" style="color: #f48024;"></i> by DevQuery Team
+                </div>
+                <div class="footer-social">
+                    <span title="GitHub"><i class="fa-brands fa-github"></i></span>
+                    <span title="Twitter"><i class="fa-brands fa-twitter"></i></span>
+                    <span title="Facebook"><i class="fa-brands fa-facebook"></i></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
