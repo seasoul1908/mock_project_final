@@ -45,6 +45,7 @@ public class HomeController {
             safeFilter = "all";
         }
 
+        // Dùng cú pháp switch hiện đại của nhánh main
         Sort sortObj = switch (safeTab) {
             case "active" -> Sort.by(Sort.Direction.DESC, "updatedAt");
             case "voted" -> Sort.by(Sort.Direction.DESC, "score");
@@ -52,20 +53,24 @@ public class HomeController {
             default -> Sort.by(Sort.Direction.DESC, "createdAt");
         };
 
+        // Kế thừa logic chống lỗi trang âm của nhánh main
         int currentPage = Math.max(page, 1);
         Pageable pageable = PageRequest.of(currentPage - 1, 10, sortObj);
 
         String keywordSearch = safeKeyword.isEmpty() ? "" : "%" + safeKeyword + "%";
 
+        // BẮT BUỘC dùng Map nguyên thủy của nhánh Hiep để tránh lỗi sập server 500
         Page<Map<String, Object>> resultPage = questionRepository.searchQuestions(
-                safeKeyword, keywordSearch, safeFilter, safeTag, pageable);
+                safeKeyword, keywordSearch, safeFilter, safeTag, safeTab, pageable);
 
+        // Tự động ép kiểu (Map -> QuestionDTO) siêu an toàn
         List<QuestionDTO> questionList = new ArrayList<>();
         Map<Long, List<String>> questionTags = new HashMap<>();
 
         for (Map<String, Object> rs : resultPage.getContent()) {
             QuestionDTO q = new QuestionDTO();
             
+            // Xử lý an toàn các kiểu số (Number)
             q.setQuestionId(((Number) rs.get("questionId")).longValue());
             q.setUserId(((Number) rs.get("userId")).longValue());
             q.setTitle((String) rs.get("title"));
@@ -73,6 +78,7 @@ public class HomeController {
             q.setViewCount(((Number) rs.get("viewCount")).intValue());
             q.setScore(((Number) rs.get("score")).intValue());
             
+            // Xử lý an toàn kiểu Ngày tháng
             Object createdAtObj = rs.get("createdAt");
             if (createdAtObj instanceof java.sql.Timestamp) {
                 q.setCreatedAt((java.sql.Timestamp) createdAtObj);
@@ -80,11 +86,14 @@ public class HomeController {
                 q.setCreatedAt(new java.sql.Timestamp(((java.util.Date) createdAtObj).getTime()));
             }
 
+            // Xử lý chuỗi
             q.setAuthorName((String) rs.get("authorName"));
             q.setAuthorAvatar((String) rs.get("authorAvatar"));
             
+            // Ép kiểu AnswerCount
             q.setAnswerCount(((Number) rs.get("answerCount")).intValue());
 
+            // Gắn Tags cho từng câu hỏi
             List<String> tagsForQuestion = questionRepository.findTagsByQuestionId(q.getQuestionId());
             questionTags.put(q.getQuestionId(), tagsForQuestion);
             q.setTags(tagsForQuestion);
@@ -94,6 +103,7 @@ public class HomeController {
 
         List<String> popularTags = questionRepository.getPopularTags(PageRequest.of(0, 10));
 
+        // Đẩy List mới (đã convert sang QuestionDTO) ra ngoài Model
         model.addAttribute("questions", questionList);
         model.addAttribute("totalPage", resultPage.getTotalPages());
         model.addAttribute("currentPage", currentPage);

@@ -25,13 +25,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a2 WHERE a2.question_id = q.question_id)) " +
             "ORDER BY " +
             "CASE WHEN :filter = 'voted' THEN q.Score END DESC, " +
-            "CASE WHEN :filter = 'newest' OR :filter IS NULL OR :filter = 'unanswered' THEN q.created_at END DESC " +
-            "OFFSET :offset ROWS FETCH NEXT :pageSize ROWS ONLY", nativeQuery = true)
+            "CASE WHEN :filter = 'newest' OR :filter IS NULL OR :filter = 'unanswered' THEN q.created_at END DESC", 
+            nativeQuery = true)
     List<Object[]> findQuestionsByTagNative(
             @Param("tagId") Long tagId,
             @Param("filter") String filter,
-            @Param("offset") int offset,
-            @Param("pageSize") int pageSize);
+            Pageable pageable);
 
     @Query(value = """
         SELECT q.question_id as questionId, q.user_id as userId, q.title as title, q.body as body,

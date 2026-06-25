@@ -72,9 +72,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "JOIN Tags t ON qt.tag_id = t.tag_id " +
             "WHERE YEAR(q.created_at) = YEAR(GETDATE()) AND MONTH(q.created_at) = MONTH(GETDATE()) " +
             "GROUP BY t.tag_name " +
-            "ORDER BY questionCount DESC, t.tag_name ASC " +
-            "OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY", nativeQuery = true)
-    List<Map<String, Object>> getCurrentMonthQuestionCountByTag(@Param("limit") int limit);
+            "ORDER BY questionCount DESC, t.tag_name ASC", nativeQuery = true)
+    List<Map<String, Object>> getCurrentMonthQuestionCountByTag(Pageable pageable);
 
     @Query(value = "SELECT CAST(created_at AS DATE) as date, COUNT(*) as count FROM Users WHERE created_at >= DATEADD(DAY, -:days, GETDATE()) GROUP BY CAST(created_at AS DATE) ORDER BY date", nativeQuery = true)
     List<Map<String, Object>> getUserRegistrationTrend(@Param("days") int days);
