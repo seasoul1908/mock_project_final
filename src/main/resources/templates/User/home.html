@@ -69,6 +69,27 @@
         .widget-header { padding: 12px 15px; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); background-color: rgba(0,0,0,0.02); }
         .widget-list { list-style: none; }
         .widget-list li { padding: 12px 15px; display: flex; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .popular-tags-box {
+            margin-top: 20px;
+        }
+
+        .popular-tags-box h3 {
+            font-size: 19px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            color: var(--black-text);
+        }
+
+        .popular-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag.active-tag {
+            background-color: #39739d;
+            color: white;
+        }
 
         /* Footer */
         .footer-devquery { background-color: #242729; color: #ffffff; margin-top: 40px; padding: 25px 0 15px 0; border-top: 1px solid #34495e; }
@@ -230,17 +251,35 @@
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
-            <div class="widget widget-yellow">
-                <div class="widget-header">The Dev Blog</div>
-                <div class="widget-content">
-                    <ul class="widget-list">
-                        <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A Guide</span></li>
-                        <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+    <div class="widget widget-yellow">
+        <div class="widget-header">The Dev Blog</div>
+        <div class="widget-content">
+            <ul class="widget-list">
+                <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A Guide</span></li>
+                <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
+            </ul>
+        </div>
+    </div>
 
+    <div class="popular-tags-box">
+        <h3>Popular tags</h3>
+
+        <div class="popular-tags-list">
+            <a th:each="popTag : ${popularTags}"
+               th:href="@{/home(tag=${popTag})}"
+               class="tag"
+               th:classappend="${popTag == currentTag} ? ' active-tag' : ''"
+               th:text="${popTag}">
+                java
+            </a>
+        </div>
+
+        <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}"
+           class="text-secondary mt-2">
+            No popular tags yet.
+        </p>
+    </div>
+        </aside>
     </div>
 
     <footer class="footer-devquery">
