@@ -40,7 +40,7 @@ public class HomeController {
 
         if ("unanswered".equals(safeFilter)) {
             safeTab = "newest";
-        } else if (Arrays.asList("active", "newest", "voted").contains(safeTab)) {
+        } else if (Arrays.asList("active", "newest", "voted" , "view").contains(safeTab)) {
             safeFilter = "all";
         }
 
