@@ -89,12 +89,17 @@
                 <span class="fw-bold text-dark">DevQuery</span>
             </a>
 
-            <form class="d-flex mx-auto" style="max-width: 500px; width: 100%;">
+            <form th:action="@{/search}" method="get" class="d-flex mx-auto" style="max-width: 500px; width: 100%;">
                 <div class="input-group position-relative w-100">
                     <span class="position-absolute top-50 start-0 translate-middle-y ms-2 text-secondary z-index-1">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input class="form-control rounded ps-5 search-box" type="search" placeholder="Search questions, tags, or users..." />
+
+                <input class="form-control rounded ps-5 search-box"
+                    type="search"
+                    name="q"
+                    th:value="${currentKeyword}"
+                    placeholder="Search questions, tags, or users..." />
                 </div>
             </form>
 
@@ -149,66 +154,141 @@
 
         <main class="main-content">
             <div class="content-header">
-                <h1 class="page-title">Top Questions</h1>
+                <h1 class="page-title">
+                    <span th:if="${currentKeyword != null and !#strings.isEmpty(currentKeyword)}"
+                        th:text="|Search results for '${currentKeyword}'|">
+                        Search results
+                    </span>
+
+                    <span th:unless="${currentKeyword != null and !#strings.isEmpty(currentKeyword)}">
+                        Top Questions
+                    </span>
+                </h1>
+
                 <a href="#" class="btn-primary-custom">Ask Question</a>
             </div>
 
             <div class="filters-container">
-                <div class="total-questions">3 results</div>
+                <div class="total-questions">
+                    <span th:text="${totalQuestions}">0</span> results
+                </div>
+
                 <div class="filter-btn-group">
-                    <a href="#" class="filter-item active">Newest</a>
-                    <a href="#" class="filter-item">Active</a>
-                    <a href="#" class="filter-item">Unanswered</a>
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='newest')}"
+                        class="filter-item"
+                        th:classappend="${currentSort == 'newest' and currentFilter != 'unanswered'} ? ' active' : ''">
+                        Newest
+                    </a>
+
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='active')}"
+                        class="filter-item"
+                        th:classappend="${currentSort == 'active'} ? ' active' : ''">
+                         Active
+                    </a>
+
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='views')}"
+                        class="filter-item"
+                        th:classappend="${currentSort == 'views'} ? ' active' : ''">
+                        Views
+                    </a>
+
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='voted')}"
+                        class="filter-item"
+                        th:classappend="${currentSort == 'voted'} ? ' active' : ''">
+                        Voted
+                    </a>
+
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, filter='unanswered')}"
+                        class="filter-item"
+                        th:classappend="${currentFilter == 'unanswered'} ? ' active' : ''">
+                        Unanswered
+                    </a>
                 </div>
             </div>
 
-            <div class="question-item">
+             <div th:each="q : ${questions}" class="question-item">
                 <div class="stats-container">
-                    <div class="stat-box votes">12 votes</div>
-                    <div class="stat-box status-answered">2 answers</div>
-                    <div class="stat-box">45 views</div>
-                </div>
-                <div class="question-summary">
-                    <a href="#" class="question-title">Spring Security OAuth2 redirecting to /error after successful login</a>
-                    <p class="question-excerpt">I am migrating my Java Servlet application to Spring Boot 3. After a successful Google OAuth2 login, my application redirects me to a whitelabel 404 error page instead of...</p>
-                    <div class="meta-container">
-                        <div class="tags"><a href="#" class="tag">java</a><a href="#" class="tag">spring-boot</a><a href="#" class="tag">spring-security</a></div>
-                        <div class="user-card">asked 1 hour ago</div>
+                    <div class="stat-box votes"
+                        th:text="|${q.score != null ? q.score : 0} votes|">
+                        0 votes
                     </div>
-                </div>
-            </div>
 
-            <div class="question-item">
-                <div class="stats-container">
-                    <div class="stat-box votes">5 votes</div>
-                    <div class="stat-box">0 answers</div>
-                    <div class="stat-box">12 views</div>
-                </div>
-                <div class="question-summary">
-                    <a href="#" class="question-title">How to connect Arduino to multiple soil moisture sensors for a Smart Garden?</a>
-                    <p class="question-excerpt">I'm building an IoT Smart Garden system. I have an Arduino Uno and need to connect 4 analog soil moisture sensors, but I am running out of analog pins. What is the best way to multiplex...</p>
-                    <div class="meta-container">
-                        <div class="tags"><a href="#" class="tag">arduino</a><a href="#" class="tag">iot</a><a href="#" class="tag">sensors</a></div>
-                        <div class="user-card">asked 3 hours ago</div>
+                    <div class="stat-box"
+                        th:classappend="${q.answerCount != null and q.answerCount > 0} ? ' status-answered' : ''"
+                        th:text="|${q.answerCount != null ? q.answerCount : 0} answers|">
+                        0 answers
                     </div>
-                </div>
-            </div>
 
-            <div class="question-item">
-                <div class="stats-container">
-                    <div class="stat-box votes">8 votes</div>
-                    <div class="stat-box status-answered">1 answer</div>
-                    <div class="stat-box">89 views</div>
-                </div>
-                <div class="question-summary">
-                    <a href="#" class="question-title">Audio Setup: NiceHCK NK1 Max paired with Kefine Klean IEMs on PC?</a>
-                    <p class="question-excerpt">I recently got the Kefine Klean and I'm currently using a NiceHCK NK1 Max dongle DAC. When I plug it into my Windows 11 PC, the volume is extremely loud even at 2%. Is there a driver issue...</p>
-                    <div class="meta-container">
-                        <div class="tags"><a href="#" class="tag">audio</a><a href="#" class="tag">dac</a><a href="#" class="tag">hardware</a></div>
-                        <div class="user-card">asked yesterday</div>
+                    <div class="stat-box"
+                        th:text="|${q.viewCount != null ? q.viewCount : 0} views|">
+                        0 views
                     </div>
                 </div>
+
+                <div class="question-summary">
+                    <a th:href="@{/question(id=${q.questionId})}"
+                    class="question-title"
+                    th:text="${q.title}">
+                    Question title
+                    </a>
+
+                    <p class="question-excerpt"
+                    th:text="${q.body == null ? '' : (#strings.length(q.body) > 180 ? #strings.substring(q.body, 0, 180) + '...' : q.body)}">
+                    Question body
+                     </p>
+
+                <div class="meta-container">
+                    <div class="tags" th:with="tags=${questionTags[q.questionId]}">
+                        <a th:each="t : ${tags}"
+                        th:href="@{/home(tag=${t})}"
+                        class="tag"
+                        th:text="${t}">
+                        java
+                        </a>
+                    </div>
+
+                <div class="user-card">
+                    <span>asked</span>
+                    <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'MMM dd, yyyy') : ''}">
+                        today
+                    </span>
             </div>
+        </div>
+    </div>
+</div>
+
+<div th:if="${questions == null or #lists.isEmpty(questions)}" class="text-center mt-5">
+    <h5>No questions found</h5>
+    <p class="text-secondary">Try another keyword or filter.</p>
+    <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Back to home</a>
+</div>
+<nav th:if="${totalPage > 1}" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
+            <a class="page-link"
+               th:href="@{/home(page=${currentPage - 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                Previous
+            </a>
+        </li>
+
+        <li class="page-item"
+            th:each="i : ${#numbers.sequence(1, totalPage)}"
+            th:classappend="${i == currentPage} ? ' active' : ''">
+            <a class="page-link"
+               th:href="@{/home(page=${i}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}"
+               th:text="${i}">
+                1
+            </a>
+        </li>
+
+        <li class="page-item" th:classappend="${currentPage >= totalPage} ? ' disabled' : ''">
+            <a class="page-link"
+               th:href="@{/home(page=${currentPage + 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
