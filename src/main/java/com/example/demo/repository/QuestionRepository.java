@@ -107,9 +107,18 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           AND q.bounty_expires_at IS NOT NULL
           AND q.bounty_expires_at > GETDATE()
         ORDER BY
+          -- sort expiring
           CASE WHEN :sortBy = 'expiring' THEN q.bounty_expires_at END ASC,
+          CASE WHEN :sortBy = 'expiring' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'expiring' THEN q.created_at END DESC,
+          -- sort newest
           CASE WHEN :sortBy = 'newest' THEN q.created_at END DESC,
+          CASE WHEN :sortBy = 'newest' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'newest' THEN q.bounty_expires_at END ASC,
+          -- sort amount (default)
           CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.bounty_expires_at END ASC,
+          CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.created_at END DESC,
           q.question_id DESC
     """, nativeQuery = true)
     List<Map<String, Object>> findActiveBountiesNative(@Param("sortBy") String sortBy);
