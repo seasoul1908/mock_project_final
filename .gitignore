@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AI Agent ###
+/.mock_project_final
+.agent/
+GEMINI.md
+**/GEMINI.md
+**/.agent/
