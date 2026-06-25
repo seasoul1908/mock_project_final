@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Expose /error endpoint to stop Spring Security from redirecting to login on
                         // failure
-                        .requestMatchers("/", "/home", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error").permitAll()
+                        .requestMatchers("/", "/home","search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error").permitAll()
                         .requestMatchers("/admin/**", "/dashboard").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
