@@ -119,4 +119,64 @@ public class HomeController {
 
         return "User/home";
     }
+
+    @GetMapping("/bounties")
+    public String bountyQuestionsPage(
+            @RequestParam(value = "sort", defaultValue = "amount") String sort,
+            Model model) {
+        
+        String safeSort = sort == null ? "amount" : sort.trim();
+        if (!java.util.Arrays.asList("expiring", "newest", "amount").contains(safeSort)) {
+            safeSort = "amount";
+        }
+
+        List<Map<String, Object>> rawBounties = questionRepository.findActiveBountiesNative(safeSort);
+        List<QuestionDTO> bountyQuestions = new java.util.ArrayList<>();
+        Map<Long, List<String>> questionTags = new java.util.HashMap<>();
+
+        for (Map<String, Object> rs : rawBounties) {
+            QuestionDTO q = new QuestionDTO();
+            
+            q.setQuestionId(((Number) rs.get("questionId")).longValue());
+            q.setUserId(((Number) rs.get("userId")).longValue());
+            q.setTitle((String) rs.get("title"));
+            q.setBody((String) rs.get("body"));
+            q.setViewCount(((Number) rs.get("viewCount")).intValue());
+            q.setScore(((Number) rs.get("score")).intValue());
+            q.setBountyAmount(((Number) rs.get("bountyAmount")).intValue());
+            
+            Object expiresObj = rs.get("bountyExpiresAt");
+            if (expiresObj instanceof java.sql.Timestamp) {
+                q.setBountyExpiresAt((java.sql.Timestamp) expiresObj);
+            } else if (expiresObj instanceof java.util.Date) {
+                q.setBountyExpiresAt(new java.sql.Timestamp(((java.util.Date) expiresObj).getTime()));
+            }
+
+            Object createdAtObj = rs.get("createdAt");
+            if (createdAtObj instanceof java.sql.Timestamp) {
+                q.setCreatedAt((java.sql.Timestamp) createdAtObj);
+            } else if (createdAtObj instanceof java.util.Date) {
+                q.setCreatedAt(new java.sql.Timestamp(((java.util.Date) createdAtObj).getTime()));
+            }
+
+            q.setAuthorName((String) rs.get("authorName"));
+            q.setAuthorAvatar((String) rs.get("authorAvatar"));
+            q.setAnswerCount(((Number) rs.get("answerCount")).intValue());
+
+            List<String> tagsForQuestion = questionRepository.findTagsByQuestionId(q.getQuestionId());
+            questionTags.put(q.getQuestionId(), tagsForQuestion);
+            q.setTags(tagsForQuestion);
+            
+            bountyQuestions.add(q);
+        }
+
+        List<String> popularTags = questionRepository.getPopularTags(PageRequest.of(0, 10));
+
+        model.addAttribute("bountyQuestions", bountyQuestions);
+        model.addAttribute("currentSort", safeSort);
+        model.addAttribute("popularTags", popularTags);
+        model.addAttribute("questionTags", questionTags);
+
+        return "User/bounties";
+    }
 }
