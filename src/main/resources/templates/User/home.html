@@ -135,21 +135,7 @@
     <div class="main-container">
 
         <div class="left-sidebar d-none d-md-block">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="sidebar-heading">Public</li>
-                    <li class="nav-item"><a class="nav-link-sb active" href="#"><i class="fa-solid fa-house me-2"></i> Home</a></li>
-                    <li class="nav-item"><a class="nav-link-sb" href="#"><i class="fa-solid fa-tags me-2"></i> Tags</a></li>
-                    <li class="nav-item"><a class="nav-link-sb" href="#"><i class="fa-solid fa-users me-2"></i> Users</a></li>
-                    <li class="nav-item"><a class="nav-link-sb" href="#"><i class="fa-solid fa-coins me-2"></i> Bounties</a></li>
-                    
-                    <th:block sec:authorize="isAuthenticated()">
-                        <li class="sidebar-heading">Personal</li>
-                        <li class="nav-item"><a class="nav-link-sb" href="#"><i class="fa-solid fa-user me-2"></i> Profile</a></li>
-                        <li class="nav-item"><a class="nav-link-sb" href="#"><i class="fa-solid fa-bookmark me-2"></i> Saves</a></li>
-                    </th:block>
-                </ul>
-            </div>
+            <div th:replace="~{Common/sidebar :: sidebar('home')}"></div>
         </div>
 
         <main class="main-content">

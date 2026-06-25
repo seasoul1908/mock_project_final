@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.entity.Question;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,24 @@ import com.example.demo.entity.Question;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
+    @Query(value = "SELECT q.question_id, q.title, q.body, q.Score, q.view_count, q.created_at, q.updated_at, q.is_closed, " +
+            "u.username, up.avatar_url, " +
+            "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) as answer_count " +
+            "FROM Questions q " +
+            "JOIN Question_Tags qt ON q.question_id = qt.question_id " +
+            "JOIN Users u ON q.user_id = u.user_id " +
+            "LEFT JOIN User_Profile up ON u.user_id = up.user_id " +
+            "WHERE qt.tag_id = :tagId " +
+            "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a2 WHERE a2.question_id = q.question_id)) " +
+            "ORDER BY " +
+            "CASE WHEN :filter = 'voted' THEN q.Score END DESC, " +
+            "CASE WHEN :filter = 'newest' OR :filter IS NULL OR :filter = 'unanswered' THEN q.created_at END DESC " +
+            "OFFSET :offset ROWS FETCH NEXT :pageSize ROWS ONLY", nativeQuery = true)
+    List<Object[]> findQuestionsByTagNative(
+            @Param("tagId") Long tagId,
+            @Param("filter") String filter,
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
     @Query(value = """
         SELECT q.question_id as questionId, q.title as title, q.body as body,
                q.view_count as viewCount, q.Score as score, q.created_at as createdAt, q.updated_at as updatedAt,
@@ -50,16 +69,18 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             Pageable pageable
     );
 
-    @Query(value = """
-        SELECT t.tag_name
-        FROM Tags t
-        JOIN Question_Tags qt ON t.tag_id = qt.tag_id
-        GROUP BY t.tag_name
-        ORDER BY COUNT(qt.question_id) DESC
-        OFFSET 0 ROWS FETCH NEXT :limit ROWS ONLY
-    """, nativeQuery = true)
-    List<String> getPopularTags(@Param("limit") int limit);
+    @Query(value = "SELECT COUNT(DISTINCT q.question_id) " +
+            "FROM Questions q " +
+            "JOIN Question_Tags qt ON q.question_id = qt.question_id " +
+            "WHERE qt.tag_id = :tagId " +
+            "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a WHERE a.question_id = q.question_id))", nativeQuery = true)
+    int countQuestionsByTagNative(
+            @Param("tagId") Long tagId,
+            @Param("filter") String filter);
 
-    @Query(value = "SELECT t.tag_name FROM Tags t JOIN Question_Tags qt ON t.tag_id = qt.tag_id WHERE qt.question_id = :questionId", nativeQuery = true)
-    List<String> findTagsByQuestionId(@Param("questionId") Long questionId);
+    @Query(value = "SELECT t.tag_name " +
+            "FROM Tags t " +
+            "JOIN Question_Tags qt ON t.tag_id = qt.tag_id " +
+            "WHERE qt.question_id = :questionId AND t.IsActive = 1", nativeQuery = true)
+    List<String> findTagNamesByQuestionIdNative(@Param("questionId") Long questionId);
 }
