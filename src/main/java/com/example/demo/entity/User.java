@@ -29,7 +29,7 @@ public class User {
     private String status;
 
     @Column(name = "Reputation")
-    private int reputation;
+    private Integer reputation;
 
     private String provider;
 
@@ -73,8 +73,8 @@ public class User {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public int getReputation() { return reputation; }
-    public void setReputation(int reputation) { this.reputation = reputation; }
+    public Integer getReputation() { return reputation; }
+    public void setReputation(Integer reputation) { this.reputation = reputation; }
 
     public String getProvider() { return provider; }
     public void setProvider(String provider) { this.provider = provider; }

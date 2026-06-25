@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Manage Reports | DevQuery Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        body { background: #f6f7f8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; }
+        .admin-sidebar { width: 220px; min-width: 220px; background: #fff; border-right: 1px solid #dee2e6; padding-top: 16px; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
+        .admin-nav-link { display: block; padding: 9px 16px; color: #525960; text-decoration: none; font-size: 14px; border-radius: 6px; margin: 2px 8px; transition: background 0.15s, color 0.15s; }
+        .admin-nav-link:hover { color: #0c0d0e; background: #f1f2f3; }
+        .admin-nav-link.active { color: #0c0d0e; background: #e3e6e8; border-left: 3px solid #f48024; font-weight: 600; padding-left: 13px; }
+        .sidebar-label { padding: 8px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6a737c; letter-spacing: 0.5px; }
+        .content-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e3e6e8; }
+        .page-title { font-size: 22px; font-weight: 600; color: #0c0d0e; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{Common/header :: header}"></div>
+
+<div style="margin-top:56px; display:flex; min-height:calc(100vh - 56px);">
+    <!-- Admin Sidebar -->
+    <nav class="admin-sidebar">
+        <div class="sidebar-label">Management</div>
+        <a th:href="@{/admin/dashboard}" class="admin-nav-link"><i class="fa-solid fa-chart-line fa-fw me-2"></i> Dashboard</a>
+        <a th:href="@{/admin/users}" class="admin-nav-link"><i class="fa-solid fa-users fa-fw me-2"></i> Users</a>
+        <a th:href="@{/admin/tags}" class="admin-nav-link"><i class="fa-solid fa-tags fa-fw me-2"></i> Tags</a>
+        <a th:href="@{/admin/reports}" class="admin-nav-link active">
+            <i class="fa-solid fa-flag fa-fw me-2"></i> Reports
+            <span th:if="${openCount > 0}" class="badge bg-danger ms-1 rounded-pill" th:text="${openCount}"></span>
+        </a>
+        <a th:href="@{/admin/rules}" class="admin-nav-link"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
+        <a th:href="@{/admin/badges}" class="admin-nav-link"><i class="fa-solid fa-medal fa-fw me-2"></i> Badges</a>
+        <a th:href="@{/admin/blogs}" class="admin-nav-link"><i class="fa-solid fa-newspaper fa-fw me-2"></i> Blogs</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="flex:1; padding:24px; overflow:auto;">
+        <div class="page-title"><i class="fa-solid fa-flag me-2" style="color:#f48024;"></i> Manage Reports</div>
+
+        <!-- Stats + Filter Tabs -->
+        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+            <a th:href="@{/admin/reports(status=all)}"
+               th:classappend="${status == 'all'} ? 'btn btn-secondary btn-sm' : 'btn btn-outline-secondary btn-sm'">
+                All <span class="badge bg-white text-dark ms-1" th:text="${totalCount}"></span>
+            </a>
+            <a th:href="@{/admin/reports(status=open)}"
+               th:classappend="${status == 'open'} ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'">
+                Pending <span class="badge ms-1" th:classappend="${status == 'open'} ? 'bg-white text-dark' : 'bg-danger'" th:text="${openCount}"></span>
+            </a>
+            <a th:href="@{/admin/reports(status=resolved)}"
+               th:classappend="${status == 'resolved'} ? 'btn btn-success btn-sm' : 'btn btn-outline-success btn-sm'">
+                Resolved <span class="badge ms-1" th:classappend="${status == 'resolved'} ? 'bg-white text-dark' : 'bg-success'" th:text="${resolvedCount}"></span>
+            </a>
+            <a th:href="@{/admin/reports(status=dismissed)}"
+               th:classappend="${status == 'dismissed'} ? 'btn btn-secondary btn-sm' : 'btn btn-outline-secondary btn-sm'">
+                Dismissed <span class="badge ms-1" th:classappend="${status == 'dismissed'} ? 'bg-white text-dark' : 'bg-secondary'" th:text="${dismissedCount}"></span>
+            </a>
+        </div>
+
+        <div class="content-card">
+            <table class="table table-hover table-sm mb-0" style="font-size:13px;">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>Target ID</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Reported At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="r : ${reports}" th:id="'row-' + ${r.reportId}">
+                        <td class="text-muted" th:text="${r.reportId}"></td>
+                        <td>
+                            <span class="badge bg-info text-dark" th:text="${r.targetType}"></span>
+                        </td>
+                        <td th:text="${r.targetId}"></td>
+                        <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                            th:text="${r.reason}" th:title="${r.reason}"></td>
+                        <td>
+                            <span class="badge status-badge" th:id="'status-' + ${r.reportId}"
+                                th:classappend="${r.status == 'open'} ? 'bg-warning text-dark' : (${r.status == 'resolved'} ? 'bg-success' : 'bg-secondary')"
+                                th:text="${r.status}"></span>
+                        </td>
+                        <td class="text-muted" th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></td>
+                        <td th:if="${r.status == 'open'}">
+                            <button class="btn btn-sm btn-outline-success me-1 resolve-btn" th:data-id="${r.reportId}">
+                                <i class="fa-solid fa-check"></i> Resolve
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary dismiss-btn" th:data-id="${r.reportId}">
+                                <i class="fa-solid fa-xmark"></i> Dismiss
+                            </button>
+                        </td>
+                        <td th:if="${r.status != 'open'}" class="text-muted small">No action needed</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(reports)}">
+                        <td colspan="7" class="text-center text-muted py-4">No reports found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toast" class="toast align-items-center text-white border-0">
+        <div class="d-flex">
+            <div class="toast-body" id="toast-msg">Done.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const toast = new bootstrap.Toast(document.getElementById('toast'), { delay: 2500 });
+
+    function showToast(msg, success) {
+        const el = document.getElementById('toast');
+        el.classList.remove('bg-success', 'bg-danger');
+        el.classList.add(success ? 'bg-success' : 'bg-danger');
+        document.getElementById('toast-msg').textContent = msg;
+        toast.show();
+    }
+
+    function updateReportStatus(id, action) {
+        fetch(`/api/admin/reports/${id}/${action}`, { method: 'PUT' })
+            .then(r => r.json())
+            .then(data => {
+                const statusEl = document.getElementById('status-' + id);
+                statusEl.className = 'badge status-badge ' + (data.status === 'resolved' ? 'bg-success' : 'bg-secondary');
+                statusEl.textContent = data.status;
+                const row = document.getElementById('row-' + id);
+                const actionCell = row.querySelector('td:last-child');
+                actionCell.innerHTML = '<span class="text-muted small">No action needed</span>';
+                showToast('Report ' + data.status, true);
+            }).catch(() => showToast('Action failed', false));
+    }
+
+    document.querySelectorAll('.resolve-btn').forEach(btn =>
+        btn.addEventListener('click', () => updateReportStatus(btn.dataset.id, 'resolve')));
+
+    document.querySelectorAll('.dismiss-btn').forEach(btn =>
+        btn.addEventListener('click', () => updateReportStatus(btn.dataset.id, 'dismiss')));
+</script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Dashboard | DevQuery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { background: #f6f7f8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; }
+        .admin-sidebar { width: 220px; min-width: 220px; background: #fff; border-right: 1px solid #dee2e6; padding-top: 16px; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
+        .admin-nav-link { display: block; padding: 9px 16px; color: #525960; text-decoration: none; font-size: 14px; border-radius: 6px; margin: 2px 8px; transition: background 0.15s, color 0.15s; }
+        .admin-nav-link:hover { color: #0c0d0e; background: #f1f2f3; }
+        .admin-nav-link.active { color: #0c0d0e; background: #e3e6e8; border-left: 3px solid #f48024; font-weight: 600; padding-left: 13px; }
+        .sidebar-label { padding: 8px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6a737c; letter-spacing: 0.5px; }
+        .stat-card { background: #fff; border-radius: 8px; padding: 20px 16px; border: 1px solid #e3e6e8; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #0c0d0e; line-height: 1; }
+        .stat-label { color: #6a737c; font-size: 13px; margin-top: 4px; }
+        .content-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e3e6e8; }
+        .page-title { font-size: 22px; font-weight: 600; color: #0c0d0e; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<div th:replace="~{Common/header :: header}"></div>
+
+<div style="margin-top:56px; display:flex; min-height:calc(100vh - 56px);">
+    <!-- Admin Sidebar -->
+    <nav class="admin-sidebar">
+        <div class="sidebar-label">Management</div>
+        <a th:href="@{/admin/dashboard}" class="admin-nav-link active"><i class="fa-solid fa-chart-line fa-fw me-2"></i> Dashboard</a>
+        <a th:href="@{/admin/users}" class="admin-nav-link"><i class="fa-solid fa-users fa-fw me-2"></i> Users</a>
+        <a th:href="@{/admin/tags}" class="admin-nav-link"><i class="fa-solid fa-tags fa-fw me-2"></i> Tags</a>
+        <a th:href="@{/admin/reports}" class="admin-nav-link">
+            <i class="fa-solid fa-flag fa-fw me-2"></i> Reports
+            <span th:if="${pendingReports > 0}" class="badge bg-danger ms-1 rounded-pill" th:text="${pendingReports}"></span>
+        </a>
+        <a th:href="@{/admin/rules}" class="admin-nav-link"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
+        <a th:href="@{/admin/badges}" class="admin-nav-link"><i class="fa-solid fa-medal fa-fw me-2"></i> Badges</a>
+        <a th:href="@{/admin/blogs}" class="admin-nav-link"><i class="fa-solid fa-newspaper fa-fw me-2"></i> Blogs</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="flex:1; padding:24px; overflow:auto;">
+        <div class="page-title"><i class="fa-solid fa-gauge me-2" style="color:#f48024;"></i> Admin Dashboard</div>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalUsers}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-users me-1" style="color:#0a95ff;"></i> Users</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalQuestions}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-circle-question me-1" style="color:#f48024;"></i> Questions</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalAnswers}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-comment-dots me-1" style="color:#2fa84f;"></i> Answers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalTags}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-tags me-1" style="color:#6c757d;"></i> Tags</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value text-danger" th:text="${pendingReports}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-flag me-1" style="color:#d0393e;"></i> Reports</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalBlogs}">0</div>
+                    <div class="stat-label"><i class="fa-solid fa-newspaper me-1" style="color:#7c5cbf;"></i> Blogs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-7">
+                <div class="content-card">
+                    <div class="fw-semibold mb-3 text-secondary small text-uppercase" style="letter-spacing:0.5px;">New Users — Last 7 Days</div>
+                    <canvas id="userChart" height="90"></canvas>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="content-card">
+                    <div class="fw-semibold mb-3 text-secondary small text-uppercase" style="letter-spacing:0.5px;">Top Tags This Month</div>
+                    <canvas id="tagChart" height="90"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newest Users Table -->
+        <div class="content-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="fw-semibold text-secondary small text-uppercase" style="letter-spacing:0.5px;">Newest Users</div>
+                <a th:href="@{/admin/users}" class="btn btn-sm btn-outline-primary" style="font-size:12px;">View All</a>
+            </div>
+            <table class="table table-hover table-sm mb-0" style="font-size:13px;">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${newestUsers}">
+                        <td th:text="${u.userId}" class="text-muted"></td>
+                        <td>
+                            <a th:href="@{/profile(id=${u.userId})}" th:text="${u.username}" class="text-decoration-none fw-semibold"></a>
+                        </td>
+                        <td class="text-muted" th:text="${u.email}"></td>
+                        <td>
+                            <span class="badge"
+                                th:classappend="${u.role == 'admin'} ? 'bg-danger' : (${u.role == 'moderator'} ? 'bg-warning text-dark' : 'bg-secondary')"
+                                th:text="${u.role}"></span>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                th:classappend="${u.status == 'active'} ? 'bg-success' : 'bg-danger'"
+                                th:text="${u.status}"></span>
+                        </td>
+                        <td class="text-muted" th:text="${u.createdAt != null ? #dates.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(newestUsers)}">
+                        <td colspan="6" class="text-center text-muted py-3">No users found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    const userTrendJson = /*[[${userTrendJson}]]*/ '[]';
+    const questionTrendJson = /*[[${questionTrendJson}]]*/ '[]';
+    const topTagsJson = /*[[${topTagsJson}]]*/ '[]';
+
+    try {
+        const ud = JSON.parse(userTrendJson);
+        new Chart(document.getElementById('userChart'), {
+            type: 'line',
+            data: {
+                labels: ud.map(d => d.date),
+                datasets: [{
+                    label: 'New Users',
+                    data: ud.map(d => d.count),
+                    borderColor: '#0a95ff',
+                    backgroundColor: 'rgba(10,149,255,0.08)',
+                    tension: 0.35, fill: true, pointRadius: 4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    } catch(e) { console.warn('User chart error', e); }
+
+    try {
+        const td = JSON.parse(topTagsJson);
+        new Chart(document.getElementById('tagChart'), {
+            type: 'bar',
+            data: {
+                labels: td.map(d => d.tagName),
+                datasets: [{
+                    label: 'Questions',
+                    data: td.map(d => d.questionCount),
+                    backgroundColor: ['#f48024cc','#0a95ffcc','#2fa84fcc','#7c5cbfcc','#e84393cc']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    } catch(e) { console.warn('Tag chart error', e); }
+</script>
+</body>
+</html>
