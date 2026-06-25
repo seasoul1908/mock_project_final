@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,7 @@ public class HomeController {
     @Autowired
     private QuestionRepository questionRepository;
 
-    @GetMapping({"/", "/home", "/search"})
+    @GetMapping({"/", "/home", "/search", "/SearchController"})
     public String homePage(
             @RequestParam(value = "q", defaultValue = "") String keyword,
             @RequestParam(value = "tab", defaultValue = "newest") String tab,
@@ -44,9 +45,7 @@ public class HomeController {
             safeFilter = "all";
         }
 
-        Sort sortObj;
-        
-        sortObj = switch (safeTab) {
+        Sort sortObj = switch (safeTab) {
             case "active" -> Sort.by(Sort.Direction.DESC, "updatedAt");
             case "voted" -> Sort.by(Sort.Direction.DESC, "score");
             case "views" -> Sort.by(Sort.Direction.DESC, "viewCount");
@@ -54,33 +53,53 @@ public class HomeController {
         };
 
         int currentPage = Math.max(page, 1);
-
         Pageable pageable = PageRequest.of(currentPage - 1, 10, sortObj);
 
-        
         String keywordSearch = safeKeyword.isEmpty() ? "" : "%" + safeKeyword + "%";
 
-        Page<QuestionDTO> questionPage = questionRepository.searchQuestions(
-        safeKeyword,
-        keywordSearch,
-        safeFilter,
-        safeTag,
-        safeTab,
-        pageable
-);
+        Page<Map<String, Object>> resultPage = questionRepository.searchQuestions(
+                safeKeyword, keywordSearch, safeFilter, safeTag, pageable);
 
+        List<QuestionDTO> questionList = new ArrayList<>();
         Map<Long, List<String>> questionTags = new HashMap<>();
 
-        for (QuestionDTO q : questionPage.getContent()) {
-            questionTags.put(q.getQuestionId(), questionRepository.findTagsByQuestionId(q.getQuestionId()));
+        for (Map<String, Object> rs : resultPage.getContent()) {
+            QuestionDTO q = new QuestionDTO();
+            
+            q.setQuestionId(((Number) rs.get("questionId")).longValue());
+            q.setUserId(((Number) rs.get("userId")).longValue());
+            q.setTitle((String) rs.get("title"));
+            q.setBody((String) rs.get("body"));
+            q.setViewCount(((Number) rs.get("viewCount")).intValue());
+            q.setScore(((Number) rs.get("score")).intValue());
+            
+            Object createdAtObj = rs.get("createdAt");
+            if (createdAtObj instanceof java.sql.Timestamp) {
+                q.setCreatedAt((java.sql.Timestamp) createdAtObj);
+            } else if (createdAtObj instanceof java.util.Date) {
+                q.setCreatedAt(new java.sql.Timestamp(((java.util.Date) createdAtObj).getTime()));
+            }
+
+            q.setAuthorName((String) rs.get("authorName"));
+            q.setAuthorAvatar((String) rs.get("authorAvatar"));
+            
+            q.setAnswerCount(((Number) rs.get("answerCount")).intValue());
+
+            List<String> tagsForQuestion = questionRepository.findTagsByQuestionId(q.getQuestionId());
+            questionTags.put(q.getQuestionId(), tagsForQuestion);
+            q.setTags(tagsForQuestion);
+            
+            questionList.add(q);
         }
 
-        model.addAttribute("questions", questionPage.getContent());
-        model.addAttribute("totalPage", questionPage.getTotalPages());
+        List<String> popularTags = questionRepository.getPopularTags(PageRequest.of(0, 10));
+
+        model.addAttribute("questions", questionList);
+        model.addAttribute("totalPage", resultPage.getTotalPages());
         model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalQuestions", questionPage.getTotalElements());
+        model.addAttribute("totalQuestions", resultPage.getTotalElements());
         
-        model.addAttribute("popularTags", questionRepository.getPopularTags(10));
+        model.addAttribute("popularTags", popularTags);
         model.addAttribute("questionTags", questionTags);
 
         model.addAttribute("currentKeyword", safeKeyword);

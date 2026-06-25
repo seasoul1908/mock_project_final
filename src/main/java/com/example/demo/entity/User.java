@@ -1,16 +1,18 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "Users")
+// Map User_Profile table directly to this entity for easier data access
+@SecondaryTable(name = "User_Profile", pkJoinColumns = @PrimaryKeyJoinColumn(name = "user_id"))
 public class User {
 
-    // Map to user_id (bigint)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private long userId;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -18,93 +20,88 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    // Map to password_hash
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash")
     private String passwordHash;
 
     private String role;
+    
+    @Column(name = "status")
     private String status;
+
+    @Column(name = "Reputation")
+    private int reputation;
+
     private String provider;
 
     @Column(name = "provider_id")
     private String providerId;
 
-    @Column(name = "Reputation")
-    private Integer reputation;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
 
-    public User() {
-    }
+    // --- Fields mapped from User_Profile table ---
+    @Column(table = "User_Profile", name = "avatar_url")
+    private String avatarUrl;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    @Column(table = "User_Profile", name = "bio")
+    private String bio;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(table = "User_Profile", name = "location")
+    private String location;
 
-    public String getUsername() {
-        return username;
-    }
+    @Column(table = "User_Profile", name = "website")
+    private String website;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public User() {}
 
-    public String getEmail() {
-        return email;
-    }
+    // --- Getters and Setters ---
+    public long getUserId() { return userId; }
+    public void setUserId(long userId) { this.userId = userId; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public String getRole() {
-        return role;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public int getReputation() { return reputation; }
+    public void setReputation(int reputation) { this.reputation = reputation; }
 
-    public String getProvider() {
-        return provider;
-    }
+    public String getProvider() { return provider; }
+    public void setProvider(String provider) { this.provider = provider; }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
-    }
+    public String getProviderId() { return providerId; }
+    public void setProviderId(String providerId) { this.providerId = providerId; }
 
-    public String getStatus() {
-        return status;
-    }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
-    public String getProviderId() {
-        return providerId;
-    }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 
-    public Integer getReputation() {
-        return reputation;
-    }
+    public String getWebsite() { return website; }
+    public void setWebsite(String website) { this.website = website; }
 
-    public void setReputation(Integer reputation) {
-        this.reputation = reputation;
+    // Helper: Display default avatar if null
+    public String getDisplayAvatar() {
+        if (avatarUrl != null && !avatarUrl.isEmpty()) { 
+            return avatarUrl; 
+        }
+        return "assets/img/default-avatar.png";
     }
 }
