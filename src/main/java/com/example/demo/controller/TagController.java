@@ -70,7 +70,7 @@ public class TagController {
         
         User user = getAuthenticatedUser();
         boolean isLoggedIn = (user != null);
-        boolean isFollowed = isLoggedIn && tagService.isFollowing(user.getId(), id);
+        boolean isFollowed = isLoggedIn && tagService.isFollowing(user.getUserId(), id);
         
         model.addAttribute("tag", tag);
         model.addAttribute("questions", questions);
@@ -95,7 +95,7 @@ public class TagController {
             return "redirect:/auth/login";
         }
         
-        tagService.followOrUnfollowTag(user.getId(), tagId, action);
+        tagService.followOrUnfollowTag(user.getUserId(), tagId, action);
         
         return "redirect:" + redirectTo;
     }
