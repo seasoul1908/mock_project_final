@@ -1,7 +1,6 @@
 package com.example.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.example.demo.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.example.demo.service.CustomOAuth2UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Expose /error endpoint to stop Spring Security from redirecting to login on
                         // failure
-                        .requestMatchers("/", "/home", "/auth/**", "/assets/**").permitAll()
+                        .requestMatchers("/", "/home", "/sreach" , "/auth/**", "/assets/**").permitAll()
                         .requestMatchers("/admin/**", "/dashboard").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form

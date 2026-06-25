@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Question;
-import com.example.demo.dto.QuestionSummaryProjection;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.example.demo.dto.QuestionDTO;
+import com.example.demo.entity.Question;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
@@ -26,6 +27,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           AND (:keyword = '' OR q.title LIKE :keywordSearch OR q.body LIKE :keywordSearch)
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
+        ORDER BY
+          CASE WHEN :sortBy = 'views' THEN q.view_count END DESC,
+          CASE WHEN :sortBy = 'active' THEN q.updated_at END DESC,
+          CASE WHEN :sortBy = 'voted' THEN q.Score END DESC,
+          CASE WHEN :sortBy = 'newest' THEN q.created_at END DESC,
+          q.question_id DESC
     """, countQuery = """
         SELECT COUNT(q.question_id)
         FROM Questions q
@@ -34,11 +41,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
     """, nativeQuery = true)
-    Page<QuestionSummaryProjection> searchQuestions(
+    Page<QuestionDTO> searchQuestions(
             @Param("keyword") String keyword,
             @Param("keywordSearch") String keywordSearch,
             @Param("filter") String filter,
             @Param("tag") String tag,
+            @Param("sortBy") String sortBy,
             Pageable pageable
     );
 
