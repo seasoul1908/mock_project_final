@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import com.example.demo.service.CustomOAuth2UserService;
 
-import java.io.IOException;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
