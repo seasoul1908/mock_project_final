@@ -49,8 +49,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<QuestionViewDTO> getQuestionsByTag(Long tagId, String filter, int page, int pageSize) {
-        int offset = (page - 1) * pageSize;
-        List<Object[]> results = questionRepository.findQuestionsByTagNative(tagId, filter, offset, pageSize);
+        List<Object[]> results = questionRepository.findQuestionsByTagNative(tagId, filter, org.springframework.data.domain.PageRequest.of(page - 1, pageSize));
         List<QuestionViewDTO> questions = new ArrayList<>();
         for (Object[] row : results) {
             Long qId = ((Number) row[0]).longValue();
