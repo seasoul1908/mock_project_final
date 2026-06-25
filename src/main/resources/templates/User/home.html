@@ -257,38 +257,38 @@
     </div>
 </div>
 
-<div th:if="${questions == null or #lists.isEmpty(questions)}" class="text-center mt-5">
-    <h5>No questions found</h5>
-    <p class="text-secondary">Try another keyword or filter.</p>
-    <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Back to home</a>
-</div>
-<nav th:if="${totalPage > 1}" class="mt-4">
-    <ul class="pagination justify-content-center">
-        <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
-            <a class="page-link"
-               th:href="@{/home(page=${currentPage - 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
-                Previous
-            </a>
-        </li>
+            <div th:if="${questions == null or #lists.isEmpty(questions)}" class="text-center mt-5">
+                <h5>No questions found</h5>
+                <p class="text-secondary">Try another keyword or filter.</p>
+                <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Back to home</a>
+            </div>
+        <nav th:if="${totalPage > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
+                    <a class="page-link"
+                    th:href="@{/home(page=${currentPage - 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                    Previous
+                    </a>
+                </li>
 
-        <li class="page-item"
-            th:each="i : ${#numbers.sequence(1, totalPage)}"
-            th:classappend="${i == currentPage} ? ' active' : ''">
-            <a class="page-link"
-               th:href="@{/home(page=${i}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}"
-               th:text="${i}">
-                1
-            </a>
-        </li>
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(1, totalPage)}"
+                    th:classappend="${i == currentPage} ? ' active' : ''">
+                        <a class="page-link"
+                            th:href="@{/home(page=${i}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}"
+                            th:text="${i}">
+                            1
+                        </a>
+                </li>
 
-        <li class="page-item" th:classappend="${currentPage >= totalPage} ? ' disabled' : ''">
-            <a class="page-link"
-               th:href="@{/home(page=${currentPage + 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
-                Next
-            </a>
-        </li>
-    </ul>
-</nav>
+                <li class="page-item" th:classappend="${currentPage >= totalPage} ? ' disabled' : ''">
+                    <a class="page-link"
+                        th:href="@{/home(page=${currentPage + 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
