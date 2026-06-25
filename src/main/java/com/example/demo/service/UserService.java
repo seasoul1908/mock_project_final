@@ -38,7 +38,7 @@ public class UserService {
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
         dto.setStatus(user.getStatus() != null ? user.getStatus() : "active");
-        dto.setReputation(user.getReputation());
+        dto.setReputation(user.getReputation() != null ? user.getReputation() : 0);
         dto.setCreatedAt(user.getCreatedAt());
         dto.setBio(user.getBio());
         dto.setLocation(user.getLocation());

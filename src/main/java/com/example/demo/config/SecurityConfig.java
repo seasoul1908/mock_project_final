@@ -1,21 +1,27 @@
 package com.example.demo.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.example.demo.service.CustomOAuth2UserService;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Inject our custom service
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
@@ -25,28 +31,35 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationSuccessHandler roleBasedSuccessHandler() {
+        return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
+        };
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         // Expose /error endpoint to stop Spring Security from redirecting to login on
                         // failure
                         .requestMatchers("/", "/home","search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error").permitAll()
-                        .requestMatchers("/admin/**", "/dashboard").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/api/admin/**", "/dashboard").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .usernameParameter("email") 
+                        .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/home", true)
+                        .successHandler(roleBasedSuccessHandler())
                         .failureUrl("/auth/login?error=true")
                         .permitAll())
-                // UNCOMMENT AND UPDATE THIS BLOCK
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/home", true)
+                        .successHandler(roleBasedSuccessHandler())
                         .userInfoEndpoint(userInfo -> userInfo
-                                // Plug the data catcher here
                                 .userService(customOAuth2UserService)))
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>User Management | DevQuery Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        body { background: #f6f7f8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; font-size: 13px; }
+        .admin-sidebar { width: 220px; min-width: 220px; background: #fff; border-right: 1px solid #dee2e6; padding-top: 16px; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
+        .admin-nav-link { display: block; padding: 9px 16px; color: #525960; text-decoration: none; font-size: 14px; border-radius: 6px; margin: 2px 8px; transition: background 0.15s, color 0.15s; }
+        .admin-nav-link:hover { color: #0c0d0e; background: #f1f2f3; }
+        .admin-nav-link.active { color: #0c0d0e; background: #e3e6e8; border-left: 3px solid #f48024; font-weight: 600; padding-left: 13px; }
+        .sidebar-label { padding: 8px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #6a737c; letter-spacing: 0.5px; }
+        .content-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e3e6e8; }
+        .page-title { font-size: 22px; font-weight: 600; color: #0c0d0e; margin-bottom: 20px; }
+        .badge-role-admin { background: #d0393e; }
+        .badge-role-moderator { background: #f48024; }
+        .badge-role-member { background: #6c757d; }
+    </style>
+</head>
+<body>
+<div th:replace="~{Common/header :: header}"></div>
+
+<div style="margin-top:56px; display:flex; min-height:calc(100vh - 56px);">
+    <!-- Admin Sidebar -->
+    <nav class="admin-sidebar">
+        <div class="sidebar-label">Management</div>
+        <a th:href="@{/admin/dashboard}" class="admin-nav-link"><i class="fa-solid fa-chart-line fa-fw me-2"></i> Dashboard</a>
+        <a th:href="@{/admin/users}" class="admin-nav-link active"><i class="fa-solid fa-users fa-fw me-2"></i> Users</a>
+        <a th:href="@{/admin/tags}" class="admin-nav-link"><i class="fa-solid fa-tags fa-fw me-2"></i> Tags</a>
+        <a th:href="@{/admin/reports}" class="admin-nav-link"><i class="fa-solid fa-flag fa-fw me-2"></i> Reports</a>
+        <a th:href="@{/admin/rules}" class="admin-nav-link"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
+        <a th:href="@{/admin/badges}" class="admin-nav-link"><i class="fa-solid fa-medal fa-fw me-2"></i> Badges</a>
+        <a th:href="@{/admin/blogs}" class="admin-nav-link"><i class="fa-solid fa-newspaper fa-fw me-2"></i> Blogs</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="flex:1; padding:24px; overflow:auto;">
+        <div class="page-title"><i class="fa-solid fa-users me-2" style="color:#f48024;"></i> User Management</div>
+
+        <!-- Search & Filter -->
+        <div class="content-card mb-3">
+            <form th:action="@{/admin/users}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <input type="text" name="keyword" class="form-control form-control-sm" placeholder="Search username or email..."
+                        th:value="${keyword}"/>
+                </div>
+                <div class="col-md-2">
+                    <select name="role" class="form-select form-select-sm">
+                        <option value="" th:selected="${role == ''}">All Roles</option>
+                        <option value="admin" th:selected="${role == 'admin'}">Admin</option>
+                        <option value="moderator" th:selected="${role == 'moderator'}">Moderator</option>
+                        <option value="member" th:selected="${role == 'member'}">Member</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="" th:selected="${status == ''}">All Status</option>
+                        <option value="active" th:selected="${status == 'active'}">Active</option>
+                        <option value="inactive" th:selected="${status == 'inactive'}">Banned</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa-solid fa-magnifying-glass me-1"></i> Search</button>
+                    <a th:href="@{/admin/users}" class="btn btn-sm btn-outline-secondary ms-1">Reset</a>
+                </div>
+                <div class="col-auto ms-auto">
+                    <span class="text-muted small">Total: <strong th:text="${totalUsers}">0</strong> users</span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="content-card">
+            <table class="table table-hover table-sm mb-0" style="font-size:13px;">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Reputation</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}" th:id="'row-' + ${u.userId}">
+                        <td class="text-muted" th:text="${u.userId}"></td>
+                        <td>
+                            <a th:href="@{/profile(id=${u.userId})}" th:text="${u.username}"
+                               class="text-decoration-none fw-semibold" target="_blank"></a>
+                        </td>
+                        <td class="text-muted" th:text="${u.email}"></td>
+                        <td>
+                            <select class="form-select form-select-sm role-select" style="min-width:100px; font-size:12px;"
+                                th:data-uid="${u.userId}" th:data-current="${u.role}">
+                                <option value="admin" th:selected="${u.role == 'admin'}">admin</option>
+                                <option value="moderator" th:selected="${u.role == 'moderator'}">moderator</option>
+                                <option value="member" th:selected="${u.role == 'member'}">member</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span class="badge status-badge"
+                                th:classappend="${u.status == 'active'} ? 'bg-success' : 'bg-danger'"
+                                th:text="${u.status}" th:id="'status-' + ${u.userId}"></span>
+                        </td>
+                        <td th:text="${u.reputation}"></td>
+                        <td class="text-muted" th:text="${u.createdAt != null ? #dates.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
+                        <td>
+                            <button class="btn btn-sm toggle-btn"
+                                th:classappend="${u.status == 'active'} ? 'btn-outline-danger' : 'btn-outline-success'"
+                                th:data-uid="${u.userId}"
+                                th:title="${u.status == 'active'} ? 'Ban user' : 'Unban user'">
+                                <i class="fa-solid" th:classappend="${u.status == 'active'} ? 'fa-ban' : 'fa-circle-check'"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="8" class="text-center text-muted py-4">No users found</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="mt-3">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/users(page=${currentPage - 1}, keyword=${keyword}, role=${role}, status=${status})}">«</a>
+                    </li>
+                    <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                        th:classappend="${p == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/users(page=${p}, keyword=${keyword}, role=${role}, status=${status})}" th:text="${p}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/users(page=${currentPage + 1}, keyword=${keyword}, role=${role}, status=${status})}">»</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </main>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="toast" class="toast align-items-center text-white border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toast-msg">Done.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const toast = new bootstrap.Toast(document.getElementById('toast'), { delay: 2500 });
+
+    function showToast(msg, success) {
+        const el = document.getElementById('toast');
+        el.classList.remove('bg-success', 'bg-danger');
+        el.classList.add(success ? 'bg-success' : 'bg-danger');
+        document.getElementById('toast-msg').textContent = msg;
+        toast.show();
+    }
+
+    // Toggle ban/unban
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const uid = btn.dataset.uid;
+            fetch(`/api/admin/users/${uid}/toggle-status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const statusEl = document.getElementById('status-' + uid);
+                        const isActive = data.newStatus === 'active';
+                        statusEl.className = 'badge status-badge ' + (isActive ? 'bg-success' : 'bg-danger');
+                        statusEl.textContent = data.newStatus;
+                        btn.className = 'btn btn-sm ' + (isActive ? 'btn-outline-danger' : 'btn-outline-success');
+                        btn.innerHTML = `<i class="fa-solid ${isActive ? 'fa-ban' : 'fa-circle-check'}"></i>`;
+                        showToast('User status updated to ' + data.newStatus, true);
+                    } else {
+                        showToast('Failed to update status', false);
+                    }
+                }).catch(() => showToast('Error updating status', false));
+        });
+    });
+
+    // Change role
+    document.querySelectorAll('.role-select').forEach(sel => {
+        sel.addEventListener('change', () => {
+            const uid = sel.dataset.uid;
+            const newRole = sel.value;
+            fetch(`/api/admin/users/${uid}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: newRole })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    showToast('Role updated to ' + newRole, true);
+                    sel.dataset.current = newRole;
+                } else {
+                    sel.value = sel.dataset.current;
+                    showToast('Failed to update role', false);
+                }
+            }).catch(() => { sel.value = sel.dataset.current; showToast('Error updating role', false); });
+        });
+    });
+</script>
+</body>
+</html>
