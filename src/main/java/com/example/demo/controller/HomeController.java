@@ -51,27 +51,6 @@ public class HomeController {
         String safeKeyword = keyword.trim();
         String keywordSearch = safeKeyword.isEmpty() ? "" : "%" + safeKeyword + "%";
 
-        Page<QuestionDTO> questionPage = questionRepository.searchQuestions(
-                safeKeyword, keywordSearch, filter, tag.trim(), pageable);
-
-        Map<Long, List<String>> questionTags = new HashMap<>();
-        for (QuestionDTO q : questionPage.getContent()) {
-            questionTags.put(q.getQuestionId(), questionRepository.findTagsByQuestionId(q.getQuestionId()));
-        }
-
-        model.addAttribute("questions", questionPage.getContent());
-        model.addAttribute("totalPage", questionPage.getTotalPages());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalQuestions", questionPage.getTotalElements());
-        
-        model.addAttribute("popularTags", questionRepository.getPopularTags(10));
-        model.addAttribute("questionTags", questionTags);
-
-        model.addAttribute("currentKeyword", safeKeyword);
-        model.addAttribute("currentSort", tab);
-        model.addAttribute("currentFilter", filter);
-        model.addAttribute("currentTag", tag.trim());
-
         return "User/home";
     }
 }
