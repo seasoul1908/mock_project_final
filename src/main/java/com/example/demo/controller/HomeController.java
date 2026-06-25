@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,21 +40,15 @@ public class HomeController {
 
         if ("unanswered".equals(safeFilter)) {
             safeTab = "newest";
-        } else if (Arrays.asList("active", "newest", "voted").contains(safeTab)) {
+        } else if (Arrays.asList("active", "newest", "voted" , "view").contains(safeTab)) {
             safeFilter = "all";
         }
 
-        // Dùng cú pháp switch hiện đại của nhánh main
-        Sort sortObj = switch (safeTab) {
-            case "active" -> Sort.by(Sort.Direction.DESC, "updatedAt");
-            case "voted" -> Sort.by(Sort.Direction.DESC, "score");
-            case "views" -> Sort.by(Sort.Direction.DESC, "viewCount");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
-        };
-
+        
+        
         // Kế thừa logic chống lỗi trang âm của nhánh main
         int currentPage = Math.max(page, 1);
-        Pageable pageable = PageRequest.of(currentPage - 1, 10, sortObj);
+        Pageable pageable = PageRequest.of(currentPage - 1, 10);
 
         String keywordSearch = safeKeyword.isEmpty() ? "" : "%" + safeKeyword + "%";
 

@@ -43,7 +43,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error").permitAll()
+                        // Expose /error endpoint to stop Spring Security from redirecting to login on
+                        // failure
+                        .requestMatchers("/", "/home","search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error").permitAll()
                         .requestMatchers("/admin/**", "/api/admin/**", "/dashboard").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form

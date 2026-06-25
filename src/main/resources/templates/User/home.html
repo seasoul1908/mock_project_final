@@ -69,6 +69,27 @@
         .widget-header { padding: 12px 15px; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); background-color: rgba(0,0,0,0.02); }
         .widget-list { list-style: none; }
         .widget-list li { padding: 12px 15px; display: flex; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .popular-tags-box {
+            margin-top: 20px;
+        }
+
+        .popular-tags-box h3 {
+            font-size: 19px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            color: var(--black-text);
+        }
+
+        .popular-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag.active-tag {
+            background-color: #39739d;
+            color: white;
+        }
 
         /* Footer */
         .footer-devquery { background-color: #242729; color: #ffffff; margin-top: 40px; padding: 25px 0 15px 0; border-top: 1px solid #34495e; }
@@ -82,55 +103,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-devquery">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center me-4 ms-4" th:href="@{/home}">
-                <i class="fa-brands fa-stack-overflow fa-lg me-2" style="color: #f48024;"></i>
-                <span class="fw-bold text-dark">DevQuery</span>
-            </a>
-
-            <form th:action="@{/search}" method="get" class="d-flex mx-auto" style="max-width: 500px; width: 100%;">
-                <div class="input-group position-relative w-100">
-                    <span class="position-absolute top-50 start-0 translate-middle-y ms-2 text-secondary z-index-1">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </span>
-
-                <input class="form-control rounded ps-5 search-box"
-                    type="search"
-                    name="q"
-                    th:value="${currentKeyword}"
-                    placeholder="Search questions, tags, or users..." />
-                </div>
-            </form>
-
-            <ul class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
-                <th:block sec:authorize="isAuthenticated()">
-                    <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center py-0" href="#">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar" width="32" height="32" class="rounded-circle border avatar-img" />
-                            <span class="ms-2 fw-bold text-dark small" sec:authentication="name">User</span>
-                        </a>
-                    </li>
-                    <li class="nav-item me-4">
-                        <form th:action="@{/auth/logout}" method="post" class="m-0">
-                            <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth">
-                                <i class="fa-solid fa-right-from-bracket"></i> Logout
-                            </button>
-                        </form>
-                    </li>
-                </th:block>
-
-                <th:block sec:authorize="isAnonymous()">
-                    <li class="nav-item">
-                        <a class="btn btn-outline-primary btn-sm btn-auth px-3" th:href="@{/auth/login}">Log in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm btn-auth px-3 me-4" th:href="@{/auth/register}">Sign up</a>
-                    </li>
-                </th:block>
-            </ul>
-        </div>
-    </nav>
+    <div th:replace="~{Common/header :: header}"></div>
 
     <div class="main-container">
 
@@ -151,7 +124,7 @@
                     </span>
                 </h1>
 
-                <a href="#" class="btn-primary-custom">Ask Question</a>
+                <a th:href="@{/questions/ask}" class="btn-primary-custom">Ask Question</a>
             </div>
 
             <div class="filters-container">
@@ -278,17 +251,35 @@
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
-            <div class="widget widget-yellow">
-                <div class="widget-header">The Dev Blog</div>
-                <div class="widget-content">
-                    <ul class="widget-list">
-                        <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A Guide</span></li>
-                        <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+    <div class="widget widget-yellow">
+        <div class="widget-header">The Dev Blog</div>
+        <div class="widget-content">
+            <ul class="widget-list">
+                <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A Guide</span></li>
+                <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
+            </ul>
+        </div>
+    </div>
 
+    <div class="popular-tags-box">
+        <h3>Popular tags</h3>
+
+        <div class="popular-tags-list">
+            <a th:each="popTag : ${popularTags}"
+               th:href="@{/home(tag=${popTag})}"
+               class="tag"
+               th:classappend="${popTag == currentTag} ? ' active-tag' : ''"
+               th:text="${popTag}">
+                java
+            </a>
+        </div>
+
+        <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}"
+           class="text-secondary mt-2">
+            No popular tags yet.
+        </p>
+    </div>
+        </aside>
     </div>
 
     <footer class="footer-devquery">

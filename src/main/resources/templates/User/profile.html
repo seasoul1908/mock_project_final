@@ -2,20 +2,31 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${uPro.username} + ' - User Profile - DevQuery'">User Profile</title>
+    <title th:text="${uPro.username + ' - User Profile - DevQuery'}">User Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { padding-top: 60px; }
-        /* Dán toàn bộ CSS cũ của ông vào đây */
+        .user-name { font-size: 34px; font-weight: normal; margin-bottom: 4px; }
+        .user-meta { list-style: none; padding: 0; margin: 0; color: #6a737c; font-size: 13px; }
+        .profile-tabs { border-bottom: none; margin-bottom: 20px; }
+        .profile-tabs .nav-link { color: #525960; border-radius: 20px; padding: 6px 12px; margin-right: 5px; border: none; font-size: 13px; }
+        .profile-tabs .nav-link:hover { background-color: #e3e6e8; color: #0c0d0e; }
+        .profile-tabs .nav-link.active { background-color: #f48024; color: white; }
+        .list-group-item.active { background-color: #f48024 !important; border-color: #f48024 !important; }
+        
+        /* Căn chỉnh lại các khối thông tin cho đẹp */
+        .badge-dashboard { border: 1px solid #d6d9dc; border-radius: 5px; background-color: #fff; }
+        .sticker-box { padding: 10px; border: 1px solid #e3e6e8; border-radius: 5px; text-align: center; }
+        .achievement-chip { display: inline-block; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; background: #f1f2f3; border: 1px solid #d6d9dc; }
     </style>
 </head>
-<body>
+
+<body style="padding-top: 60px; background-color: #f8f9fa;">
 
     <div th:replace="~{Common/header :: header}"></div>
 
-    <div class="container-fluid" style="max-width: 1264px; margin: 0 auto;">
+    <div class="container-fluid" style="max-width: 1264px; margin: 0 auto; background-color: #fff; padding-bottom: 50px;">
         <div class="row">
             
             <nav class="col-md-2 d-none d-md-block bg-light sidebar p-0 pt-4" style="border-right: 1px solid #d6d9dc; min-height: 100vh;">
@@ -36,15 +47,15 @@
                                     <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">reputation</div>
                                 </div>
                                 <div class="col-6">
-                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${viewCount != null ? viewCount : 0}">0</div>
+                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${viewCount ?: 0}">0</div>
                                     <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">views</div>
                                 </div>
                                 <div class="col-6">
-                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${answersCount != null ? answersCount : 0}">0</div>
+                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${answersCount ?: 0}">0</div>
                                     <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">answers</div>
                                 </div>
                                 <div class="col-6">
-                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${questionsCount != null ? questionsCount : 0}">0</div>
+                                    <div style="font-size: 17px; font-weight: bold; color: #212529;" th:text="${questionsCount ?: 0}">0</div>
                                     <div style="font-size: 11px; color: #6c757d; text-transform: uppercase; font-weight: 600;">questions</div>
                                 </div>
                             </div>
@@ -52,10 +63,10 @@
 
                         <h3 style="font-size: 21px; margin-bottom: 16px; font-weight: 600; color: #2b2d42;">Links</h3>
                         <div class="badge-dashboard mb-4" style="padding: 15px;">
-                            <th:block th:if="${userLinks != null and !userLinks.isEmpty()}">
+                            <th:block th:if="${not #maps.isEmpty(userLinks)}">
                                 <ul class="list-unstyled mb-0" style="font-size: 14px;">
                                     <th:block th:each="link : ${userLinks}">
-                                        <li class="mb-2" th:if="${link.value != null and !link.value.isEmpty()}">
+                                        <li class="mb-2" th:if="${not #strings.isEmpty(link.value)}">
                                             <th:block th:switch="${link.key}">
                                                 <th:block th:case="'github'">
                                                     <i class="fa-brands fa-github me-2 text-dark"></i>
@@ -74,7 +85,7 @@
                                     </th:block>
                                 </ul>
                             </th:block>
-                            <th:block th:if="${userLinks == null or userLinks.isEmpty()}">
+                            <th:block th:if="${#maps.isEmpty(userLinks)}">
                                 <p class="text-muted mb-0" style="font-size: 13px;">No links added.</p>
                             </th:block>
                         </div>            
@@ -82,11 +93,11 @@
 
                     <div class="col-md-9">
                         <h3 style="font-size: 21px; margin-bottom: 16px; font-weight: 600; color: #2b2d42;">About</h3>
-                        <div class="badge-dashboard mb-4" style="text-align: left; min-height: 150px;">
-                            <th:block th:if="${uPro.bio != null and !uPro.bio.isEmpty()}">
+                        <div class="badge-dashboard mb-4" style="text-align: left; min-height: 150px; padding: 20px;">
+                            <th:block th:if="${not #strings.isEmpty(uPro.bio)}">
                                 <div style="color: #495057; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-break: break-word;" th:text="${uPro.bio}"></div>
                             </th:block>
-                            <th:block th:if="${uPro.bio == null or uPro.bio.isEmpty()}">
+                            <th:block th:if="${#strings.isEmpty(uPro.bio)}">
                                 <div class="text-center py-3">
                                     <p class="text-muted mb-3">Your about me section is currently blank.</p>
                                     <a th:href="@{/edit-profile}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
@@ -95,59 +106,59 @@
                         </div>
 
                         <h3 style="font-size: 21px; margin-bottom: 16px; font-weight: 600; color: #2b2d42;">Achievements</h3>
-                        <div class="badge-dashboard mb-5">
+                        <div class="badge-dashboard mb-5" style="padding: 20px;">
                             <div class="row g-3 mb-4">
                                 <div class="col-4">
                                     <div class="sticker-box sticker-gold">
-                                        <i class="fa-solid fa-medal sticker-icon" style="color: #f1c40f;"></i>
-                                        <span class="sticker-count" th:text="${goldBadges == null ? 0 : goldBadges.size()}">0</span>
-                                        <span class="sticker-label">Gold</span>
+                                        <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #f1c40f;"></i>
+                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(goldBadges)}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Gold</div>
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <div class="sticker-box sticker-silver">
-                                        <i class="fa-solid fa-medal sticker-icon" style="color: #adb5bd;"></i>
-                                        <span class="sticker-count" th:text="${silverBadges == null ? 0 : silverBadges.size()}">0</span>
-                                        <span class="sticker-label">Silver</span>
+                                        <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #adb5bd;"></i>
+                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(silverBadges)}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Silver</div>
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <div class="sticker-box sticker-bronze">
-                                        <i class="fa-solid fa-medal sticker-icon" style="color: #d35400;"></i>
-                                        <span class="sticker-count" th:text="${bronzeBadges == null ? 0 : bronzeBadges.size()}">0</span>
-                                        <span class="sticker-label">Bronze</span>
+                                        <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #d35400;"></i>
+                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(bronzeBadges)}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Bronze</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="achievement-details border-top pt-4">
-                                <th:block th:if="${(goldBadges == null or goldBadges.isEmpty()) and (silverBadges == null or silverBadges.isEmpty()) and (bronzeBadges == null or bronzeBadges.isEmpty())}">
+                                <th:block th:if="${#lists.isEmpty(goldBadges) and #lists.isEmpty(silverBadges) and #lists.isEmpty(bronzeBadges)}">
                                     <div class="text-center py-3">
                                         <p class="text-muted mb-3">You haven't earned any badges yet. Keep participating to unlock achievements!</p>
                                         <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Explore Community</a>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${goldBadges != null and !goldBadges.isEmpty()}">
+                                <th:block th:if="${not #lists.isEmpty(goldBadges)}">
                                     <div class="mb-3">
-                                        <span class="achievement-chip chip-gold" th:each="b : ${goldBadges}" th:title="${b.description}">
-                                            <i class="fa-solid fa-award"></i> <th:block th:text="${b.name}"></th:block>
+                                        <span class="achievement-chip chip-gold" th:each="b : ${goldBadges}" th:title="${b['description']}">
+                                            <i class="fa-solid fa-award" style="color: #f1c40f;"></i> <th:block th:text="${b['name']}"></th:block>
                                         </span>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${silverBadges != null and !silverBadges.isEmpty()}">
+                                <th:block th:if="${not #lists.isEmpty(silverBadges)}">
                                     <div class="mb-3">
-                                        <span class="achievement-chip chip-silver" th:each="b : ${silverBadges}" th:title="${b.description}">
-                                            <i class="fa-solid fa-award"></i> <th:block th:text="${b.name}"></th:block>
+                                        <span class="achievement-chip chip-silver" th:each="b : ${silverBadges}" th:title="${b['description']}">
+                                            <i class="fa-solid fa-award" style="color: #adb5bd;"></i> <th:block th:text="${b['name']}"></th:block>
                                         </span>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${bronzeBadges != null and !bronzeBadges.isEmpty()}">
+                                <th:block th:if="${not #lists.isEmpty(bronzeBadges)}">
                                     <div class="mb-1">
-                                        <span class="achievement-chip chip-bronze" th:each="b : ${bronzeBadges}" th:title="${b.description}">
-                                            <i class="fa-solid fa-award"></i> <th:block th:text="${b.name}"></th:block>
+                                        <span class="achievement-chip chip-bronze" th:each="b : ${bronzeBadges}" th:title="${b['description']}">
+                                            <i class="fa-solid fa-award" style="color: #d35400;"></i> <th:block th:text="${b['name']}"></th:block>
                                         </span>
                                     </div>
                                 </th:block>
