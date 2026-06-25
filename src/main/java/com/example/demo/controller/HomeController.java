@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class HomeController {
     @Autowired
     private QuestionRepository questionRepository;
 
-    @GetMapping({"/", "/home", "/search"})
+    @GetMapping({"/", "/home", "/search", "/SearchController"})
     public String homePage(
             @RequestParam(value = "q", defaultValue = "") String keyword,
             @RequestParam(value = "tab", defaultValue = "newest") String tab,
@@ -40,10 +41,18 @@ public class HomeController {
 
         Sort sortObj;
         switch (tab) {
-            case "active": sortObj = Sort.by(Sort.Direction.DESC, "updatedAt"); break;
-            case "voted": sortObj = Sort.by(Sort.Direction.DESC, "score"); break;
-            case "views": sortObj = Sort.by(Sort.Direction.DESC, "viewCount"); break;
-            default: sortObj = Sort.by(Sort.Direction.DESC, "createdAt"); break;
+            case "active": 
+                sortObj = Sort.by(Sort.Direction.DESC, "updated_at"); 
+                break;
+            case "voted": 
+                sortObj = Sort.by(Sort.Direction.DESC, "Score"); 
+                break;
+            case "views": 
+                sortObj = Sort.by(Sort.Direction.DESC, "view_count"); 
+                break;
+            default: 
+                sortObj = Sort.by(Sort.Direction.DESC, "created_at"); 
+                break;
         }
 
         Pageable pageable = PageRequest.of(page - 1, 10, sortObj);
@@ -51,20 +60,57 @@ public class HomeController {
         String safeKeyword = keyword.trim();
         String keywordSearch = safeKeyword.isEmpty() ? "" : "%" + safeKeyword + "%";
 
-        Page<QuestionDTO> questionPage = questionRepository.searchQuestions(
+        // Móc dữ liệu dạng Map nguyên thủy từ DB để tránh lỗi Constructor
+        Page<Map<String, Object>> resultPage = questionRepository.searchQuestions(
                 safeKeyword, keywordSearch, filter, tag.trim(), pageable);
 
+        // Tự động ép kiểu (Map -> QuestionDTO) siêu an toàn
+        List<QuestionDTO> questionList = new ArrayList<>();
         Map<Long, List<String>> questionTags = new HashMap<>();
-        for (QuestionDTO q : questionPage.getContent()) {
-            questionTags.put(q.getQuestionId(), questionRepository.findTagsByQuestionId(q.getQuestionId()));
+        
+        for (Map<String, Object> rs : resultPage.getContent()) {
+            QuestionDTO q = new QuestionDTO();
+            
+            // Xử lý an toàn các kiểu số (Number)
+            q.setQuestionId(((Number) rs.get("questionId")).longValue());
+            q.setUserId(((Number) rs.get("userId")).longValue());
+            q.setTitle((String) rs.get("title"));
+            q.setBody((String) rs.get("body"));
+            q.setViewCount(((Number) rs.get("viewCount")).intValue());
+            q.setScore(((Number) rs.get("score")).intValue());
+            
+            // Xử lý an toàn kiểu Ngày tháng
+            Object createdAtObj = rs.get("createdAt");
+            if (createdAtObj instanceof java.sql.Timestamp) {
+                q.setCreatedAt((java.sql.Timestamp) createdAtObj);
+            } else if (createdAtObj instanceof java.util.Date) {
+                q.setCreatedAt(new java.sql.Timestamp(((java.util.Date) createdAtObj).getTime()));
+            }
+
+            // Xử lý chuỗi
+            q.setAuthorName((String) rs.get("authorName"));
+            q.setAuthorAvatar((String) rs.get("authorAvatar"));
+            
+            // Ép kiểu AnswerCount
+            q.setAnswerCount(((Number) rs.get("answerCount")).intValue());
+
+            // Gắn Tags cho từng câu hỏi
+            List<String> tagsForQuestion = questionRepository.findTagsByQuestionId(q.getQuestionId());
+            questionTags.put(q.getQuestionId(), tagsForQuestion);
+            q.setTags(tagsForQuestion);
+            
+            questionList.add(q);
         }
 
-        model.addAttribute("questions", questionPage.getContent());
-        model.addAttribute("totalPage", questionPage.getTotalPages());
+        List<String> popularTags = questionRepository.getPopularTags(PageRequest.of(0, 10));
+
+        // Đẩy List mới (đã convert sang QuestionDTO) ra ngoài Model
+        model.addAttribute("questions", questionList);
+        model.addAttribute("totalPage", resultPage.getTotalPages());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalQuestions", questionPage.getTotalElements());
+        model.addAttribute("totalQuestions", resultPage.getTotalElements());
         
-        model.addAttribute("popularTags", questionRepository.getPopularTags(10));
+        model.addAttribute("popularTags", popularTags);
         model.addAttribute("questionTags", questionTags);
 
         model.addAttribute("currentKeyword", safeKeyword);
