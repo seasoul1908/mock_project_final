@@ -2,25 +2,30 @@ package com.example.demo.service;
 
 import com.example.demo.dto.TagDTO;
 import com.example.demo.dto.QuestionViewDTO;
+import com.example.demo.entity.TagFollow;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.TagFollowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
     private final QuestionRepository questionRepository;
+    private final TagFollowRepository tagFollowRepository;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, QuestionRepository questionRepository) {
+    public TagServiceImpl(TagRepository tagRepository, QuestionRepository questionRepository, TagFollowRepository tagFollowRepository) {
         this.tagRepository = tagRepository;
         this.questionRepository = questionRepository;
+        this.tagFollowRepository = tagFollowRepository;
     }
 
     @Override
@@ -70,6 +75,23 @@ public class TagServiceImpl implements TagService {
     @Override
     public int countQuestionsByTag(Long tagId, String filter) {
         return questionRepository.countQuestionsByTagNative(tagId, filter);
+    }
+
+    @Override
+    public void followOrUnfollowTag(Long userId, Long tagId, String action) {
+        Optional<TagFollow> followOpt = tagFollowRepository.findByUserIdAndTagId(userId, tagId);
+        if ("follow".equalsIgnoreCase(action)) {
+            if (followOpt.isEmpty()) {
+                tagFollowRepository.save(new TagFollow(userId, tagId));
+            }
+        } else if ("unfollow".equalsIgnoreCase(action)) {
+            followOpt.ifPresent(tagFollowRepository::delete);
+        }
+    }
+
+    @Override
+    public boolean isFollowing(Long userId, Long tagId) {
+        return tagFollowRepository.existsByUserIdAndTagId(userId, tagId);
     }
 
     private TagDTO mapRowToTagDTO(Object[] row) {

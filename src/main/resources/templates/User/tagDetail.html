@@ -195,9 +195,22 @@
 
             <!-- Action Bar -->
             <div class="action-bar">
-                <a href="/auth/login" class="btn-watch not-followed">
-                    <i class="fa-solid fa-eye"></i> Follow Tag
-                </a>
+                <div th:if="${!isLoggedIn}">
+                    <a th:href="@{/auth/login}" class="btn-watch not-followed">
+                        <i class="fa-solid fa-eye"></i> Follow Tag
+                    </a>
+                </div>
+                <div th:if="${isLoggedIn}">
+                    <form method="post" th:action="@{/tags/follow}" style="margin:0;">
+                        <input type="hidden" name="tagId" th:value="${tag.id}" />
+                        <input type="hidden" name="action" th:value="${isFollowed ? 'unfollow' : 'follow'}" />
+                        <input type="hidden" name="redirectTo" th:value="'/tags/' + ${tag.id} + '?filter=' + ${filter} + '&page=' + ${currentPage}" />
+                        <button type="submit" class="btn-watch" th:classappend="${isFollowed ? 'followed' : 'not-followed'}">
+                            <i class="fa-solid" th:classappend="${isFollowed ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            <span th:text="${isFollowed ? 'Unfollow Tag' : 'Follow Tag'}">Follow Tag</span>
+                        </button>
+                    </form>
+                </div>
 
                 <div class="filter-buttons">
                     <a th:href="@{'/tags/' + ${tag.id}(filter='newest')}" th:classappend="${filter == 'newest' ? 'active' : ''}">Newest</a>
