@@ -9,4 +9,6 @@ public interface TagService {
     TagDTO getTagById(Long id);
     List<QuestionViewDTO> getQuestionsByTag(Long tagId, String filter, int page, int pageSize);
     int countQuestionsByTag(Long tagId, String filter);
+    void followOrUnfollowTag(Long userId, Long tagId, String action);
+    boolean isFollowing(Long userId, Long tagId);
 }
