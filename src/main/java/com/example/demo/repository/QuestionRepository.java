@@ -4,9 +4,11 @@ import com.example.demo.entity.Question;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -85,8 +87,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(value = "SELECT t.tag_name FROM Tags t JOIN Question_Tags qt ON t.tag_id = qt.tag_id GROUP BY t.tag_name ORDER BY COUNT(qt.question_id) DESC", nativeQuery = true)
     List<String> getPopularTags(Pageable pageable);
 
-    // Fetch tags for a specific question
-    @Query(value = "SELECT t.tag_name FROM Tags t JOIN Question_Tags qt ON t.tag_id = qt.tag_id WHERE qt.question_id = :questionId", nativeQuery = true)
+    @Query(value = "SELECT t.tag_name " +
+            "FROM Tags t " +
+            "JOIN Question_Tags qt ON t.tag_id = qt.tag_id " +
+            "WHERE qt.question_id = :questionId AND t.IsActive = 1", nativeQuery = true)
     List<String> findTagsByQuestionId(@Param("questionId") Long questionId);
 
     @Query(value = """
@@ -109,4 +113,28 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
           q.question_id DESC
     """, nativeQuery = true)
     List<Map<String, Object>> findActiveBountiesNative(@Param("sortBy") String sortBy);
+
+    @Query(value = "SELECT tag_id FROM Tags WHERE LOWER(tag_name) = LOWER(:tagName) AND IsActive = 1", nativeQuery = true)
+    Long findTagIdByName(@Param("tagName") String tagName);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO Question_Tags (question_id, tag_id) VALUES (:questionId, :tagId)", nativeQuery = true)
+    void insertQuestionTag(@Param("questionId") Long questionId, @Param("tagId") Long tagId);
+
+    @Query(value = "SELECT follower_id FROM UserFollow WHERE following_id = :authorId", nativeQuery = true)
+    List<Long> findFollowersByAuthorId(@Param("authorId") Long authorId);
+
+    @Query(value = "SELECT DISTINCT tf.user_id " +
+            "FROM TagFollow tf " +
+            "JOIN Question_Tags qt ON tf.tag_id = qt.tag_id " +
+            "WHERE qt.question_id = :questionId AND tf.user_id <> :authorId", nativeQuery = true)
+    List<Long> findFollowersByQuestionTags(@Param("questionId") Long questionId, @Param("authorId") Long authorId);
+
+    @Query(value = "SELECT t.tag_name " +
+            "FROM TagFollow tf " +
+            "JOIN Tags t ON tf.tag_id = t.tag_id " +
+            "JOIN Question_Tags qt ON t.tag_id = qt.tag_id " +
+            "WHERE qt.question_id = :questionId AND tf.user_id = :userId", nativeQuery = true)
+    List<String> findFollowedTagsForQuestion(@Param("questionId") Long questionId, @Param("userId") Long userId);
 }
