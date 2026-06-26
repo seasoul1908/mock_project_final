@@ -1,8 +1,5 @@
 package com.example.demo.config;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.example.demo.service.CustomOAuth2UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Expose /error endpoint to stop Spring Security from redirecting to login on
                         // failure
-                        .requestMatchers("/", "/home","search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error", "/blog", "/blog/**").permitAll()
+                        .requestMatchers("/", "/home","/search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error", "/blog", "/blog/**", "/forgot-password", "/reset-password").permitAll()
                         .requestMatchers("/admin/**", "/api/admin/**", "/dashboard").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
