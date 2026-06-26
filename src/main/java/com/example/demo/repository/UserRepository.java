@@ -185,7 +185,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         "WHERE v.user_id = :userId " +
                         "ORDER BY v.created_at DESC", countQuery = "SELECT COUNT(*) FROM Votes WHERE user_id = :userId", nativeQuery = true)
         Page<Map<String, Object>> getVotesActivityByUser(@Param("userId") long userId, Pageable pageable);
-        
+
         @Query(value = "SELECT COUNT(*) FROM Users WHERE email = :email", nativeQuery = true)
         int countByEmailNative(@Param("email") String email);
 
@@ -193,5 +193,35 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Transactional
         @Query(value = "UPDATE Users SET password_hash = :passwordHash WHERE email = :email", nativeQuery = true)
         int updatePasswordByEmail(@Param("email") String email,
-                                  @Param("passwordHash") String passwordHash);  
+                        @Param("passwordHash") String passwordHash);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Users SET username = :displayName WHERE user_id = :userId", nativeQuery = true)
+        int updateDisplayName(@Param("userId") long userId, @Param("displayName") String displayName);
+
+        @Query(value = "SELECT COUNT(*) FROM User_Profile WHERE user_id = :userId", nativeQuery = true)
+        int checkProfileExists(@Param("userId") long userId);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE User_Profile SET bio = :bio, location = :location, website = :website WHERE user_id = :userId", nativeQuery = true)
+        void updateProfileInfoOnly(@Param("userId") long userId, @Param("bio") String bio,
+                        @Param("location") String location, @Param("website") String website);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO User_Profile (user_id, bio, location, website) VALUES (:userId, :bio, :location, :website)", nativeQuery = true)
+        void insertProfileInfoOnly(@Param("userId") long userId, @Param("bio") String bio,
+                        @Param("location") String location, @Param("website") String website);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE User_Profile SET avatar_url = :avatarUrl WHERE user_id = :userId", nativeQuery = true)
+        void updateAvatarOnly(@Param("userId") long userId, @Param("avatarUrl") String avatarUrl);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO User_Profile (user_id, avatar_url) VALUES (:userId, :avatarUrl)", nativeQuery = true)
+        void insertAvatarOnly(@Param("userId") long userId, @Param("avatarUrl") String avatarUrl);
 }
