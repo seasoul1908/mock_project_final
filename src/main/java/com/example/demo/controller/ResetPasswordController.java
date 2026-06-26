@@ -29,7 +29,7 @@ public class ResetPasswordController {
 
      @GetMapping("/forgot-password")
     public String showForgotPasswordPage() {
-        return "User/forgot-password";
+        return "User/forgot_password";
     }
 
     @PostMapping("/forgot-password")
@@ -39,12 +39,12 @@ public class ResetPasswordController {
 
         if (safeEmail.isBlank()) {
             model.addAttribute("error", "Please enter your email.");
-            return "User/forgot-password";
+            return "User/forgot_password";
         }
 
         if (userRepository.countByEmailNative(safeEmail) <= 0) {
             model.addAttribute("error", "Email does not exist.");
-            return "User/forgot-password";
+            return "User/forgot_password";
         }
 
         try {
@@ -52,10 +52,10 @@ public class ResetPasswordController {
             mailService.sendResetPasswordEmail(safeEmail, token);
 
             model.addAttribute("message", "Reset password link has been sent to your email.");
-            return "User/forgot-password";
+            return "User/forgot_password";
         } catch (RuntimeException e) {
             model.addAttribute("error", "Could not send reset email. Please check mail configuration.");
-            return "User/forgot-password";
+            return "User/forgot_password";
         }
     }
 
@@ -66,11 +66,11 @@ public class ResetPasswordController {
 
         if (email == null) {
             model.addAttribute("error", "Invalid or expired reset link.");
-            return "User/reset-password";
+            return "User/reset_password";
         }
 
         model.addAttribute("token", token);
-        return "User/reset-password";
+        return "User/reset_password";
     }
 
      @PostMapping("/reset-password")
@@ -82,19 +82,19 @@ public class ResetPasswordController {
 
         if (email == null) {
             model.addAttribute("error", "Invalid or expired reset link.");
-            return "User/reset-password";
+            return "User/reset_password";
         }
 
         if (password == null || password.length() < 8) {
             model.addAttribute("token", token);
             model.addAttribute("error", "Password must be at least 8 characters.");
-            return "User/reset-password";
+            return "User/reset_password";
         }
 
         if (!password.equals(confirmPassword)) {
             model.addAttribute("token", token);
             model.addAttribute("error", "Confirm password does not match.");
-            return "User/reset-password";
+            return "User/reset_password";
         }
 
         String encodedPassword = passwordEncoder.encode(password);
@@ -104,7 +104,7 @@ public class ResetPasswordController {
         if (updatedRows <= 0) {
             model.addAttribute("token", token);
             model.addAttribute("error", "Could not update password.");
-            return "User/reset-password";
+            return "User/reset_password";
         }
 
         tokenStore.removeToken(token);
