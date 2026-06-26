@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@SuppressWarnings("null")
 public class QuestionRecommendationService {
 
     private static final Set<String> RECOMMENDATION_STOP_WORDS = new HashSet<>(Arrays.asList(

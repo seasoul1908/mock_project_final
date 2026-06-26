@@ -70,7 +70,7 @@ public class TagController {
         
         User user = getAuthenticatedUser();
         boolean isLoggedIn = (user != null);
-        boolean isFollowed = isLoggedIn && tagService.isFollowing(user.getUserId(), id);
+        boolean isFollowed = user != null && tagService.isFollowing(user.getUserId(), id);
         
         model.addAttribute("tag", tag);
         model.addAttribute("questions", questions);
