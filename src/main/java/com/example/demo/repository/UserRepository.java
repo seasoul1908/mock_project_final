@@ -1,6 +1,9 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.User;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.example.demo.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -122,4 +123,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "SELECT b.name as name, b.description as description FROM Badges b JOIN User_Badges ub ON b.badge_id = ub.badge_id WHERE ub.user_id = :userId AND b.type = :type", nativeQuery = true)
     List<Map<String, Object>> getBadgesByUserAndType(@Param("userId") long userId, @Param("type") String type);
+
+    @Query(value = "SELECT COUNT(*) FROM Users WHERE email = :email", nativeQuery = true)
+    int countByEmailNative(@Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Users SET password_hash = :passwordHash WHERE email = :email", nativeQuery = true)
+    int updatePasswordByEmail(@Param("email") String email,
+                              @Param("passwordHash") String passwordHash);
 }
