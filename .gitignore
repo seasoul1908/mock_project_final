@@ -38,3 +38,5 @@ build/
 GEMINI.md
 **/GEMINI.md
 **/.agent/
+docs/
+**/docs/
