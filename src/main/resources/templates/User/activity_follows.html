@@ -40,7 +40,7 @@
                             <a th:href="@{/activity(id=${uPro.userId}, tab='follows')}" class="list-group-item list-group-item-action active text-white">Follows</a>
 
                             <th:block sec:authorize="isAuthenticated()">
-                                <a th:if="${#authentication.name == uPro.email}" th:href="@{/activity(id=${uPro.userId}, tab='votes')}" class="list-group-item list-group-item-action">Votes</a>
+                                <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/activity(id=${uPro.userId}, tab='votes')}" class="list-group-item list-group-item-action">Votes</a>
                             </th:block>
                         </div>
                     </div>

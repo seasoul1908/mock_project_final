@@ -105,60 +105,72 @@
                             </th:block>
                         </div>
 
-                        <h3 style="font-size: 21px; margin-bottom: 16px; font-weight: 600; color: #2b2d42;">Achievements</h3>
-                        <div class="badge-dashboard mb-5" style="padding: 20px;">
+                        <h3 style="font-size: 21px; margin-top: 20px; margin-bottom: 16px; font-weight: 600; color: #2b2d42;" 
+                            th:text="'Achievements (' + ${totalBadgesCount ?: 0} + ')'">Achievements (0)</h3>
+                        
+                        <div class="badge-dashboard mb-5" style="padding: 20px; border: 1px solid #d6d9dc; border-radius: 5px; background-color: #fff;">
                             <div class="row g-3 mb-4">
                                 <div class="col-4">
-                                    <div class="sticker-box sticker-gold">
+                                    <div class="sticker-box sticker-gold" style="padding: 15px; border: 1px solid #f1c40f; background-color: #fffdf0; border-radius: 5px; text-align: center;">
                                         <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #f1c40f;"></i>
-                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(goldBadges)}">0</div>
-                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Gold</div>
+                                        <div class="sticker-count fs-5 fw-bold" style="color: #212529;" th:text="${goldCount ?: 0}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 11px; text-transform: uppercase; font-weight: 600;">Gold</div>
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="sticker-box sticker-silver">
+                                    <div class="sticker-box sticker-silver" style="padding: 15px; border: 1px solid #adb5bd; background-color: #f8f9fa; border-radius: 5px; text-align: center;">
                                         <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #adb5bd;"></i>
-                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(silverBadges)}">0</div>
-                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Silver</div>
+                                        <div class="sticker-count fs-5 fw-bold" style="color: #212529;" th:text="${silverCount ?: 0}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 11px; text-transform: uppercase; font-weight: 600;">Silver</div>
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <div class="sticker-box sticker-bronze">
+                                    <div class="sticker-box sticker-bronze" style="padding: 15px; border: 1px solid #d35400; background-color: #fff5ee; border-radius: 5px; text-align: center;">
                                         <i class="fa-solid fa-medal sticker-icon fs-4 mb-2" style="color: #d35400;"></i>
-                                        <div class="sticker-count fs-5 fw-bold" th:text="${#lists.size(bronzeBadges)}">0</div>
-                                        <div class="sticker-label text-muted" style="font-size: 12px; text-transform: uppercase;">Bronze</div>
+                                        <div class="sticker-count fs-5 fw-bold" style="color: #212529;" th:text="${bronzeCount ?: 0}">0</div>
+                                        <div class="sticker-label text-muted" style="font-size: 11px; text-transform: uppercase; font-weight: 600;">Bronze</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="achievement-details border-top pt-4">
+                                
                                 <th:block th:if="${#lists.isEmpty(goldBadges) and #lists.isEmpty(silverBadges) and #lists.isEmpty(bronzeBadges)}">
-                                    <div class="text-center py-3">
-                                        <p class="text-muted mb-3">You haven't earned any badges yet. Keep participating to unlock achievements!</p>
-                                        <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Explore Community</a>
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-3" style="font-size: 14px;">You haven't earned any badges yet. Keep participating to unlock achievements!</p>
+                                        <a th:href="@{/home}" class="btn btn-sm text-white" style="background-color: #f48024; border-color: #f48024;">Explore Community</a>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${not #lists.isEmpty(goldBadges)}">
+                                <th:block th:if="${goldBadges != null and !#lists.isEmpty(goldBadges)}">
                                     <div class="mb-3">
-                                        <span class="achievement-chip chip-gold" th:each="b : ${goldBadges}" th:title="${b['description']}">
-                                            <i class="fa-solid fa-award" style="color: #f1c40f;"></i> <th:block th:text="${b['name']}"></th:block>
+                                        <span class="achievement-chip" style="display: inline-block; padding: 6px 12px; border-radius: 15px; font-size: 13px; margin-right: 8px; background: #fffdf0; border: 1px solid #f1c40f; color: #8a6d3b;" 
+                                              th:each="b : ${goldBadges}" th:title="${b['description'] ?: b['DESCRIPTION']}">
+                                            <i class="fa-solid fa-award" style="color: #f1c40f;"></i> 
+                                            <th:block th:text="${b['name'] ?: b['NAME']}"></th:block>
+                                            <span class="ms-1 fw-bold" th:if="${b['badgeCount'] != null and b['badgeCount'] > 1}" th:text="'×' + ${b['badgeCount']}"></span>
                                         </span>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${not #lists.isEmpty(silverBadges)}">
+                                <th:block th:if="${silverBadges != null and !#lists.isEmpty(silverBadges)}">
                                     <div class="mb-3">
-                                        <span class="achievement-chip chip-silver" th:each="b : ${silverBadges}" th:title="${b['description']}">
-                                            <i class="fa-solid fa-award" style="color: #adb5bd;"></i> <th:block th:text="${b['name']}"></th:block>
+                                        <span class="achievement-chip" style="display: inline-block; padding: 6px 12px; border-radius: 15px; font-size: 13px; margin-right: 8px; background: #f8f9fa; border: 1px solid #adb5bd; color: #555;" 
+                                              th:each="b : ${silverBadges}" th:title="${b['description'] ?: b['DESCRIPTION']}">
+                                            <i class="fa-solid fa-award" style="color: #adb5bd;"></i> 
+                                            <th:block th:text="${b['name'] ?: b['NAME']}"></th:block>
+                                            <span class="ms-1 fw-bold" th:if="${b['badgeCount'] != null and b['badgeCount'] > 1}" th:text="'×' + ${b['badgeCount']}"></span>
                                         </span>
                                     </div>
                                 </th:block>
 
-                                <th:block th:if="${not #lists.isEmpty(bronzeBadges)}">
+                                <th:block th:if="${bronzeBadges != null and !#lists.isEmpty(bronzeBadges)}">
                                     <div class="mb-1">
-                                        <span class="achievement-chip chip-bronze" th:each="b : ${bronzeBadges}" th:title="${b['description']}">
-                                            <i class="fa-solid fa-award" style="color: #d35400;"></i> <th:block th:text="${b['name']}"></th:block>
+                                        <span class="achievement-chip" style="display: inline-block; padding: 6px 12px; border-radius: 15px; font-size: 13px; margin-right: 8px; background: #fff5ee; border: 1px solid #d35400; color: #a0522d;" 
+                                              th:each="b : ${bronzeBadges}" th:title="${b['description'] ?: b['DESCRIPTION']}">
+                                            <i class="fa-solid fa-award" style="color: #d35400;"></i> 
+                                            <th:block th:text="${b['name'] ?: b['NAME']}"></th:block>
+                                            <span class="ms-1 fw-bold" th:if="${b['badgeCount'] != null and b['badgeCount'] > 1}" th:text="'×' + ${b['badgeCount']}"></span>
                                         </span>
                                     </div>
                                 </th:block>

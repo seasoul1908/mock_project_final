@@ -59,6 +59,7 @@ public class GlobalControllerAdvice {
         if (email != null) {
             Optional<User> userOpt = userRepository.findByEmail(email);
             if (userOpt.isPresent()) {
+                model.addAttribute("loggedInUser", userOpt.get());
                 long unreadCount = notificationRepository.countByUserIdAndIsReadFalse(userOpt.get().getUserId());
                 if (unreadCount > 0) {
                     model.addAttribute("unreadNotification", unreadCount);

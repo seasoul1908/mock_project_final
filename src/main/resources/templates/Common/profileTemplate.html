@@ -51,7 +51,7 @@
 
             <div class="pt-2">
                 <th:block sec:authorize="isAuthenticated()">
-                    <a th:if="${#authentication.name == uPro.email}" th:href="@{/edit-profile}" 
+                    <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/edit-profile}" 
                        class="btn btn-outline-secondary btn-sm" style="border-color: #9fa6ad; color: #525960;">
                         <i class="fas fa-pencil-alt me-1"></i> Edit profile
                     </a>
