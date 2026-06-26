@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${blog.title} + ' - DevQuery Blog'">Blog Title - DevQuery Blog</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://zurb.github.io/tribute/dist/tribute.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://zurb.github.io/tribute/dist/tribute.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --orange: #F48024; --blue-link: #0074cc; --blue-btn: #0a95ff;
+            --blue-tag-bg: #e1ecf4; --blue-tag-text: #39739d; --black-text: #0c0d0e;
+            --gray-text: #525960; --gray-sub: #6a737c; --border-color: #d6d9dc;
+            --bg-body: #ffffff; --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-stack); background-color: var(--bg-body); color: var(--black-text); font-size: 13px; }
+
+        .navbar-devquery { border-top: 3px solid #f48024; background-color: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05); height: 56px; }
+        
+        .main-container { max-width: 1264px; margin: 56px auto 0; display: flex; align-items: flex-start; }
+        .left-sidebar { width: 164px; flex-shrink: 0; padding-top: 25px; border-right: 1px solid var(--border-color); }
+        .main-content { flex-grow: 1; padding: 24px; border-left: 1px solid var(--border-color); width: 100%; }
+
+        .blog-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px 0;
+        }
+        .blog-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--black-text);
+            margin-bottom: 20px;
+        }
+        .blog-content {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #2b2e32;
+            margin-top: 30px;
+        }
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .reply-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .reply-box {
+            border-left: 3px solid #e3e6e8;
+            padding-left: 20px;
+            margin-top: 15px;
+        }
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div th:replace="~{Common/header :: header}"></div>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="left-sidebar">
+            <div th:replace="~{Common/sidebar :: sidebar('blog')}"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="blog-container">
+                <a th:href="@{/blog}" class="text-decoration-none text-muted mb-3 d-inline-block">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Blogs
+                </a>
+
+                <h1 class="blog-title" th:text="${blog.title}">Blog Title</h1>
+
+                <div class="d-flex align-items-center text-muted mb-4 border-bottom pb-3">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle me-2" width="40" height="40" alt="Admin Avatar">
+                    <div>
+                        <div class="fw-bold text-dark">
+                            <span th:text="${blog.authorName}">Admin Name</span> 
+                            <span class="badge bg-primary ms-1">Admin</span>
+                        </div>
+                        <div class="small">
+                            Published on <span th:text="${#dates.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
+                            <span class="ms-3"><i class="fa-solid fa-eye"></i> <span th:text="${blog.viewCount}">0</span> Views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <img th:src="${blog.thumbnailUrl != null && !blog.thumbnailUrl.isEmpty() ? blog.thumbnailUrl : 'https://placehold.co/800x400/eeeeee/999999?text=DevQuery+Blog'}" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/800x400/eeeeee/999999?text=DevQuery+Blog';" 
+                     class="img-fluid rounded mb-4 w-100" alt="Thumbnail">
+
+                <div class="blog-content" th:utext="${blog.content}">
+                    Blog content goes here.
+                </div>
+
+                <hr class="mt-5 mb-4">
+
+                <h4 class="fw-bold mb-4">Comments (<span th:text="${blog.commentCount}">0</span>)</h4>
+
+                <!-- Comment Form -->
+                <form th:action="@{/blog/comment}" method="post" class="mb-5" sec:authorize="isAuthenticated()">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="blogId" th:value="${blog.blogId}">
+                    <div class="d-flex">
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="comment-avatar me-3" alt="Your Avatar">
+                        <div class="flex-grow-1">
+                            <div class="bg-light border rounded-top p-1 border-bottom-0 d-flex gap-1" style="border-color: #dee2e6;">
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="Bold" onclick="insertMd('main-cmt', '**', '**')"><i class="fa-solid fa-bold"></i></button>
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="Italic" onclick="insertMd('main-cmt', '*', '*')"><i class="fa-solid fa-italic"></i></button>
+                                <div class="vr mx-1"></div>
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="List" onclick="insertMd('main-cmt', '\n* ', '')"><i class="fa-solid fa-list"></i></button>
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="Quote" onclick="insertMd('main-cmt', '\n> ', '')"><i class="fa-solid fa-quote-left"></i></button>
+                                <div class="vr mx-1"></div>
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="Inline Code" onclick="insertMd('main-cmt', '`', '`')"><i class="fa-solid fa-code"></i></button>
+                                <button type="button" class="btn btn-sm btn-light text-secondary" title="Code Block" onclick="insertMd('main-cmt', '\n```java\n', '\n```\n')"><i class="fa-solid fa-file-code"></i></button>
+                            </div>
+                            <textarea id="main-cmt" name="content" class="form-control mb-2 rounded-bottom" style="border-top-left-radius: 0; border-top-right-radius: 0; font-size: 13px;" rows="3" placeholder="Write a comment..." required></textarea>
+                            <button type="submit" class="btn btn-primary btn-sm px-4">Post Comment</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div sec:authorize="!isAuthenticated()" class="alert alert-warning mb-5 text-center">
+                    Please <a th:href="@{/auth/login}" class="alert-link">login</a> to post comments.
+                </div>
+
+                <!-- Recursive Comments Tree -->
+                <div class="comments-list">
+                    <p th:if="${#lists.isEmpty(rootComments)}" class="text-muted text-center py-4 bg-light rounded">There are no comments yet. Be the first to start the discussion!</p>
+                    
+                    <div th:if="${!#lists.isEmpty(rootComments)}">
+                        <!-- Fragment container -->
+                        <div th:each="cmt : ${rootComments}">
+                            <div th:replace="~{:: commentNode(node=${cmt}, depth=1)}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recursive Node Fragment Definition -->
+    <div th:fragment="commentNode(node, depth)" th:if="${node != null}" class="d-flex mb-3 mt-2">
+        <img th:src="${node.userAvatar}" class="me-3" th:classappend="${node.parentId == null ? 'comment-avatar' : 'reply-avatar'}" alt="Avatar">
+        <div class="flex-grow-1 w-100">
+            <div class="bg-light p-3 rounded">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size:13px;" th:text="${node.username != null ? node.username : 'Unknown User'}">Username</h6>
+                    <span class="text-muted fw-normal small" th:text="${#dates.format(node.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                </div>
+                <div th:id="'commentText' + ${node.commentId}" class="comment-text-content mb-0 text-dark" style="font-size: 14px;" th:text="${node.content}">Content</div>
+
+                <!-- Edit Comment Form -->
+                <form th:id="'editForm' + ${node.commentId}" th:action="@{/blog/comment}" method="post" class="d-none mt-2" sec:authorize="isAuthenticated()">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="commentId" th:value="${node.commentId}">
+                    <input type="hidden" name="blogId" th:value="${blog.blogId}">
+                    <div class="border rounded overflow-hidden mb-2">
+                        <div class="bg-light border-bottom p-1 d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Bold" th:onclick="|insertMd('edit-text-${node.commentId}', '**', '**')|"><i class="fa-solid fa-bold" style="font-size: 11px;"></i></button>
+                            <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Italic" th:onclick="|insertMd('edit-text-${node.commentId}', '*', '*')|"><i class="fa-solid fa-italic" style="font-size: 11px;"></i></button>
+                            <div class="vr mx-1"></div>
+                            <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Code" th:onclick="|insertMd('edit-text-${node.commentId}', '\`', '\`')|"><i class="fa-solid fa-code" style="font-size: 11px;"></i></button>
+                            <button type="button" class="btn btn-sm btn-light text-secondary" title="Code Block" th:onclick="|insertMd('edit-text-${node.commentId}', '\n\`\`\`java\n', '\n\`\`\`\n')|"><i class="fa-solid fa-file-code" style="font-size: 11px;"></i></button>
+                        </div>
+                        <textarea th:id="'edit-text-' + ${node.commentId}" name="content" class="form-control border-0 shadow-none" style="font-size:13px;" rows="3" required th:text="${node.content}"></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-link btn-sm text-muted text-decoration-none" th:onclick="|toggleEditForm('${node.commentId}')|">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3">Save</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-1 ms-2" sec:authorize="isAuthenticated()">
+                <a href="javascript:void(0)" class="text-muted small fw-bold text-decoration-none" th:onclick="|toggleReplyForm('replyForm${node.commentId}')|">
+                    <i class="fa-solid fa-reply"></i> Reply
+                </a>
+                <a th:if="${!#lists.isEmpty(node.replies)}" href="javascript:void(0)" class="text-secondary small fw-bold text-decoration-none ms-3" th:onclick="|toggleReplies('${node.commentId}')|" th:id="'toggleBtn' + ${node.commentId}">
+                    <i class="fa-solid fa-chevron-up"></i> Hide Replies
+                </a>
+                <!-- Edit & Delete buttons if owner -->
+                <th:block th:if="${currentUser != null && currentUser.userId == node.userId}">
+                    <a href="javascript:void(0)" class="text-primary small fw-bold text-decoration-none ms-3" th:onclick="|toggleEditForm('${node.commentId}')|">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                    <form th:action="@{/blog/comment}" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này và tất cả phản hồi của nó?')">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="commentId" th:value="${node.commentId}">
+                        <input type="hidden" name="blogId" th:value="${blog.blogId}">
+                        <button type="submit" class="btn btn-link text-danger small fw-bold p-0 border-0 ms-3 align-baseline" style="font-size:11px; text-decoration:none;">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </th:block>
+            </div>
+
+            <!-- Reply Form -->
+            <form th:id="'replyForm' + ${node.commentId}" th:action="@{/blog/comment}" method="post" class="d-none mt-2" sec:authorize="isAuthenticated()">
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="blogId" th:value="${blog.blogId}">
+                <input type="hidden" name="parentId" th:value="${node.commentId}">
+                <div class="border rounded overflow-hidden">
+                    <div class="bg-light border-bottom p-1 d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Bold" th:onclick="|insertMd('reply-text-${node.commentId}', '**', '**')|"><i class="fa-solid fa-bold" style="font-size: 11px;"></i></button>
+                        <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Italic" th:onclick="|insertMd('reply-text-${node.commentId}', '*', '*')|"><i class="fa-solid fa-italic" style="font-size: 11px;"></i></button>
+                        <div class="vr mx-1"></div>
+                        <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Code" th:onclick="|insertMd('reply-text-${node.commentId}', '\`', '\`')|"><i class="fa-solid fa-code" style="font-size: 11px;"></i></button>
+                        <button type="button" class="btn btn-sm btn-light p-0 px-1 text-secondary" title="Code Block" th:onclick="|insertMd('reply-text-${node.commentId}', '\n\`\`\`java\n', '\n\`\`\`\n')|"><i class="fa-solid fa-file-code" style="font-size: 11px;"></i></button>
+                    </div>
+                    <textarea th:id="'reply-text-' + ${node.commentId}" name="content" class="form-control form-control-sm border-0 shadow-none" style="font-size:13px;" rows="2" placeholder="Write a reply... (Markdown supported)" required></textarea>
+                </div>
+                <div class="d-flex justify-content-end mt-2">
+                    <button type="submit" class="btn btn-secondary btn-sm px-3">Reply</button>
+                </div>
+            </form>
+
+            <!-- Render child replies recursively -->
+            <div th:if="${!#lists.isEmpty(node.replies)}" th:id="'repliesBox' + ${node.commentId}" 
+                 class="mt-3" th:classappend="${depth < 4 ? 'border-start border-2 border-secondary border-opacity-25 ps-3 ms-2' : ''}">
+                <div th:each="child : ${node.replies}">
+                    <div th:replace="~{:: commentNode(node=${child}, depth=${depth + 1})}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{Common/footer :: footer}"></div>
+
+    <script th:inline="javascript">
+        // Client-side Javascript logic
+        function toggleReplyForm(formId) {
+            const form = document.getElementById(formId);
+            if (form) {
+                if (form.classList.contains('d-none')) {
+                    document.querySelectorAll('form[id^="replyForm"]').forEach(f => f.classList.add('d-none'));
+                    form.classList.remove('d-none');
+                    form.querySelector('textarea').focus();
+                } else {
+                    form.classList.add('d-none');
+                }
+            }
+        }
+
+        function toggleEditForm(cmtId) {
+            const textDiv = document.getElementById('commentText' + cmtId);
+            const editForm = document.getElementById('editForm' + cmtId);
+            if (editForm && textDiv) {
+                if (editForm.classList.contains('d-none')) {
+                    editForm.classList.remove('d-none');
+                    textDiv.classList.add('d-none');
+                } else {
+                    editForm.classList.add('d-none');
+                    textDiv.classList.remove('d-none');
+                }
+            }
+        }
+
+        function toggleReplies(cmtId) {
+            const box = document.getElementById('repliesBox' + cmtId);
+            const btn = document.getElementById('toggleBtn' + cmtId);
+            if (box && btn) {
+                if (box.classList.contains('d-none')) {
+                    box.classList.remove('d-none');
+                    btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Hide Replies';
+                } else {
+                    box.classList.add('d-none');
+                    btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Show Replies';
+                }
+            }
+        }
+
+        function insertMd(elementId, prefix, suffix) {
+            const textarea = document.getElementById(elementId);
+            if (!textarea) return;
+
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const defaultText = selectedText || "content";
+            const newText = prefix + defaultText + suffix;
+
+            textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+            textarea.focus();
+            textarea.selectionStart = start + prefix.length;
+            textarea.selectionEnd = start + prefix.length + defaultText.length;
+        }
+
+        // Initialize user tagging (Tribute)
+        var tribute = new Tribute({
+            values: function (remoteQuery, callback) {
+                const blogId = /*[[${blog.blogId}]]*/ 0;
+                fetch('/api/users?blogId=' + blogId)
+                    .then(res => res.json())
+                    .then(data => callback(data))
+                    .catch(err => console.error('Error loading tags:', err));
+            },
+            selectTemplate: function (item) {
+                return '@' + item.original.value;
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var textareas = document.querySelectorAll('textarea[name="content"]');
+            tribute.attach(textareas);
+
+            // Parse Markdown content
+            if (typeof marked !== 'undefined') {
+                marked.use({
+                    breaks: true,
+                    gfm: true
+                });
+
+                const commentContents = document.querySelectorAll('.comment-text-content');
+                commentContents.forEach(function (el) {
+                    let rawMarkdown = el.textContent.trim();
+                    let renderedHtml = marked.parse(rawMarkdown);
+                    renderedHtml = renderedHtml.replace(/(@\w+)/g, '<span class="text-primary fw-bold">$1</span>');
+                    el.innerHTML = renderedHtml;
+                });
+            }
+
+            // Highlight code blocks
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+</body>
+</html>

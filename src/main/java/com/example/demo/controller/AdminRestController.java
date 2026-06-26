@@ -33,6 +33,7 @@ import com.example.demo.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/admin")
+@SuppressWarnings("null")
 public class AdminRestController {
 
     @Autowired private BlogRepository blogRepository;

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@SuppressWarnings("null")
 public class QuestionServiceImpl implements QuestionService {
 
     @Autowired

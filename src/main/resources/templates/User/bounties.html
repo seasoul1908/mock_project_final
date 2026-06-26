@@ -107,11 +107,37 @@
         .user-card { font-size: 11px; color: var(--gray-sub); display: flex; align-items: center; gap: 5px; }
 
         /* Widgets */
-        .widget { border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid; font-size: 13px; }
-        .widget-yellow { background-color: #fdf7e2; border-color: #f1e5bc; }
-        .widget-header { padding: 12px 15px; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); background-color: rgba(0,0,0,0.02); }
-        .widget-list { list-style: none; }
-        .widget-list li { padding: 10px 15px; display: flex; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .widget {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .widget-body { padding: 18px; }
+        .widget-title {
+            margin: 0 0 14px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .chip:hover {
+            background: #e1ecf4;
+            color: #39739d;
+        }
 
         /* Footer */
         .footer-devquery { background-color: #242729; color: #ffffff; margin-top: 40px; padding: 25px 0 15px 0; border-top: 1px solid #34495e; }
@@ -199,13 +225,13 @@
 
         <!-- Right Sidebar -->
         <div class="right-sidebar">
-            <div class="widget widget-yellow">
-                <div class="widget-header">Popular Tags</div>
-                <ul class="widget-list">
-                    <li th:each="tag : ${popularTags}">
-                        <a th:href="@{/home(tag=${tag})}" class="tag" th:text="${tag}">java</a>
-                    </li>
-                </ul>
+            <div class="widget">
+                <div class="widget-body">
+                    <div class="widget-title">Popular tags</div>
+                    <div class="chips">
+                        <a th:each="tag : ${popularTags}" th:href="@{/home(tag=${tag})}" class="chip" th:text="${tag}">tag</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
