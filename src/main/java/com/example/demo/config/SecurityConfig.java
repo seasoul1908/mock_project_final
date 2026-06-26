@@ -33,7 +33,7 @@ public class SecurityConfig {
         return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-            response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
+            response.sendRedirect(isAdmin ? "/admin/dashboard" : "/system-rules");
         };
     }
 
