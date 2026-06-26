@@ -6,7 +6,6 @@ import com.example.demo.repository.BlogRepository;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.RuleRepository;
 import com.example.demo.repository.TagRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     @Autowired private UserService userService;
-    @Autowired private UserRepository userRepository;
     @Autowired private TagRepository tagRepository;
     @Autowired private ReportRepository reportRepository;
     @Autowired private RuleRepository ruleRepository;

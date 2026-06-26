@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevQuery - Recommended Questions</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --border: #d6d9dc;
+            --panel: #ffffff;
+            --soft: #f8fafc;
+            --accent: #0a95ff;
+            --accent-deep: #0550ae;
+            --tag-bg: #e1ecf4;
+            --tag-text: #39739d;
+            --highlight: linear-gradient(135deg, #fff6e5 0%, #eef6ff 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #fff;
+            color: var(--ink);
+            font-size: 13px;
+        }
+
+        .navbar-devquery { border-top: 3px solid #f48024; background-color: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05); height: 56px; }
+
+        .page-shell {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            padding-top: 25px;
+            border-right: 1px solid var(--border);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            min-width: 0;
+        }
+
+        .right-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            padding: 24px 0 0 24px;
+        }
+
+        .hero {
+            background: var(--highlight);
+            border: 1px solid #e9d8b5;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 760px;
+            line-height: 1.6;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .insight-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .insight-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .content-card,
+        .widget {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .section-head {
+            padding: 18px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .section-head span {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .question-item {
+            display: flex;
+            gap: 18px;
+            padding: 18px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .stats {
+            width: 105px;
+            flex-shrink: 0;
+            text-align: right;
+            color: var(--muted);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stats strong { color: var(--ink); }
+
+        .question-body { flex: 1; min-width: 0; }
+
+        .question-title {
+            color: var(--accent-deep);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .question-title:hover { color: var(--accent); }
+
+        .question-excerpt {
+            margin: 10px 0 14px;
+            color: #3b4045;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            text-decoration: none;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            font-size: 12px;
+        }
+
+        .user-meta { color: var(--muted); font-size: 13px; }
+
+        .user-meta a {
+            color: var(--accent-deep);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .widget-title {
+            margin: 0 0 14px;
+            font-size: 18px;
+        }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: var(--soft);
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .widget { margin-bottom: 18px; }
+        .widget-body { padding: 18px; }
+
+        .widget-list { list-style: none; padding: 0; margin: 0; }
+        .widget-list li + li { margin-top: 12px; }
+
+        .widget-link {
+            color: var(--accent-deep);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .widget-subtle {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .empty-state {
+            padding: 36px 20px 40px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 42px;
+            color: #f59e0b;
+            margin-bottom: 14px;
+        }
+
+        .empty-state a {
+            color: var(--accent-deep);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .sidebar-sticky { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-x: hidden; overflow-y: auto; padding-top: 1rem; }
+        .nav-link-sb { color: #525960; font-size: 14px; padding: 8px 12px; margin-bottom: 4px; border-radius: 6px; transition: all 0.2s ease; display: block; text-decoration: none; }
+        .nav-link-sb:hover { color: #0c0d0e; background-color: #f1f2f3; transform: translateX(3px); }
+        .nav-link-sb.active { font-weight: 600; color: #0c0d0e; background-color: #e3e6e8; border-left: 3px solid #f48024; }
+        .sidebar-heading { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #6a737c; margin: 15px 0 5px; padding-left: 10px; }
+
+        @media (max-width: 991px) {
+            .page-shell { display: block; }
+            .left-sidebar, .right-sidebar { width: auto; border-right: none; padding: 0 24px; }
+            .main-content { padding-top: 12px; }
+        }
+
+        @media (max-width: 640px) {
+            .main-content, .left-sidebar, .right-sidebar { padding-left: 16px; padding-right: 16px; }
+            .question-item { flex-direction: column; }
+            .stats { width: auto; text-align: left; flex-direction: row; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{Common/header :: header}"></div>
+
+    <div class="page-shell">
+        <div class="left-sidebar">
+            <div th:replace="~{Common/sidebar :: sidebar('recommended')}"></div>
+        </div>
+
+        <main class="main-content">
+            <section class="hero">
+                <h1>Recommended Questions</h1>
+                <p>
+                    Danh sách này được cá nhân hóa từ lịch sử các câu hỏi bạn đã xem. Hệ thống trích xuất tag và từ khóa nổi bật, sau đó ưu tiên những câu hỏi vừa liên quan vừa đang được cộng đồng quan tâm.
+                </p>
+
+                <div class="insight-grid">
+                    <div class="insight-card">
+                        <div class="insight-label">Viewed Questions</div>
+                        <div class="insight-value" th:text="${viewedHistoryCount}">0</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-label">Interest Tags</div>
+                        <div class="insight-value" th:text="${#lists.size(profileTags)}">0</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-label">Extracted Keywords</div>
+                        <div class="insight-value" th:text="${#lists.size(profileKeywords)}">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-card">
+                <div class="section-head">
+                    <h2>Questions for You</h2>
+                    <span th:text="${#lists.size(recommendedQuestions)} + ' suggestions'">0 suggestions</span>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(recommendedQuestions)}">
+                    <article th:each="q : ${recommendedQuestions}" class="question-item">
+                        <div class="stats">
+                            <div><strong th:text="${q.score}">0</strong> votes</div>
+                            <div><strong th:text="${q.answerCount}">0</strong> answers</div>
+                            <div><strong th:text="${q.viewCount}">0</strong> views</div>
+                        </div>
+
+                        <div class="question-body">
+                            <a th:href="@{/question(id=${q.questionId})}" class="question-title" th:text="${q.title}">Question title</a>
+
+                            <p class="question-excerpt" th:text="${#strings.length(q.body) > 220 ? #strings.substring(q.body, 0, 220) + '...' : q.body}">Excerpt</p>
+
+                            <div class="meta-row">
+                                <div class="tags">
+                                    <a th:each="t : ${q.tags}" th:href="@{/home(tag=${t})}" class="tag" th:text="${t}">tag</a>
+                                </div>
+
+                                <div class="user-meta">
+                                    by
+                                    <a th:href="@{/profile(id=${q.userId})}" th:text="${q.authorName}">author</a>
+                                    on <span th:text="${#dates.format(q.createdAt, 'MMM dd, yyyy')}">date</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div th:if="${#lists.isEmpty(recommendedQuestions)}" class="empty-state">
+                    <i class="fa-solid fa-compass"></i>
+                    <p>Bạn chưa có đủ lịch sử xem để tạo gợi ý cá nhân hóa.</p>
+                    <p>Hãy mở thêm vài câu hỏi ở trang <a th:href="@{/home}">Home</a>, sau đó quay lại đây.</p>
+                </div>
+            </section>
+        </main>
+
+        <aside class="right-sidebar">
+            <div class="widget">
+                <div class="widget-body">
+                    <div class="widget-title">Your Interest Profile</div>
+
+                    <div th:if="${!#lists.isEmpty(profileTags)}">
+                        <h3 style="margin: 0 0 10px; font-size: 14px; color: var(--muted);">Top tags</h3>
+                        <div class="chips" style="margin-bottom: 16px;">
+                            <a th:each="tag : ${profileTags}" class="chip" th:href="@{/home(tag=${tag})}">
+                                <i class="fa-solid fa-tag"></i><span th:text="${tag}">tag</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div th:if="${!#lists.isEmpty(profileKeywords)}">
+                        <h3 style="margin: 0 0 10px; font-size: 14px; color: var(--muted);">Top keywords</h3>
+                        <div class="chips">
+                            <span th:each="keyword : ${profileKeywords}" class="chip">
+                                <i class="fa-solid fa-key"></i><span th:text="${keyword}">keyword</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <p th:if="${#lists.isEmpty(profileTags) and #lists.isEmpty(profileKeywords)}"
+                       style="margin: 0; color: var(--muted); line-height: 1.6;">
+                        Hệ thống sẽ bắt đầu xây hồ sơ sở thích sau khi bạn xem một vài câu hỏi.
+                    </p>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-body">
+                    <div class="widget-title">How ranking works</div>
+                    <ul class="widget-list">
+                        <li>
+                            <div class="widget-link">Relevance first</div>
+                            <div class="widget-subtle">Ưu tiên câu hỏi trùng tag và từ khóa với lịch sử xem gần đây.</div>
+                        </li>
+                        <li>
+                            <div class="widget-link">Popularity matters</div>
+                            <div class="widget-subtle">Điểm vote, lượt xem và câu trả lời được chấp nhận giúp đẩy nội dung chất lượng lên cao hơn.</div>
+                        </li>
+                        <li>
+                            <div class="widget-link">No manual search needed</div>
+                            <div class="widget-subtle">Bạn chỉ cần đọc nội dung quan tâm, hệ thống sẽ tự làm phần còn lại.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-body">
+                    <div class="widget-title">Popular tags</div>
+                    <div class="chips">
+                        <a th:each="tag : ${popularTags}" th:href="@{/home(tag=${tag})}" class="chip" th:text="${tag}">tag</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div th:replace="~{Common/footer :: footer}"></div>
+</body>
+</html>

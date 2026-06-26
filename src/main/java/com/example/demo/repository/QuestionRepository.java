@@ -93,6 +93,36 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "WHERE qt.question_id = :questionId AND t.IsActive = 1", nativeQuery = true)
     List<String> findTagsByQuestionId(@Param("questionId") Long questionId);
 
+    @Query(value = """
+        SELECT q.question_id as questionId, q.user_id as userId, q.title as title, q.body as body,
+               q.view_count as viewCount, q.Score as score, q.created_at as createdAt,
+               q.bounty_amount as bountyAmount, q.bounty_expires_at as bountyExpiresAt,
+               u.username as authorName, up.avatar_url as authorAvatar,
+               (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) as answerCount
+        FROM Questions q
+        JOIN Users u ON q.user_id = u.user_id
+        LEFT JOIN User_Profile up ON u.user_id = up.user_id
+        WHERE ISNULL(q.is_deleted, 0) = 0
+          AND ISNULL(q.bounty_amount, 0) > 0
+          AND q.bounty_expires_at IS NOT NULL
+          AND q.bounty_expires_at > GETDATE()
+        ORDER BY
+          -- sort expiring
+          CASE WHEN :sortBy = 'expiring' THEN q.bounty_expires_at END ASC,
+          CASE WHEN :sortBy = 'expiring' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'expiring' THEN q.created_at END DESC,
+          -- sort newest
+          CASE WHEN :sortBy = 'newest' THEN q.created_at END DESC,
+          CASE WHEN :sortBy = 'newest' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'newest' THEN q.bounty_expires_at END ASC,
+          -- sort amount (default)
+          CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.bounty_amount END DESC,
+          CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.bounty_expires_at END ASC,
+          CASE WHEN :sortBy = 'amount' OR :sortBy IS NULL OR :sortBy = '' THEN q.created_at END DESC,
+          q.question_id DESC
+    """, nativeQuery = true)
+    List<Map<String, Object>> findActiveBountiesNative(@Param("sortBy") String sortBy);
+
     @Query(value = "SELECT tag_id FROM Tags WHERE LOWER(tag_name) = LOWER(:tagName) AND IsActive = 1", nativeQuery = true)
     Long findTagIdByName(@Param("tagName") String tagName);
 
