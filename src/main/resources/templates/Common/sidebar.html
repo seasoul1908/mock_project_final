@@ -4,23 +4,19 @@
 <body>
     <div th:fragment="sidebar(activeTab)" class="sidebar-sticky">
         <style>
-            /* CHÌA KHÓA NẰM Ở ĐÂY: Thuộc tính cố định màn hình */
+            /* CORE FEATURE: Sticky positioning property */
             .sidebar-sticky {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
-
                 position: -webkit-sticky;
                 position: sticky !important;
-                top: 60px !important;
-                /* Dính chặt cách mép trên 60px (bằng đúng chiều cao Header) */
-                height: calc(100vh - 60px);
-                /* Thanh sidebar kéo dài trọn vẹn màn hình */
-
+                top: 60px !important; /* Stick to the top with a 60px offset (exactly the Header's height) */
+                height: calc(100vh - 60px); /* Sidebar stretches the full height of the screen */
                 overflow-x: hidden;
                 overflow-y: auto;
                 padding-bottom: 20px;
             }
 
-            /* Làm thanh cuộn của sidebar tàng hình mượt mà */
+            /* Make the sidebar's scrollbar smooth and subtle */
             .sidebar-sticky::-webkit-scrollbar {
                 width: 6px;
             }
@@ -43,7 +39,7 @@
                 margin: 16px 0 4px 12px;
             }
 
-            /* Các thẻ Link menu */
+            /* Menu link styles */
             .nav-link-sb {
                 display: flex;
                 align-items: center;
@@ -60,22 +56,21 @@
                 padding-left: 12px !important;
             }
 
-            /* Hiệu ứng Hover */
+            /* Hover effect */
             .nav-link-sb:hover {
                 color: #0c0d0e;
                 background-color: #f8f9f9;
             }
 
-            /* Hiệu ứng Active (Đang chọn) */
+            /* Active effect (Currently selected) */
             .nav-link-sb.active {
                 font-weight: 700;
                 color: #0c0d0e;
                 background-color: #f1f2f3;
-                border-right: 3px solid #f48024;
-                /* Vạch cam chuẩn Stack Overflow */
+                border-right: 3px solid #f48024; /* Stack Overflow standard orange border */
             }
 
-            /* Căn chỉnh Icon */
+            /* Icon alignment */
             .nav-icon {
                 width: 18px;
                 text-align: center;
@@ -112,6 +107,12 @@
                 <a th:href="@{/bounties}" class="nav-link-sb"
                     th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
                     <i class="fa-solid fa-coins nav-icon"></i> Bounties
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/system-rules}" class="nav-link-sb" 
+                    th:classappend="${activeTab == 'rules' ? 'active' : ''}">
+                    <i class="fa-solid fa-scale-balanced nav-icon"></i> System Rules
                 </a>
             </li>
 
