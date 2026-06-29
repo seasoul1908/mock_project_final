@@ -20,51 +20,57 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+        @Autowired
+        private CustomOAuth2UserService customOAuth2UserService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationSuccessHandler roleBasedSuccessHandler() {
-        return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
-            boolean isAdmin = authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-            response.sendRedirect(isAdmin ? "/admin/dashboard" : "/system-rules");
-        };
-    }
+        @Bean
+        public AuthenticationSuccessHandler roleBasedSuccessHandler() {
+                return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
+                        boolean isAdmin = authentication.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/system-rules");
+                };
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        // Expose /error endpoint to stop Spring Security from redirecting to login on
-                        // failure
-                        .requestMatchers("/", "/home","/search", "/tags", "/tags/**", "/auth/**", "/assets/**", "/error", "/blog", "/blog/**", "/forgot-password", "/reset-password").permitAll()
-                        .requestMatchers("/admin/**", "/api/admin/**", "/dashboard").hasRole("ADMIN")
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler(roleBasedSuccessHandler())
-                        .failureUrl("/auth/login?error=true")
-                        .permitAll())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/auth/login")
-                        .successHandler(roleBasedSuccessHandler())
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)))
-                .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .logoutSuccessUrl("/auth/login?logout=true")
-                        .invalidateHttpSession(true))
-                .csrf(csrf -> csrf.disable());
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .authorizeHttpRequests(auth -> auth
+                                                // Expose /error endpoint to stop Spring Security from redirecting to
+                                                // login on
+                                                // failure
+                                                .requestMatchers("/", "/home", "/search", "/tags", "/tags/**",
+                                                                "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
+                                                                "/forgot-password", "/reset-password", "/oauth2/**",
+                                                                "/login/oauth2/**")
+                                                .permitAll()
+                                                .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
+                                                .hasRole("ADMIN")
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                .loginPage("/auth/login")
+                                                .loginProcessingUrl("/auth/login")
+                                                .usernameParameter("email")
+                                                .passwordParameter("password")
+                                                .successHandler(roleBasedSuccessHandler())
+                                                .failureUrl("/auth/login?error=true")
+                                                .permitAll())
+                                .oauth2Login(oauth2 -> oauth2
+                                                .loginPage("/auth/login")
+                                                .successHandler(roleBasedSuccessHandler())
+                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                .userService(customOAuth2UserService)))
+                                .logout(logout -> logout
+                                                .logoutUrl("/auth/logout")
+                                                .logoutSuccessUrl("/auth/login?logout=true")
+                                                .invalidateHttpSession(true))
+                                .csrf(csrf -> csrf.disable());
 
-        return http.build();
-    }
+                return http.build();
+        }
 }

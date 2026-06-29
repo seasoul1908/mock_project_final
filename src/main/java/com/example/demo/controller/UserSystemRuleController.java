@@ -36,19 +36,11 @@ public class UserSystemRuleController {
             return "redirect:/auth/login";
         }
 
-        String loginName = principal.getName();
+        User user = (User) model.getAttribute("loggedInUser");
 
-        Optional<User> optionalUser = userRepository.findByEmail(loginName);
-
-        if (optionalUser.isEmpty()) {
-            optionalUser = userRepository.findByUsername(loginName);
-        }
-
-        if (optionalUser.isEmpty()) {
+        if (user == null) {
             return "redirect:/auth/login";
         }
-
-        User user = optionalUser.get();
 
         List<Rule> rules = ruleRepository.findAllByOrderByCreatedAtDesc();
         List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getUserId());
