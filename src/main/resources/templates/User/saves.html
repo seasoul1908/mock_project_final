@@ -9,19 +9,10 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #fff;
             padding-top: 60px;
             color: #232629;
-            font-size: 14px;
-        }
-
-        /* Profile Header Box */
-        .user-avatar-lg {
-            width: 128px;
-            height: 128px;
-            border-radius: 5px;
-            object-fit: cover;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
         }
 
         .user-name {
@@ -35,7 +26,6 @@
             color: #6a737c;
         }
 
-        /* Sidebar Saves */
         .saves-sidebar-item {
             display: block;
             padding: 6px 12px;
@@ -66,17 +56,21 @@
             margin-bottom: 5px;
         }
 
-        /* Item List */
         .saved-item-card {
             padding: 16px;
             border-bottom: 1px solid #e3e6e8;
+            transition: background-color 0.1s;
+        }
+
+        .saved-item-card:hover {
+            background-color: #f8f9f9;
         }
 
         .saved-item-title {
-            font-size: 1.1rem;
+            font-size: 15px;
             color: #0074cc;
             text-decoration: none;
-            font-weight: 400;
+            font-weight: 500;
             display: block;
             margin-bottom: 5px;
         }
@@ -90,9 +84,8 @@
             color: #6a737c;
         }
 
-        /* Empty State */
         .empty-state-box {
-            background-color: #fff;
+            background-color: #f8f9f9;
             border: 1px dashed #d6d9dc;
             border-radius: 5px;
             padding: 40px;
@@ -101,7 +94,6 @@
             color: #6a737c;
         }
 
-        /* Modal custom */
         .modal-custom {
             display: none;
             position: fixed;
@@ -118,21 +110,21 @@
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
-            border: 1px solid #888;
+            border: 1px solid #d6d9dc;
             width: 400px;
-            border-radius: 8px;
+            border-radius: 5px;
         }
 
         .close-custom {
             color: #aaa;
             float: right;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
         }
 
         .close-custom:hover {
-            color: black;
+            color: #232629;
         }
 
         .profile-tabs {
@@ -159,180 +151,283 @@
             color: white;
             font-weight: 500;
         }
+
+        /* Bố cục Sidebar dính chuẩn SO */
+        .main-container {
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            background-color: #fff;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid #d6d9dc;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* So-list container */
+        .so-list-container {
+            border: 1px solid #d6d9dc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .btn-primary {
+            background-color: #f48024;
+            border-color: #f48024;
+        }
+
+        .btn-primary:hover {
+            background-color: #da680b;
+            border-color: #da680b;
+        }
+
+        .btn-outline-secondary {
+            border-color: #d6d9dc;
+            color: #525960;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            border-color: #d6d9dc;
+        }
+
+        .pagination-so {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .btn-so-page {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            border: 1px solid #d6d9dc;
+            border-radius: 3px;
+            color: #3b4045;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background-color 0.1s;
+        }
+
+        .btn-so-page:hover {
+            background-color: #d6d9dc;
+            color: #0c0d0e;
+        }
+
+        .btn-so-page.active {
+            background-color: #f48024;
+            border-color: #f48024;
+            color: white;
+            font-weight: 600;
+        }
     </style>
 </head>
 
-<body>
+<body style="padding-top: 60px; background-color: #fff;">
 
     <div th:replace="~{Common/header :: header}"></div>
 
-    <div class="container-fluid"
-        style="max-width: 1264px; margin: 0 auto; background-color: #fff; padding-bottom: 50px;">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar p-0 pt-4"
-                style="border-right: 1px solid #d6d9dc; min-height: 100vh;">
-                <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
-            </nav>
+    <div class="main-container">
 
-            <main class="col-md-10 px-md-4 pt-4">
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('saves')}"></div>
+        </div>
 
-                <div th:replace="~{Common/profileTemplate :: profileTemplate('saves')}"></div>
+        <main class="main-content">
 
-                <div class="row mt-4">
-                    <div class="col-md-2">
-                        <nav class="nav flex-column">
-                            <a th:href="@{/saves}" class="saves-sidebar-item"
-                                th:classappend="${activeListId == null ? 'active fw-bold' : ''}"
-                                style="display: block; text-decoration: none; padding: 6px 12px; border-radius: 100px;">
-                                All saves
+            <div th:replace="~{Common/profileTemplate :: profileTemplate('saves')}"></div>
+
+            <div class="row mt-4">
+                <div class="col-md-2">
+                    <nav class="nav flex-column">
+                        <a th:href="@{/saves(colPage=${currentColPage})}" class="saves-sidebar-item"
+                            th:classappend="${activeListId == null ? 'active' : ''}">
+                            All saves
+                        </a>
+
+                        <div class="d-flex justify-content-between align-items-center px-2 mt-3">
+                            <span class="saves-sidebar-header">MY LISTS</span>
+                            <a href="javascript:void(0)"
+                                onclick="document.getElementById('createListModal').style.display = 'block'"
+                                class="text-decoration-none small">
+                                <i class="fa-solid fa-plus text-secondary"></i>
                             </a>
-
-                            <div class="d-flex justify-content-between align-items-center px-2 mt-3">
-                                <span class="saves-sidebar-header">MY LISTS</span>
-                                <a href="javascript:void(0)"
-                                    onclick="document.getElementById('createListModal').style.display = 'block'"
-                                    class="text-decoration-none small">
-                                    <i class="fa-solid fa-plus text-secondary"></i>
-                                </a>
-                            </div>
-
-                            <div class="mb-3 px-2">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-white border-end-0 text-muted"><i
-                                            class="fa-solid fa-magnifying-glass"></i></span>
-                                    <input type="text" id="collectionSearchInput"
-                                        class="form-control border-start-0 ps-0 shadow-none"
-                                        placeholder="Find a collection...">
-                                </div>
-                            </div>
-
-                            <th:block th:each="col : ${myCollections}">
-                                <div class="saves-sidebar-item collection-item d-flex justify-content-between align-items-center"
-                                    th:classappend="${activeListId == col.collectionId ? 'active' : ''}"
-                                    style="padding-right: 8px;">
-                                    <a th:href="@{/saves(listId=${col.collectionId})}"
-                                        class="text-decoration-none text-dark text-truncate flex-grow-1 collection-name-text"
-                                        style="max-width: 90px;" th:text="${col.name}">Collection Name</a>
-
-                                    <div class="d-flex">
-                                        <a href="javascript:void(0)" class="text-secondary small ms-2 opacity-75"
-                                            title="Rename"
-                                            th:onclick="openRenameModal([[${col.collectionId}]], [[${col.name}]])">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </a>
-                                        <a th:href="@{/saves/delete(id=${col.collectionId})}"
-                                            class="text-danger small ms-2 opacity-75" title="Delete"
-                                            th:onclick="return confirm('Delete list: ' + [[${col.name}]] + '?');">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </th:block>
-                        </nav>
-                    </div>
-
-                    <div class="col-md-10 ps-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="d-flex flex-column w-100 me-3">
-                                <div class="d-flex align-items-baseline mb-2">
-                                    <h3 class="mb-0 fw-bold" th:text="${currentListName}">All saves</h3>
-                                    <span class="text-muted ms-3" style="font-size: 14px;"
-                                        th:text="${savedCount + ' saved items'}">0 saved items</span>
-                                </div>
-                                <div class="input-group input-group-sm mt-1" style="max-width: 400px;">
-                                    <span class="input-group-text bg-white border-end-0 text-muted"><i
-                                            class="fa-solid fa-magnifying-glass"></i></span>
-                                    <input type="text" id="savedItemSearchInput"
-                                        class="form-control border-start-0 ps-0 shadow-none"
-                                        placeholder="Search in this list...">
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-sm text-nowrap"
-                                style="background-color: #0a95ff; border: none;"
-                                onclick="document.getElementById('createListModal').style.display = 'block'">
-                                <i class="fa-solid fa-plus me-1"></i> Create new list
-                            </button>
                         </div>
 
-                        <th:block th:if="${#lists.isEmpty(savedList)}">
-                            <div class="empty-state-box text-center p-5 rounded">
-                                <i class="fa-solid fa-layer-group fa-3x text-secondary opacity-25"></i>
-                                <p class="mt-3 text-muted fw-medium">You have no saved items here</p>
+                        <div class="mb-3 px-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white border-end-0 text-muted"
+                                    style="border-color: #d6d9dc;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="collectionSearchInput"
+                                    class="form-control border-start-0 ps-0 shadow-none"
+                                    placeholder="Find a collection..." style="border-color: #d6d9dc;">
                             </div>
-                        </th:block>
+                        </div>
 
-                        <th:block th:if="${not #lists.isEmpty(savedList)}">
-                            <div class="list-group list-group-flush border-top">
-                                <div class="saved-item-card saved-item-row d-flex justify-content-between align-items-center py-3"
-                                    th:each="item : ${savedList}">
-                                    <div>
-                                        <a th:href="@{/question(id=${item.questionId})}"
-                                            class="saved-item-title saved-title-text fw-bold text-decoration-none"
-                                            style="color: #0074cc; font-size: 16px;"
-                                            th:text="${item.questionTitle}">Question Title</a>
-                                        <div class="saved-meta mt-1 text-muted">
-                                            Saved on <span
-                                                th:text="${#dates.format(item.createdAt, 'MMM dd, yyyy')}">Date</span>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <a href="javascript:void(0)"
-                                            class="text-secondary small ms-3 text-decoration-none"
-                                            th:onclick="openMoveModal([[${item.questionId}]])"><i
-                                                class="fa-solid fa-folder-tree"></i> Move</a>
-                                        <a th:href="@{/saves/remove(questionId=${item.questionId}, fromCollectionId=${activeListId})}"
-                                            class="text-danger small ms-3 text-decoration-none"
-                                            onclick="return confirm('Remove bookmark?');"><i
-                                                class="fa-solid fa-bookmark-slash"></i> Unsave</a>
-                                    </div>
+                        <th:block th:each="col : ${myCollections}">
+                            <div class="saves-sidebar-item collection-item d-flex justify-content-between align-items-center"
+                                th:classappend="${activeListId == col.collectionId ? 'active' : ''}"
+                                style="padding-right: 8px;">
+                                <a th:href="@{/saves(listId=${col.collectionId}, colPage=${currentColPage})}"
+                                    class="text-decoration-none text-dark text-truncate flex-grow-1 collection-name-text"
+                                    style="max-width: 90px;" th:text="${col.name}">Collection Name</a>
+
+                                <div class="d-flex">
+                                    <a href="javascript:void(0)" class="text-secondary small ms-2 opacity-75"
+                                        title="Rename"
+                                        th:onclick="openRenameModal([[${col.collectionId}]], [[${col.name}]])">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a th:href="@{/saves/delete(id=${col.collectionId})}"
+                                        class="text-danger small ms-2 opacity-75" title="Delete"
+                                        th:onclick="return confirm('Delete list: ' + [[${col.name}]] + '?');">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </a>
                                 </div>
                             </div>
-
-                            <div id="noSavedItemsFound" class="text-center p-4 d-none">
-                                <p class="text-muted mb-0"><i class="fa-regular fa-face-frown"></i> No items match your
-                                    search.</p>
-                            </div>
-
-                            <th:block th:if="${totalItemPages > 1}">
-                                <nav aria-label="Page navigation" class="mt-4">
-                                    <ul class="pagination pagination-sm justify-content-center">
-                                        <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
-                                            <a class="page-link"
-                                                th:href="@{/saves(listId=${activeListId}, page=${currentPage - 1})}">Prev</a>
-                                        </li>
-                                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalItemPages)}"
-                                            th:classappend="${currentPage == i ? 'active' : ''}">
-                                            <a class="page-link" th:href="@{/saves(listId=${activeListId}, page=${i})}"
-                                                th:text="${i}">1</a>
-                                        </li>
-                                        <li class="page-item"
-                                            th:classappend="${currentPage == totalItemPages ? 'disabled' : ''}">
-                                            <a class="page-link"
-                                                th:href="@{/saves(listId=${activeListId}, page=${currentPage + 1})}">Next</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </th:block>
                         </th:block>
-                    </div>
+
+                        <th:block th:if="${totalColPages != null and totalColPages > 1}">
+                            <div class="d-flex justify-content-center px-1 mt-4 mb-2">
+                                <div class="pagination-so flex-nowrap" style="gap: 2px; margin: 0;">
+                                    <a th:if="${currentColPage > 1}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${currentPage}, colPage=${currentColPage - 1})}"
+                                        class="btn-so-page"
+                                        style="min-width: 20px; height: 22px; padding: 0 4px; font-size: 11px;"><i
+                                            class="fa-solid fa-angle-left"></i></a>
+
+                                    <a th:each="i : ${#numbers.sequence(colStartPage, colEndPage)}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${currentPage}, colPage=${i})}"
+                                        th:classappend="${currentColPage == i ? 'active' : ''}" class="btn-so-page"
+                                        style="min-width: 20px; height: 22px; padding: 0 4px; font-size: 11px;"
+                                        th:text="${i}">1</a>
+
+                                    <a th:if="${currentColPage < totalColPages}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${currentPage}, colPage=${currentColPage + 1})}"
+                                        class="btn-so-page"
+                                        style="min-width: 20px; height: 22px; padding: 0 4px; font-size: 11px;"><i
+                                            class="fa-solid fa-angle-right"></i></a>
+                                </div>
+                            </div>
+                        </th:block>
+                    </nav>
                 </div>
-            </main>
-        </div>
+
+                <div class="col-md-10 ps-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex flex-column w-100 me-3">
+                            <div class="d-flex align-items-baseline mb-2">
+                                <h3 class="mb-0 fw-bold" style="font-size: 24px; font-weight: 400 !important;"
+                                    th:text="${currentListName}">All saves</h3>
+                                <span class="text-muted ms-3" style="font-size: 14px;"
+                                    th:text="${savedCount + ' saved items'}">0 saved items</span>
+                            </div>
+                            <div class="input-group input-group-sm mt-1" style="max-width: 400px;">
+                                <span class="input-group-text bg-white border-end-0 text-muted"
+                                    style="border-color: #d6d9dc;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="savedItemSearchInput"
+                                    class="form-control border-start-0 ps-0 shadow-none"
+                                    placeholder="Search in this list..." style="border-color: #d6d9dc;">
+                            </div>
+                        </div>
+                        <button class="btn btn-sm text-white text-nowrap"
+                            style="background-color: #0a95ff; border: none;"
+                            onclick="document.getElementById('createListModal').style.display = 'block'">
+                            <i class="fa-solid fa-plus me-1"></i> Create new list
+                        </button>
+                    </div>
+
+                    <th:block th:if="${#lists.isEmpty(savedList)}">
+                        <div class="empty-state-box">
+                            <i class="fa-solid fa-layer-group fa-3x text-secondary opacity-25"></i>
+                            <p class="mt-3 text-muted fw-medium">You have no saved items here</p>
+                        </div>
+                    </th:block>
+
+                    <th:block th:if="${not #lists.isEmpty(savedList)}">
+                        <div class="so-list-container">
+                            <div class="saved-item-card saved-item-row d-flex justify-content-between align-items-center"
+                                th:each="item : ${savedList}">
+                                <div>
+                                    <a th:href="@{/question(id=${item.questionId})}"
+                                        class="saved-item-title saved-title-text"
+                                        th:text="${item.questionTitle}">Question Title</a>
+                                    <div class="saved-meta mt-1">
+                                        Saved on <span
+                                            th:text="${#dates.format(item.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <a href="javascript:void(0)" class="text-secondary small ms-3 text-decoration-none"
+                                        th:onclick="openMoveModal([[${item.questionId}]])"><i
+                                            class="fa-solid fa-folder-tree"></i> Move</a>
+                                    <a th:href="@{/saves/remove(questionId=${item.questionId}, fromCollectionId=${activeListId})}"
+                                        class="text-danger small ms-3 text-decoration-none"
+                                        onclick="return confirm('Remove bookmark?');"><i
+                                            class="fa-solid fa-bookmark-slash"></i> Unsave</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="noSavedItemsFound" class="text-center p-4 d-none">
+                            <p class="text-muted mb-0"><i class="fa-regular fa-face-frown"></i> No items match your
+                                search.</p>
+                        </div>
+
+                        <th:block th:if="${totalItemPages != null and totalItemPages > 1}">
+                            <div class="d-flex justify-content-end mt-4">
+                                <div class="pagination-so">
+                                    <a th:if="${currentPage > 1}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${currentPage - 1}, colPage=${currentColPage})}"
+                                        class="btn-so-page">Prev</a>
+
+                                    <a th:each="i : ${#numbers.sequence(itemStartPage, itemEndPage)}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${i}, colPage=${currentColPage})}"
+                                        th:classappend="${currentPage == i ? 'active' : ''}" class="btn-so-page"
+                                        th:text="${i}">1</a>
+
+                                    <a th:if="${currentPage < totalItemPages}"
+                                        th:href="@{/saves(listId=${activeListId}, page=${currentPage + 1}, colPage=${currentColPage})}"
+                                        class="btn-so-page">Next</a>
+                                </div>
+                            </div>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+        </main>
     </div>
 
+    <!-- Modals -->
     <div id="createListModal" class="modal-custom">
         <div class="modal-content-custom">
             <span onclick="document.getElementById('createListModal').style.display = 'none'"
                 class="close-custom">&times;</span>
-            <h4 style="margin-top: 0; font-size: 18px; font-weight: bold;">Create a new list</h4>
+            <h4 style="margin-top: 0; font-size: 18px; font-weight: 500;">Create a new list</h4>
             <form th:action="@{/saves/create}" method="post">
                 <div class="mb-3 mt-3">
                     <label class="form-label fw-bold small">List Name</label>
-                    <input type="text" name="listName" class="form-control" placeholder="e.g. Java Tips" required>
+                    <input type="text" name="listName" class="form-control" placeholder="e.g. Java Tips"
+                        style="border-color: #d6d9dc;" required>
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('createListModal').style.display = 'none'"
-                        class="btn btn-light border me-2 btn-sm">Cancel</button>
+                        class="btn btn-outline-secondary btn-sm me-2">Cancel</button>
                     <button type="submit" class="btn btn-primary btn-sm">Create</button>
                 </div>
             </form>
@@ -343,16 +438,17 @@
         <div class="modal-content-custom">
             <span onclick="document.getElementById('renameListModal').style.display = 'none'"
                 class="close-custom">&times;</span>
-            <h4 style="margin-top: 0; font-size: 18px; font-weight: bold;">Rename list</h4>
+            <h4 style="margin-top: 0; font-size: 18px; font-weight: 500;">Rename list</h4>
             <form th:action="@{/saves/rename}" method="post">
                 <input type="hidden" id="renameCollectionId" name="collectionId" value="">
                 <div class="mb-3 mt-3">
                     <label class="form-label fw-bold small">New List Name</label>
-                    <input type="text" id="renameInput" name="newName" class="form-control" required>
+                    <input type="text" id="renameInput" name="newName" class="form-control"
+                        style="border-color: #d6d9dc;" required>
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('renameListModal').style.display = 'none'"
-                        class="btn btn-light border me-2 btn-sm">Cancel</button>
+                        class="btn btn-outline-secondary btn-sm me-2">Cancel</button>
                     <button type="submit" class="btn btn-primary btn-sm">Save</button>
                 </div>
             </form>
@@ -363,12 +459,12 @@
         <div class="modal-content-custom">
             <span onclick="document.getElementById('moveBookmarkModal').style.display = 'none'"
                 class="close-custom">&times;</span>
-            <h4 style="margin-top: 0; font-size: 18px; font-weight: bold;">Move saved item</h4>
+            <h4 style="margin-top: 0; font-size: 18px; font-weight: 500;">Move saved item</h4>
             <form th:action="@{/saves/move}" method="post">
                 <input type="hidden" id="moveQuestionId" name="questionId" value="">
                 <div class="mb-4 mt-3">
                     <label class="form-label fw-bold small">Select destination list</label>
-                    <select name="collectionId" class="form-select">
+                    <select name="collectionId" class="form-select" style="border-color: #d6d9dc;">
                         <option value="">-- All saves (No specific list) --</option>
                         <th:block th:each="col : ${allMyCollections}">
                             <option th:value="${col.collectionId}" th:text="${col.name}">Name</option>
@@ -377,7 +473,7 @@
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('moveBookmarkModal').style.display = 'none'"
-                        class="btn btn-light border me-2 btn-sm">Cancel</button>
+                        class="btn btn-outline-secondary btn-sm me-2">Cancel</button>
                     <button type="submit" class="btn btn-primary btn-sm">Move Item</button>
                 </div>
             </form>

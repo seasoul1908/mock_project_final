@@ -6,22 +6,12 @@
     <title th:text="${uPro.username + ' - User Activity - DevQuery'}">User Activity - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #fff;
             padding-top: 60px;
             color: #232629;
-            font-size: 14px;
-        }
-
-        /* Profile Header Box */
-        .user-avatar-lg {
-            width: 128px;
-            height: 128px;
-            border-radius: 5px;
-            object-fit: cover;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
         }
 
         .user-name {
@@ -35,7 +25,6 @@
             color: #6a737c;
         }
 
-        /* Main Navigation Tabs */
         .profile-tabs {
             border-bottom: none;
             margin-bottom: 20px;
@@ -43,7 +32,7 @@
 
         .profile-tabs .nav-link {
             color: #525960;
-            border-radius: 20px;
+            border-radius: 100px;
             padding: 6px 12px;
             margin-right: 5px;
             border: none;
@@ -58,55 +47,51 @@
         .profile-tabs .nav-link.active {
             background-color: #f48024;
             color: white;
+            font-weight: 500;
         }
 
-        /* Inner Left Sidebar */
+        /* Sidebar Nav - Chuẩn SO */
         .inner-nav-item {
             display: block;
-            padding: 10px 12px;
+            padding: 6px 12px;
+            margin-bottom: 2px;
+            border-radius: 100px;
             color: #525960;
+            font-size: 13px;
+            background-color: transparent;
             text-decoration: none;
-            font-size: 14px;
-            border-bottom: 1px solid #e3e6e8;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .inner-nav-item:last-child {
-            border-bottom: none;
         }
 
         .inner-nav-item:hover {
-            background-color: #f8f9fa;
+            background-color: #f8f9f9;
             color: #0c0d0e;
         }
 
         .inner-nav-item.active {
-            background-color: #f48024;
-            font-weight: 500;
-            border-bottom-color: #f48024;
-            padding: 6px 12px;
-            text-decoration: none;
-            margin-bottom: 2px;
-            color: #FFFFFF;
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            font-weight: bold;
         }
 
-        /* Content Boxes */
-        .summary-box {
+        /* List container & items */
+        .so-list-container {
             border: 1px solid #d6d9dc;
             border-radius: 5px;
-            padding: 20px;
-            height: 100%;
-            text-align: center;
+            background-color: #fff;
         }
 
-        .summary-box h4 {
-            font-size: 15px;
-            font-weight: normal;
-            color: #6a737c;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-size: 12px;
-            text-align: left;
+        .so-list-item {
+            border-bottom: 1px solid #e3e6e8;
+            padding: 16px;
+            transition: background-color 0.1s;
+        }
+
+        .so-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .so-list-item:hover {
+            background-color: #f8f9f9;
         }
 
         /* Badges Indicator */
@@ -119,49 +104,34 @@
             vertical-align: middle;
         }
 
-        .gold {
+        .badge-dot.gold {
             background-color: #ffcc01;
+            width: 10px;
+            height: 10px;
+            box-shadow: 0 0 4px rgba(255, 204, 1, 0.4);
         }
 
-        .silver {
+        .badge-dot.silver {
             background-color: #b4b8bc;
+            width: 10px;
+            height: 10px;
         }
 
-        .bronze {
+        .badge-dot.bronze {
             background-color: #d1a684;
-        }
-
-        /* Table / List styling */
-        .activity-table th {
-            font-weight: normal;
-            color: #6a737c;
-            border-bottom: 1px solid #e3e6e8;
-        }
-
-        .activity-table td {
-            padding: 12px 0;
-            border-bottom: 1px solid #e3e6e8;
-        }
-
-        .rep-score {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .rep-score.negative {
-            color: #dc3545;
+            width: 10px;
+            height: 10px;
         }
 
         .badge-title-group {
-            border-bottom: 2px solid #f1f2f3;
+            border-bottom: 1px solid #e3e6e8;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
 
-        /* Chỉnh lại Card cho nhỏ gọn và căn giữa */
         .badge-item-card {
-            border: 1px solid #e3e6e8;
-            border-radius: 8px;
+            border: 1px solid #d6d9dc;
+            border-radius: 5px;
             padding: 12px 16px;
             background-color: #fff;
             display: flex;
@@ -172,25 +142,34 @@
             position: relative;
         }
 
-        .badge-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
+        .empty-badge-box {
+            text-align: center;
+            color: #6a737c;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #e3e6e8;
+            border-radius: 5px;
         }
 
-        .badge-dot.gold {
-            background-color: #ffcc01;
-            box-shadow: 0 0 4px rgba(255, 204, 1, 0.4);
+        .btn-primary {
+            background-color: #f48024;
+            border-color: #f48024;
         }
 
-        .badge-dot.silver {
-            background-color: #b4b8bc;
+        .btn-primary:hover {
+            background-color: #da680b;
+            border-color: #da680b;
         }
 
-        .badge-dot.bronze {
-            background-color: #d1a684;
+        .btn-outline-secondary {
+            border-color: #d6d9dc;
+            color: #525960;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            border-color: #d6d9dc;
         }
 
         /* Custom Tooltip */
@@ -206,12 +185,11 @@
             background-color: #ffffff;
             color: #242729;
             text-align: left;
-            border-radius: 8px;
+            border-radius: 5px;
             padding: 12px;
             border: 1px solid #d6d9dc;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: opacity 0.2s, visibility 0.2s;
-            transition-delay: 0s;
             pointer-events: none;
         }
 
@@ -229,390 +207,290 @@
         .badge-item-card:hover .badge-custom-tooltip {
             visibility: visible;
             opacity: 1;
-            transition-delay: 1s;
+            transition-delay: 0.5s;
         }
 
-        .empty-badge-box {
-            text-align: center;
-            color: #6a737c;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+        /* Bố cục Sidebar dính chuẩn SO */
+        .main-container {
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            background-color: #fff;
         }
 
-        /* Custom Pagination */
-        .pagination .page-link {
-            color: #525960;
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid #d6d9dc;
         }
 
-        .pagination .page-item.active .page-link {
-            background-color: #f48024;
-            border-color: #f48024;
-            color: white;
-        }
-
-        .pagination .page-link:hover {
-            color: #f48024;
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
         }
     </style>
 </head>
 
-<body>
-
+<body style="padding-top: 60px; background-color: #fff;">
     <div th:replace="~{Common/header :: header}"></div>
-
-    <div class="container-fluid"
-        style="max-width: 1264px; margin: 0 auto; background-color: #fff; padding-bottom: 50px;">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar p-0 pt-4"
-                style="border-right: 1px solid #d6d9dc; min-height: 100vh;">
-                <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
-            </nav>
-
-            <main class="col-md-10 px-md-4 pt-4">
-
-                <div th:replace="~{Common/profileTemplate :: profileTemplate('badge')}"></div>
-
-                <div class="row mt-4">
-
-                    <div class="col-md-2">
-                        <nav class="nav flex-column mt-2">
-                            <a class="inner-nav-item" th:classappend="${currentTab == 'reputation' ? 'active' : ''}"
-                                th:href="@{/badge(id=${uPro.userId}, tab='reputation')}">Reputation</a>
-                            <a class="inner-nav-item" th:classappend="${currentTab == 'badges' ? 'active' : ''}"
-                                th:href="@{/badge(id=${uPro.userId}, tab='badges')}">Badges</a>
-                            <a class="inner-nav-item" th:classappend="${currentTab == 'privileges' ? 'active' : ''}"
-                                th:href="@{/badge(id=${uPro.userId}, tab='privileges')}">Privileges</a>
-                        </nav>
-                    </div>
-
-                    <div class="col-md-10 ps-4">
-
-                        <th:block th:if="${currentTab == 'reputation'}">
-                            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                                <h3 class="fw-bold" style="font-size: 24px; margin-bottom: 0;">Reputation History</h3>
-                                <div class="text-muted">
-                                    Total Reputation: <span class="fw-bold text-dark fs-5 ms-1"><i
-                                            class="fa-solid fa-star text-warning"></i>
-                                        <th:block th:text="${uPro.reputation}"></th:block>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="card shadow-sm border-0" style="border-radius: 8px; overflow: hidden;">
-                                <div class="card-body p-0">
-                                    <th:block th:if="${#lists.isEmpty(repList)}">
-                                        <div class="text-center text-muted py-5" style="background-color: #f8f9fa;">
-                                            <i
-                                                class="fa-solid fa-clock-rotate-left fa-2x mb-2 d-block text-secondary"></i>
-                                            You have no reputation history yet. Keep contributing!
-                                        </div>
-                                    </th:block>
-
-                                    <th:block th:if="${not #lists.isEmpty(repList)}">
-                                        <div class="list-group list-group-flush mb-3">
-                                            <div class="list-group-item d-flex justify-content-between align-items-center py-3"
-                                                th:each="rep : ${repList}" style="transition: background-color 0.2s;">
-                                                <div class="d-flex align-items-center" style="flex: 1;">
-                                                    <div style="width: 60px; flex-shrink: 0;">
-                                                        <span th:if="${rep.value > 0}"
-                                                            class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2 fw-bold"
-                                                            style="font-size: 14px;"
-                                                            th:text="'+' + ${rep.value}">+0</span>
-                                                        <span th:unless="${rep.value > 0}"
-                                                            class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2 fw-bold"
-                                                            style="font-size: 14px;" th:text="${rep.value}">0</span>
-                                                    </div>
-
-                                                    <div class="ms-3 text-dark fw-medium" style="font-size: 15px;">
-                                                        <th:block th:switch="${rep.actionType}">
-                                                            <th:block th:case="'question_upvoted'"><i
-                                                                    class="fa-solid fa-arrow-up text-secondary me-2"></i>
-                                                                Your question was upvoted</th:block>
-                                                            <th:block th:case="'answer_upvoted'"><i
-                                                                    class="fa-solid fa-arrow-up text-secondary me-2"></i>
-                                                                Your answer was upvoted</th:block>
-                                                            <th:block th:case="'answer_accepted'"><i
-                                                                    class="fa-solid fa-check text-success me-2"></i>
-                                                                Your answer was accepted</th:block>
-                                                            <th:block th:case="'question_downvoted'"><i
-                                                                    class="fa-solid fa-arrow-down text-danger me-2"></i>
-                                                                Your question was downvoted</th:block>
-                                                            <th:block th:case="*"><i
-                                                                    class="fa-solid fa-bolt text-warning me-2"></i>
-                                                                <th:block th:text="${rep.actionType}"></th:block>
-                                                            </th:block>
-                                                        </th:block>
-                                                    </div>
-                                                </div>
-
-                                                <div class="text-muted small ms-3" style="white-space: nowrap;">
-                                                    <i class="fa-regular fa-calendar me-1"></i> <span
-                                                        th:text="${#dates.format(rep.createdAt, 'MMM dd, yyyy')}">Date</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <th:block th:if="${totalPage > 1}">
-                                            <nav aria-label="Reputation page navigation" class="pb-4">
-                                                <ul class="pagination justify-content-center mb-0">
-                                                    <li class="page-item"
-                                                        th:classappend="${currentPage == 1} ? 'disabled'">
-                                                        <a class="page-link"
-                                                            th:href="@{/badge(id=${uPro.userId}, tab='reputation', page=${currentPage - 1})}">&laquo;
-                                                            Prev</a>
-                                                    </li>
-
-                                                    <li class="page-item"
-                                                        th:each="i : ${#numbers.sequence(1, totalPage)}"
-                                                        th:classappend="${currentPage == i} ? 'active'">
-                                                        <a class="page-link"
-                                                            th:href="@{/badge(id=${uPro.userId}, tab='reputation', page=${i})}"
-                                                            th:text="${i}">1</a>
-                                                    </li>
-
-                                                    <li class="page-item"
-                                                        th:classappend="${currentPage == totalPage} ? 'disabled'">
-                                                        <a class="page-link"
-                                                            th:href="@{/badge(id=${uPro.userId}, tab='reputation', page=${currentPage + 1})}">Next
-                                                            &raquo;</a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </th:block>
-
-                                    </th:block>
-                                </div>
-                            </div>
-                        </th:block>
-
-                        <th:block th:if="${currentTab == 'badges'}">
-                            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                                <h3 class="fw-bold" style="font-size: 24px; margin-bottom: 0;">Earned Badges</h3>
-
-                                <form th:action="@{/badge}" method="get" class="d-flex align-items-center">
-                                    <input type="hidden" name="id" th:value="${uPro.userId}">
-                                    <input type="hidden" name="tab" value="badges">
-                                    <label for="sortBadges" class="me-2 text-muted small mb-0 text-nowrap">Sort
-                                        by:</label>
-                                    <select name="sort" id="sortBadges" class="form-select form-select-sm shadow-sm"
-                                        onchange="this.form.submit()" style="width: auto; border-radius: 6px;">
-                                        <option value="newest" th:selected="${currentSort == 'newest'}">Newest</option>
-                                        <option value="name" th:selected="${currentSort == 'name'}">Name</option>
-                                    </select>
-                                </form>
-                            </div>
-
-                            <th:block th:if="${#lists.isEmpty(myBadges)}">
-                                <div class="empty-badge-box mt-4">
-                                    <i class="fa-solid fa-medal fa-2x text-muted mb-2 d-block"></i>
-                                    You haven't earned any badges yet. Keep participating to unlock them!
-                                </div>
-                            </th:block>
-
-                            <th:block th:if="${not #lists.isEmpty(myBadges)}">
-
-                                <div class="badge-title-group mt-4">
-                                    <h5 class="mb-0 fw-bold" style="color: #ab825f;"><i class="fa-solid fa-medal"
-                                            style="color: #d1a684;"></i> Bronze Badges</h5>
-                                </div>
-                                <div class="row mb-4">
-                                    <th:block th:with="bronzeList=${myBadges.?[type.toLowerCase() == 'bronze']}">
-                                        <th:block th:if="${not #lists.isEmpty(bronzeList)}">
-                                            <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${bronzeList}">
-                                                <div class="badge-item-card">
-                                                    <span class="badge-dot bronze"></span>
-                                                    <span class="fw-bold text-dark" style="font-size: 15px;"
-                                                        th:text="${badge.name}"></span>
-                                                    <div class="badge-custom-tooltip">
-                                                        <div class="fw-bold mb-2 pb-1"
-                                                            style="font-size: 15px; border-bottom: 1px solid #4a4e51;"
-                                                            th:text="${badge.name}"></div>
-                                                        <div style="font-size: 13px; margin-bottom: 4px;">
-                                                            <span class="text-muted">Level:</span> <span
-                                                                class="text-capitalize fw-bold" style="color: #d1a684;"
-                                                                th:text="${badge.type}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; margin-bottom: 8px;"
-                                                            th:if="${badge.earnedAt != null}">
-                                                            <span class="text-muted">Earned:</span> <span
-                                                                th:text="${#dates.format(badge.earnedAt, 'dd/MM/yyyy')}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; line-height: 1.4;"
-                                                            th:text="${badge.description}"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </th:block>
-                                        <th:block th:if="${#lists.isEmpty(bronzeList)}">
-                                            <div class="col-12">
-                                                <div class="empty-badge-box">No bronze badges earned yet.</div>
-                                            </div>
-                                        </th:block>
-                                    </th:block>
-                                </div>
-
-                                <div class="badge-title-group mt-4">
-                                    <h5 class="mb-0 fw-bold" style="color: #838c95;"><i class="fa-solid fa-medal"
-                                            style="color: #b4b8bc;"></i> Silver Badges</h5>
-                                </div>
-                                <div class="row mb-4">
-                                    <th:block th:with="silverList=${myBadges.?[type.toLowerCase() == 'silver']}">
-                                        <th:block th:if="${not #lists.isEmpty(silverList)}">
-                                            <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${silverList}">
-                                                <div class="badge-item-card">
-                                                    <span class="badge-dot silver"></span>
-                                                    <span class="fw-bold text-dark" style="font-size: 15px;"
-                                                        th:text="${badge.name}"></span>
-                                                    <div class="badge-custom-tooltip">
-                                                        <div class="fw-bold mb-2 pb-1"
-                                                            style="font-size: 15px; border-bottom: 1px solid #4a4e51;"
-                                                            th:text="${badge.name}"></div>
-                                                        <div style="font-size: 13px; margin-bottom: 4px;">
-                                                            <span class="text-muted">Level:</span> <span
-                                                                class="text-capitalize fw-bold" style="color: #b4b8bc;"
-                                                                th:text="${badge.type}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; margin-bottom: 8px;"
-                                                            th:if="${badge.earnedAt != null}">
-                                                            <span class="text-muted">Earned:</span> <span
-                                                                th:text="${#dates.format(badge.earnedAt, 'dd/MM/yyyy')}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; line-height: 1.4;"
-                                                            th:text="${badge.description}"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </th:block>
-                                        <th:block th:if="${#lists.isEmpty(silverList)}">
-                                            <div class="col-12">
-                                                <div class="empty-badge-box">No silver badges earned yet.</div>
-                                            </div>
-                                        </th:block>
-                                    </th:block>
-                                </div>
-
-                                <div class="badge-title-group mt-4">
-                                    <h5 class="mb-0 fw-bold" style="color: #d4a81e;"><i class="fa-solid fa-medal"
-                                            style="color: #ffcc01;"></i> Gold Badges</h5>
-                                </div>
-                                <div class="row mb-4">
-                                    <th:block th:with="goldList=${myBadges.?[type.toLowerCase() == 'gold']}">
-                                        <th:block th:if="${not #lists.isEmpty(goldList)}">
-                                            <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${goldList}">
-                                                <div class="badge-item-card">
-                                                    <span class="badge-dot gold"></span>
-                                                    <span class="fw-bold text-dark" style="font-size: 15px;"
-                                                        th:text="${badge.name}"></span>
-                                                    <div class="badge-custom-tooltip">
-                                                        <div class="fw-bold mb-2 pb-1"
-                                                            style="font-size: 15px; border-bottom: 1px solid #4a4e51;"
-                                                            th:text="${badge.name}"></div>
-                                                        <div style="font-size: 13px; margin-bottom: 4px;">
-                                                            <span class="text-muted">Level:</span> <span
-                                                                class="text-capitalize fw-bold" style="color: #ffcc01;"
-                                                                th:text="${badge.type}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; margin-bottom: 8px;"
-                                                            th:if="${badge.earnedAt != null}">
-                                                            <span class="text-muted">Earned:</span> <span
-                                                                th:text="${#dates.format(badge.earnedAt, 'dd/MM/yyyy')}"></span>
-                                                        </div>
-                                                        <div style="font-size: 13px; line-height: 1.4;"
-                                                            th:text="${badge.description}"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </th:block>
-                                        <th:block th:if="${#lists.isEmpty(goldList)}">
-                                            <div class="col-12">
-                                                <div class="empty-badge-box">No gold badges earned yet.</div>
-                                            </div>
-                                        </th:block>
-                                    </th:block>
-                                </div>
-
-                            </th:block>
-                        </th:block>
-
-                        <th:block th:if="${currentTab == 'privileges'}">
-                            <h3 style="font-size: 21px; margin-bottom: 10px;">Privileges</h3>
-                            <p class="text-muted mb-4">You unlock new privileges as you gain reputation.</p>
-
-                            <div class="card mb-4 border-0" style="background-color: #f8f9f9; border-radius: 5px;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-primary" style="font-size: 15px;">
-                                        <i class="fa-solid fa-trophy text-warning"></i> Next Privilege
-                                    </h5>
-
-                                    <th:block th:if="${isMaxLevel != null and isMaxLevel}">
-                                        <p class="text-success fw-bold mb-0 mt-2">🎉 Congratulations! You have unlocked
-                                            all privileges on DevQuery!</p>
-                                    </th:block>
-
-                                    <th:block th:unless="${isMaxLevel != null and isMaxLevel}">
-                                        <p class="mb-2 mt-2">
-                                            You need <strong th:text="${pointsNeeded + ' more reputation'}"></strong> to
-                                            unlock:
-                                            <span class="badge bg-warning text-dark" th:text="${nextPriv.name}"></span>
-                                        </p>
-                                        <div class="progress" style="height: 20px; background-color: #e3e6e8;">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-                                                role="progressbar" th:style="|width: ${progressPercent}%|"
-                                                th:aria-valuenow="${progressPercent}" aria-valuemin="0"
-                                                aria-valuemax="100"
-                                                th:text="|${uPro.reputation} / ${nextPriv.requiredReputation} XP|">
-                                            </div>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-
-                            <table class="table activity-table table-borderless">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 150px;">Reputation</th>
-                                        <th>Privilege</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <th:block th:if="${not #lists.isEmpty(privilegesList)}">
-                                        <tr th:each="rule : ${privilegesList}"
-                                            th:with="isUnlocked=${uPro.reputation >= rule.requiredReputation}">
-                                            <td th:class="${isUnlocked ? 'fw-bold' : 'fw-bold text-muted'}"
-                                                th:text="${rule.requiredReputation}"></td>
-                                            <td th:class="${isUnlocked ? '' : 'text-muted'}">
-                                                <th:block th:if="${isUnlocked}">
-                                                    <a href="#" style="text-decoration: none;"
-                                                        th:text="${rule.name}">Privilege Name</a>
-                                                    <span class="text-muted d-block" style="font-size: 13px;"
-                                                        th:text="${rule.description}">Description</span>
-                                                </th:block>
-                                                <th:block th:unless="${isUnlocked}">
-                                                    <i class="fa-solid fa-lock me-2"></i>
-                                                    <th:block th:text="${rule.name}"></th:block>
-                                                    <span class="text-muted d-block" style="font-size: 13px;"
-                                                        th:text="${rule.description}">Description</span>
-                                                </th:block>
-                                            </td>
-                                        </tr>
-                                    </th:block>
-
-                                    <th:block th:if="${#lists.isEmpty(privilegesList)}">
-                                        <tr>
-                                            <td colspan="2" class="text-center text-muted py-4">System rules have not
-                                                been configured yet.</td>
-                                        </tr>
-                                    </th:block>
-                                </tbody>
-                            </table>
-                        </th:block>
-
-                    </div>
-                </div>
-
-            </main>
+    <div class="main-container">
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
         </div>
+        <main class="main-content">
+            <div th:replace="~{Common/profileTemplate :: profileTemplate('badge')}"></div>
+            <div class="row mt-4">
+                <div class="col-md-2">
+                    <nav class="nav flex-column mt-2">
+                        <a class="inner-nav-item" th:classappend="${currentTab == 'reputation' ? 'active' : ''}"
+                            th:href="@{/badge(id=${uPro.userId}, tab='reputation')}">Reputation</a>
+                        <a class="inner-nav-item" th:classappend="${currentTab == 'badges' ? 'active' : ''}"
+                            th:href="@{/badge(id=${uPro.userId}, tab='badges')}">Badges</a>
+                        <a class="inner-nav-item" th:classappend="${currentTab == 'privileges' ? 'active' : ''}"
+                            th:href="@{/badge(id=${uPro.userId}, tab='privileges')}">Privileges</a>
+                    </nav>
+                </div>
+                <div class="col-md-10 ps-md-4">
+                    <th:block th:if="${currentTab == 'reputation'}">
+                        <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                            <h3 class="fw-bold" style="font-size: 24px; font-weight: 400; margin-bottom: 0;">Reputation
+                                History</h3>
+                            <div class="text-muted" style="font-size: 15px;">
+                                Total Reputation: <span class="fw-bold text-dark ms-1"><i
+                                        class="fa-solid fa-star text-warning"></i>
+                                    <th:block th:text="${uPro.reputation}"></th:block>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="so-list-container">
+                            <th:block th:if="${#lists.isEmpty(repList)}">
+                                <div class="text-center text-muted p-5">You have no reputation history yet. Keep
+                                    contributing!</div>
+                            </th:block>
+                            <th:block th:if="${not #lists.isEmpty(repList)}">
+                                <div class="so-list-item d-flex justify-content-between align-items-center"
+                                    th:each="rep : ${repList}">
+                                    <div class="d-flex align-items-center" style="flex: 1;">
+                                        <div style="width: 60px; flex-shrink: 0;">
+                                            <span th:if="${rep.value > 0}"
+                                                class="badge bg-success text-white px-2 py-1 fw-bold"
+                                                style="font-size: 13px;" th:text="'+' + ${rep.value}">+0</span>
+                                            <span th:unless="${rep.value > 0}"
+                                                class="badge bg-danger text-white px-2 py-1 fw-bold"
+                                                style="font-size: 13px;" th:text="${rep.value}">0</span>
+                                        </div>
+                                        <div class="ms-3 text-dark fw-medium" style="font-size: 14px;">
+                                            <th:block th:switch="${rep.actionType}">
+                                                <th:block th:case="'question_upvoted'"><i
+                                                        class="fa-solid fa-arrow-up text-secondary me-2"></i>Your
+                                                    question was upvoted</th:block>
+                                                <th:block th:case="'answer_upvoted'"><i
+                                                        class="fa-solid fa-arrow-up text-secondary me-2"></i>Your answer
+                                                    was upvoted</th:block>
+                                                <th:block th:case="'answer_accepted'"><i
+                                                        class="fa-solid fa-check text-success me-2"></i>Your answer was
+                                                    accepted</th:block>
+                                                <th:block th:case="'question_downvoted'"><i
+                                                        class="fa-solid fa-arrow-down text-danger me-2"></i>Your
+                                                    question was downvoted</th:block>
+                                                <th:block th:case="*"><i class="fa-solid fa-bolt text-warning me-2"></i>
+                                                    <th:block th:text="${rep.actionType}"></th:block>
+                                                </th:block>
+                                            </th:block>
+                                        </div>
+                                    </div>
+                                    <div class="text-muted small ms-3" style="white-space: nowrap;"><i
+                                            class="fa-regular fa-calendar me-1"></i> <span
+                                            th:text="${#dates.format(rep.createdAt, 'MMM dd, yyyy')}">Date</span></div>
+                                </div>
+                            </th:block>
+                        </div>
+                        <th:block th:if="${totalPage > 1}">
+                            <div class="mt-4">
+                                <a th:each="i : ${#numbers.sequence(1, totalPage)}"
+                                    th:href="@{/badge(id=${uPro.userId}, tab='reputation', page=${i})}"
+                                    th:classappend="${currentPage == i ? 'btn-primary' : 'btn-outline-secondary'}"
+                                    class="btn btn-sm me-1" th:text="${i}">1</a>
+                            </div>
+                        </th:block>
+                    </th:block>
+
+                    <th:block th:if="${currentTab == 'badges'}">
+                        <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                            <h3 class="fw-bold" style="font-size: 24px; font-weight: 400; margin-bottom: 0;">Earned
+                                Badges</h3>
+                            <form th:action="@{/badge}" method="get" class="d-flex align-items-center">
+                                <input type="hidden" name="id" th:value="${uPro.userId}">
+                                <input type="hidden" name="tab" value="badges">
+                                <label for="sortBadges" class="me-2 text-muted small mb-0 text-nowrap">Sort by:</label>
+                                <select name="sort" id="sortBadges" class="form-select form-select-sm shadow-sm"
+                                    onchange="this.form.submit()"
+                                    style="width: auto; border-radius: 3px; border-color: #d6d9dc;">
+                                    <option value="newest" th:selected="${currentSort == 'newest'}">Newest</option>
+                                    <option value="name" th:selected="${currentSort == 'name'}">Name</option>
+                                </select>
+                            </form>
+                        </div>
+                        <th:block th:if="${#lists.isEmpty(myBadges)}">
+                            <div class="empty-badge-box mt-4"><i
+                                    class="fa-solid fa-medal fa-2x text-muted mb-2 d-block"></i>You haven't earned any
+                                badges yet. Keep participating to unlock them!</div>
+                        </th:block>
+                        <th:block th:if="${not #lists.isEmpty(myBadges)}">
+                            <div class="badge-title-group mt-4">
+                                <h5 class="mb-0 fw-bold" style="color: #ab825f; font-size: 16px;"><i
+                                        class="fa-solid fa-medal" style="color: #d1a684;"></i> Bronze Badges</h5>
+                            </div>
+                            <div class="row mb-4">
+                                <th:block th:with="bronzeList=${myBadges.?[type.toLowerCase() == 'bronze']}">
+                                    <th:block th:if="${not #lists.isEmpty(bronzeList)}">
+                                        <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${bronzeList}">
+                                            <div class="badge-item-card">
+                                                <span class="badge-dot bronze"></span>
+                                                <span class="fw-bold text-dark" style="font-size: 14px;"
+                                                    th:text="${badge.name}"></span>
+                                                <div class="badge-custom-tooltip">
+                                                    <div class="fw-bold mb-2 pb-1"
+                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                        th:text="${badge.name}"></div>
+                                                    <div style="font-size: 12px; margin-bottom: 4px;"><span
+                                                            class="text-muted">Level:</span> <span
+                                                            class="text-capitalize fw-bold" style="color: #d1a684;"
+                                                            th:text="${badge.type}"></span></div>
+                                                    <div style="font-size: 12px; line-height: 1.4;"
+                                                        th:text="${badge.description}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </th:block>
+                            </div>
+                            <div class="badge-title-group mt-4">
+                                <h5 class="mb-0 fw-bold" style="color: #838c95; font-size: 16px;"><i
+                                        class="fa-solid fa-medal" style="color: #b4b8bc;"></i> Silver Badges</h5>
+                            </div>
+                            <div class="row mb-4">
+                                <th:block th:with="silverList=${myBadges.?[type.toLowerCase() == 'silver']}">
+                                    <th:block th:if="${not #lists.isEmpty(silverList)}">
+                                        <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${silverList}">
+                                            <div class="badge-item-card">
+                                                <span class="badge-dot silver"></span>
+                                                <span class="fw-bold text-dark" style="font-size: 14px;"
+                                                    th:text="${badge.name}"></span>
+                                                <div class="badge-custom-tooltip">
+                                                    <div class="fw-bold mb-2 pb-1"
+                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                        th:text="${badge.name}"></div>
+                                                    <div style="font-size: 12px; margin-bottom: 4px;"><span
+                                                            class="text-muted">Level:</span> <span
+                                                            class="text-capitalize fw-bold" style="color: #b4b8bc;"
+                                                            th:text="${badge.type}"></span></div>
+                                                    <div style="font-size: 12px; line-height: 1.4;"
+                                                        th:text="${badge.description}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </th:block>
+                            </div>
+                            <div class="badge-title-group mt-4">
+                                <h5 class="mb-0 fw-bold" style="color: #d4a81e; font-size: 16px;"><i
+                                        class="fa-solid fa-medal" style="color: #ffcc01;"></i> Gold Badges</h5>
+                            </div>
+                            <div class="row mb-4">
+                                <th:block th:with="goldList=${myBadges.?[type.toLowerCase() == 'gold']}">
+                                    <th:block th:if="${not #lists.isEmpty(goldList)}">
+                                        <div class="col-md-3 col-sm-6 mb-3" th:each="badge : ${goldList}">
+                                            <div class="badge-item-card">
+                                                <span class="badge-dot gold"></span>
+                                                <span class="fw-bold text-dark" style="font-size: 14px;"
+                                                    th:text="${badge.name}"></span>
+                                                <div class="badge-custom-tooltip">
+                                                    <div class="fw-bold mb-2 pb-1"
+                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                        th:text="${badge.name}"></div>
+                                                    <div style="font-size: 12px; margin-bottom: 4px;"><span
+                                                            class="text-muted">Level:</span> <span
+                                                            class="text-capitalize fw-bold" style="color: #ffcc01;"
+                                                            th:text="${badge.type}"></span></div>
+                                                    <div style="font-size: 12px; line-height: 1.4;"
+                                                        th:text="${badge.description}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </th:block>
+                            </div>
+                        </th:block>
+                    </th:block>
+
+                    <th:block th:if="${currentTab == 'privileges'}">
+                        <h3 style="font-size: 21px; font-weight: 400; margin-bottom: 10px;">Privileges</h3>
+                        <p class="text-muted mb-4">You unlock new privileges as you gain reputation.</p>
+                        <div class="so-list-container mb-4" style="padding: 15px;">
+                            <h5 class="text-primary mb-2" style="font-size: 15px; color: #0074cc !important;"><i
+                                    class="fa-solid fa-trophy text-warning"></i> Next Privilege</h5>
+                            <th:block th:if="${isMaxLevel != null and isMaxLevel}">
+                                <p class="text-success fw-bold mb-0 mt-2">🎉 Congratulations! You have unlocked all
+                                    privileges on DevQuery!</p>
+                            </th:block>
+                            <th:block th:unless="${isMaxLevel != null and isMaxLevel}">
+                                <p class="mb-2 mt-2" style="font-size: 14px;">You need <strong
+                                        th:text="${pointsNeeded + ' more reputation'}"></strong> to unlock: <span
+                                        class="badge bg-warning text-dark" style="font-weight: normal;"
+                                        th:text="${nextPriv.name}"></span></p>
+                                <div class="progress"
+                                    style="height: 15px; background-color: #e3e6e8; border-radius: 3px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        th:style="|width: ${progressPercent}%|" th:aria-valuenow="${progressPercent}"
+                                        aria-valuemin="0" aria-valuemax="100"
+                                        th:text="|${uPro.reputation} / ${nextPriv.requiredReputation} XP|"
+                                        style="font-size: 10px;"></div>
+                                </div>
+                            </th:block>
+                        </div>
+                        <table class="table table-borderless so-list-container">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #d6d9dc; background-color: #f8f9fa;">
+                                    <th style="width: 150px; font-size: 13px; color: #525960; padding: 12px;">Reputation
+                                    </th>
+                                    <th style="font-size: 13px; color: #525960; padding: 12px;">Privilege</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:if="${not #lists.isEmpty(privilegesList)}">
+                                    <tr th:each="rule : ${privilegesList}"
+                                        th:with="isUnlocked=${uPro.reputation >= rule.requiredReputation}"
+                                        style="border-bottom: 1px solid #e3e6e8;">
+                                        <td th:class="${isUnlocked ? 'fw-bold' : 'fw-bold text-muted'}"
+                                            th:text="${rule.requiredReputation}" style="padding: 12px;"></td>
+                                        <td th:class="${isUnlocked ? '' : 'text-muted'}" style="padding: 12px;">
+                                            <th:block th:if="${isUnlocked}">
+                                                <a href="#"
+                                                    style="text-decoration: none; color: #0074cc; font-weight: 500;"
+                                                    th:text="${rule.name}">Privilege Name</a>
+                                                <span class="text-muted d-block mt-1" style="font-size: 13px;"
+                                                    th:text="${rule.description}">Description</span>
+                                            </th:block>
+                                            <th:block th:unless="${isUnlocked}">
+                                                <i class="fa-solid fa-lock me-2"></i>
+                                                <th:block th:text="${rule.name}"></th:block>
+                                                <span class="text-muted d-block mt-1" style="font-size: 13px;"
+                                                    th:text="${rule.description}">Description</span>
+                                            </th:block>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </tbody>
+                        </table>
+                    </th:block>
+                </div>
+            </div>
+        </main>
     </div>
     <div th:replace="~{Common/footer :: footer}"></div>
 </body>

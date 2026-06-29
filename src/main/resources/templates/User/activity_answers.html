@@ -1,92 +1,232 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="${uPro.username + ' - Answers - DevQuery'}">Answers - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .user-name { font-size: 34px; font-weight: normal; margin-bottom: 4px; }
-        .user-meta { list-style: none; padding: 0; margin: 0; color: #6a737c; font-size: 13px; }
-        .profile-tabs { border-bottom: none; margin-bottom: 20px; }
-        .profile-tabs .nav-link { color: #525960; border-radius: 20px; padding: 6px 12px; margin-right: 5px; border: none; font-size: 13px; }
-        .profile-tabs .nav-link:hover { background-color: #e3e6e8; color: #0c0d0e; }
-        .profile-tabs .nav-link.active { background-color: #f48024; color: white; }
-        .list-group-item.active { background-color: #f48024 !important; border-color: #f48024 !important; }
+        body {
+            background-color: #fff;
+            padding-top: 60px;
+            color: #232629;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
+        }
+
+        .user-name {
+            font-size: 34px;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .user-meta {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #6a737c;
+            font-size: 13px;
+        }
+
+        .profile-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+
+        .profile-tabs .nav-link {
+            color: #525960;
+            border-radius: 100px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            font-size: 13px;
+        }
+
+        .profile-tabs .nav-link:hover {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+        }
+
+        .profile-tabs .nav-link.active {
+            background-color: #f48024;
+            color: white;
+            font-weight: 500;
+        }
+
+        .activity-nav .list-group-item {
+            border: none;
+            padding: 6px 12px;
+            margin-bottom: 2px;
+            border-radius: 100px;
+            color: #525960;
+            font-size: 13px;
+            background-color: transparent;
+        }
+
+        .activity-nav .list-group-item:hover {
+            background-color: #f8f9f9;
+            color: #0c0d0e;
+        }
+
+        .activity-nav .list-group-item.active {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            font-weight: bold;
+        }
+
+        .so-list-container {
+            border: 1px solid #d6d9dc;
+            border-radius: 5px;
+        }
+
+        .so-list-item {
+            border-bottom: 1px solid #e3e6e8;
+            padding: 16px;
+            transition: background-color 0.1s;
+        }
+
+        .so-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .so-list-item:hover {
+            background-color: #f8f9f9;
+        }
+
+        .so-link {
+            color: #0074cc;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .so-link:hover {
+            color: #0a95ff;
+        }
+
+        .btn-primary {
+            background-color: #f48024;
+            border-color: #f48024;
+        }
+
+        .btn-primary:hover {
+            background-color: #da680b;
+            border-color: #da680b;
+        }
+
+        .btn-outline-secondary {
+            border-color: #d6d9dc;
+            color: #525960;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            border-color: #d6d9dc;
+        }
+
+        /* Bố cục Sidebar dính chuẩn SO */
+        .main-container {
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            background-color: #fff;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid #d6d9dc;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
     </style>
 </head>
-<body style="padding-top: 60px; background-color: #f8f9fa;">
-    
+
+<body style="padding-top: 60px; background-color: #fff;">
     <div th:replace="~{Common/header :: header}"></div>
-
-    <div class="container-fluid" style="max-width: 1264px; margin: 0 auto; background-color: #fff;">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar p-0 pt-4" style="border-right: 1px solid #d6d9dc; min-height: 100vh;">
-                <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
-            </nav>
-
-            <main class="col-md-10 px-md-4 pt-4 pb-5">
-                <div th:replace="~{Common/profileTemplate :: profileTemplate('activity')}"></div>
-
-                <div class="row mt-4">
-                    <div class="col-md-2">
-                        <div class="list-group list-group-flush" style="font-size: 14px;">
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='summary')}" class="list-group-item list-group-item-action">Summary</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='questions')}" class="list-group-item list-group-item-action">Questions</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='answers')}" class="list-group-item list-group-item-action active text-white">Answers</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='comments')}" class="list-group-item list-group-item-action">Comments</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='tags')}" class="list-group-item list-group-item-action">Tags</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='follows')}" class="list-group-item list-group-item-action">Follows</a>
-
-                            <th:block sec:authorize="isAuthenticated()">
-                                <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/activity(id=${uPro.userId}, tab='votes')}" class="list-group-item list-group-item-action">Votes</a>
-                            </th:block>
-                        </div>
-                    </div>
-
-                    <div class="col-md-10">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 style="font-weight: 400; font-size: 21px;" th:text="${totalRecords + ' Answers'}">0 Answers</h4>
-                        </div>
-
-                        <div class="list-group">
-                            <th:block th:if="${itemsList != null and !itemsList.isEmpty()}">
-                                <div th:each="a : ${itemsList}" class="list-group-item list-group-item-action d-flex p-3">
-                                    <div class="text-center me-3" style="min-width: 60px;">
-                                        <span th:class="${a.isAccepted ? 'badge bg-success rounded-pill fs-6' : (a.score > 0 ? 'badge bg-warning rounded-pill fs-6' : 'badge bg-secondary rounded-pill fs-6')}">
-                                            <i th:if="${a.isAccepted}" class="fa-solid fa-check me-1"></i><span th:text="${a.score}">0</span>
-                                        </span>
-                                        <div class="text-muted" style="font-size: 11px; margin-top: 4px;">votes</div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <a th:href="@{/question(id=${a.questionId})}" class="text-decoration-none fw-bold" style="color: #0074cc; font-size: 15px;" th:text="${a.questionTitle}">Title</a>
-                                            <span class="text-muted" style="font-size: 12px;" th:text="${#dates.format(a.createdAt, 'MMM dd, yyyy')}">Date</span>
-                                        </div>
-                                        <div class="text-muted" style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;" th:text="${a.body}">
-                                            Body
-                                        </div>
-                                    </div>
-                                </div>
-                            </th:block>
-                            <th:block th:if="${itemsList == null or itemsList.isEmpty()}">
-                                <div class="text-center text-muted p-5">User has not answered any questions yet.</div>
-                            </th:block>
-                        </div>
-
-                        <th:block th:if="${totalPage != null and totalPage > 1}">
-                            <div class="mt-4">
-                                <a th:each="i : ${#numbers.sequence(1, totalPage)}" 
-                                   th:href="@{/activity(id=${uPro.userId}, tab='answers', page=${i})}" 
-                                   th:classappend="${currentPage == i ? 'btn-primary' : 'btn-outline-secondary'}" 
-                                   class="btn btn-sm" th:text="${i}">1</a>
-                            </div>
+    <div class="main-container">
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
+        </div>
+        <main class="main-content">
+            <div th:replace="~{Common/profileTemplate :: profileTemplate('activity')}"></div>
+            <div class="row mt-4">
+                <div class="col-md-2">
+                    <div class="list-group list-group-flush activity-nav">
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='summary')}"
+                            class="list-group-item list-group-item-action">Summary</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='questions')}"
+                            class="list-group-item list-group-item-action">Questions</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='answers')}"
+                            class="list-group-item list-group-item-action active">Answers</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='comments')}"
+                            class="list-group-item list-group-item-action">Comments</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='tags')}"
+                            class="list-group-item list-group-item-action">Tags</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='follows')}"
+                            class="list-group-item list-group-item-action">Follows</a>
+                        <th:block sec:authorize="isAuthenticated()">
+                            <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}"
+                                th:href="@{/activity(id=${uPro.userId}, tab='votes')}"
+                                class="list-group-item list-group-item-action">Votes</a>
                         </th:block>
                     </div>
                 </div>
-            </main>
-        </div>
+                <div class="col-md-10 ps-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 style="font-weight: 400; font-size: 21px;" th:text="${totalRecords + ' Answers'}">0 Answers
+                        </h4>
+                    </div>
+                    <div class="so-list-container">
+                        <th:block th:if="${itemsList != null and !itemsList.isEmpty()}">
+                            <div th:each="a : ${itemsList}" class="so-list-item d-flex">
+                                <div class="text-center me-3" style="min-width: 60px;">
+                                    <span
+                                        th:class="${a.isAccepted ? 'badge bg-success rounded-pill fs-6' : (a.score > 0 ? 'badge bg-warning text-dark rounded-pill fs-6' : 'badge border border-secondary text-secondary rounded-pill fs-6')}"
+                                        style="font-weight: normal;">
+                                        <i th:if="${a.isAccepted}" class="fa-solid fa-check me-1"></i><span
+                                            th:text="${a.score}">0</span>
+                                    </span>
+                                    <div class="text-muted" style="font-size: 11px; margin-top: 4px;">votes</div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <a th:href="@{/question(id=${a.questionId})}" class="so-link"
+                                            th:text="${a.questionTitle}">Title</a>
+                                        <span class="text-muted" style="font-size: 12px;"
+                                            th:text="${#dates.format(a.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                    </div>
+                                    <div class="text-muted"
+                                        style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;"
+                                        th:text="${a.body}">Body</div>
+                                </div>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${itemsList == null or itemsList.isEmpty()}">
+                            <div class="text-center text-muted p-5">User has not answered any questions yet.</div>
+                        </th:block>
+                    </div>
+                    <th:block th:if="${totalPage != null and totalPage > 1}">
+                        <div class="mt-4">
+                            <a th:each="i : ${#numbers.sequence(1, totalPage)}"
+                                th:href="@{/activity(id=${uPro.userId}, tab='answers', page=${i})}"
+                                th:classappend="${currentPage == i ? 'btn-primary' : 'btn-outline-secondary'}"
+                                class="btn btn-sm me-1" th:text="${i}">1</a>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </main>
     </div>
     <div th:replace="~{Common/footer :: footer}"></div>
 </body>
+
 </html>
