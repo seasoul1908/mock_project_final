@@ -31,7 +31,8 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public UserDTO convertToDTO(User user) {
-        if (user == null) return null;
+        if (user == null)
+            return null;
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());
         dto.setUsername(user.getUsername());
@@ -72,7 +73,8 @@ public class UserService {
     // ĐĂNG NHẬP: Dùng .matches() của BCrypt để so sánh mật khẩu an toàn
     public User loginModel(String email, String rawPassword) throws Exception {
         User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null && user.getPasswordHash() != null && passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+        if (user != null && user.getPasswordHash() != null
+                && passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             return user;
         }
         return null;
@@ -137,7 +139,8 @@ public class UserService {
 
     public List<UserDTO> searchUsers(String keyword, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
-        return userRepository.searchUsersAdmin(keyword, pageable).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return userRepository.searchUsersAdmin(keyword, pageable).stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public UserDTO getUserById(long userId) {
@@ -176,7 +179,8 @@ public class UserService {
 
     public List<UserDTO> getUsersByFilter(String role, String status, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return userRepository.findByRoleAndStatus(role, status, pageable).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return userRepository.findByRoleAndStatus(role, status, pageable).stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public List<UserDTO> getNewestUsers(int limit) {
@@ -239,7 +243,8 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUsers(String keyword, String sort) {
-        return userRepository.getAllUsersWithSort(keyword, sort).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return userRepository.getAllUsersWithSort(keyword, sort).stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     public boolean isFollowing(long followerId, long followingId) {
@@ -266,7 +271,7 @@ public class UserService {
 
     public List<QuestionDTO> getQuestionsByUser(long userId, String filter, int page) {
         int pageSize = 10;
-        
+
         Sort sortObj;
         if ("newest".equals(filter)) {
             sortObj = Sort.by(Sort.Direction.DESC, "createdAt");
@@ -287,7 +292,7 @@ public class UserService {
             q.setBody((String) rs.get("body"));
             q.setScore(((Number) rs.get("score")).intValue());
             q.setViewCount(((Number) rs.get("viewCount")).intValue());
-            
+
             Object createdAt = rs.get("createdAt");
             if (createdAt instanceof Timestamp) {
                 q.setCreatedAt((Timestamp) createdAt);
@@ -297,10 +302,44 @@ public class UserService {
 
             Boolean isClosed = (Boolean) rs.get("isClosed");
             q.setIsClosed(isClosed != null && isClosed);
-            
+
             q.setAnswerCount(((Number) rs.get("answerCount")).intValue());
             list.add(q);
         }
         return list;
+    }
+
+    public boolean updateProfile(long userId, String displayName, String bio, String location, String websiteJson) {
+        try {
+            int updated = userRepository.updateDisplayName(userId, displayName);
+            if (updated == 0) {
+                return false;
+            }
+
+            int profileCount = userRepository.checkProfileExists(userId);
+            if (profileCount > 0) {
+                userRepository.updateProfileInfoOnly(userId, bio, location, websiteJson);
+            } else {
+                userRepository.insertProfileInfoOnly(userId, bio, location, websiteJson);
+            }
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void updateAvatar(long userId, String avatarUrl) {
+        try {
+            int profileCount = userRepository.checkProfileExists(userId);
+            if (profileCount > 0) {
+                userRepository.updateAvatarOnly(userId, avatarUrl);
+            } else {
+                userRepository.insertAvatarOnly(userId, avatarUrl);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
