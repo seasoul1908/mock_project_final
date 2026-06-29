@@ -520,38 +520,7 @@
         </aside>
     </div>
 
-    <footer class="footer-devquery">
-        <div class="footer-content">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h5>Company</h5>
-                    <ul>
-                        <li>About</li>
-                        <li>Blog</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h5>Products</h5>
-                    <ul>
-                        <li>DevQuery</li>
-                        <li>API Reference</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h5>Community</h5>
-                    <ul>
-                        <li>Questions</li>
-                        <li>Tags</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="fw-bold" style="color: #f48024; font-size: 16px;">DevQuery</div>
-                <div style="font-size: 12px;">&copy; 2026 DevQuery. Made with <i class="fa-solid fa-heart"
-                        style="color: #f48024;"></i></div>
-            </div>
-        </div>
-    </footer>
+    <div th:replace="~{Common/footer :: footer}"></div>
 
 </body>
 
