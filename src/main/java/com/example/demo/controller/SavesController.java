@@ -38,6 +38,7 @@ public class SavesController {
     public String showSaves(
             @RequestParam(value = "listId", required = false) Integer listId,
             @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "colPage", defaultValue = "1") int colPage,
             Model model) {
 
         User loggedInUser = (User) model.getAttribute("loggedInUser");
@@ -71,6 +72,17 @@ public class SavesController {
             }
         }
 
+        // Paginating Collections
+        int colSize = 5;
+        int totalColPages = (int) Math.ceil((double) allCollections.size() / colSize);
+        if (totalColPages == 0) totalColPages = 1;
+        if (colPage < 1) colPage = 1;
+        if (colPage > totalColPages) colPage = totalColPages;
+
+        int start = (colPage - 1) * colSize;
+        int end = Math.min(start + colSize, allCollections.size());
+        List<CollectionDTO> paginatedCols = allCollections.subList(start, end);
+
         // Cấu hình phân trang bài viết (10 items/trang)
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<Map<String, Object>> bookmarksPage;
@@ -96,14 +108,44 @@ public class SavesController {
             savedList.add(b);
         }
 
-        model.addAttribute("myCollections", allCollections);
+        int totalItemPages = bookmarksPage.getTotalPages() > 0 ? bookmarksPage.getTotalPages() : 1;
+
+        // Pagination window for collections
+        int colStartPage = Math.max(1, colPage - 2);
+        int colEndPage = Math.min(totalColPages, colPage + 2);
+        if (colEndPage - colStartPage < 4 && totalColPages >= 5) {
+            if (colStartPage == 1) {
+                colEndPage = 5;
+            } else {
+                colStartPage = totalColPages - 4;
+            }
+        }
+
+        // Pagination window for items
+        int itemStartPage = Math.max(1, page - 2);
+        int itemEndPage = Math.min(totalItemPages, page + 2);
+        if (itemEndPage - itemStartPage < 4 && totalItemPages >= 5) {
+            if (itemStartPage == 1) {
+                itemEndPage = 5;
+            } else {
+                itemStartPage = totalItemPages - 4;
+            }
+        }
+
+        model.addAttribute("myCollections", paginatedCols);
         model.addAttribute("allMyCollections", allCollections);
         model.addAttribute("savedList", savedList);
         model.addAttribute("savedCount", bookmarksPage.getTotalElements());
         model.addAttribute("activeListId", listId);
         model.addAttribute("currentListName", currentListName);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalItemPages", bookmarksPage.getTotalPages() > 0 ? bookmarksPage.getTotalPages() : 1);
+        model.addAttribute("totalItemPages", totalItemPages);
+        model.addAttribute("currentColPage", colPage);
+        model.addAttribute("totalColPages", totalColPages);
+        model.addAttribute("colStartPage", colStartPage);
+        model.addAttribute("colEndPage", colEndPage);
+        model.addAttribute("itemStartPage", itemStartPage);
+        model.addAttribute("itemEndPage", itemEndPage);
 
         return "User/saves";
     }

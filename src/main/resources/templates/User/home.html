@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevQuery - Home</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -12,63 +13,276 @@
     <style>
         /* Base Variables */
         :root {
-            --orange: #F48024; --blue-link: #0074cc; --blue-btn: #0a95ff;
-            --blue-tag-bg: #e1ecf4; --blue-tag-text: #39739d; --black-text: #0c0d0e;
-            --gray-text: #525960; --gray-sub: #6a737c; --border-color: #d6d9dc;
-            --bg-body: #ffffff; --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            --orange: #F48024;
+            --blue-link: #0074cc;
+            --blue-btn: #0a95ff;
+            --blue-tag-bg: #e1ecf4;
+            --blue-tag-text: #39739d;
+            --black-text: #0c0d0e;
+            --gray-text: #525960;
+            --gray-sub: #6a737c;
+            --border-color: #d6d9dc;
+            --bg-body: #ffffff;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-stack); background-color: var(--bg-body); color: var(--black-text); font-size: 13px; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body);
+            color: var(--black-text);
+            font-size: 13px;
+        }
 
         /* Navbar CSS */
-        .navbar-devquery { border-top: 3px solid #f48024; background-color: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05); height: 56px; }
-        .search-box { transition: all 0.3s ease; border: 1px solid #babfc4; }
-        .search-box:focus { border-color: #3b4045; box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15); }
-        .btn-auth { font-weight: 500; font-size: 0.9rem; }
-        .avatar-img { object-fit: cover; }
+        .navbar-devquery {
+            border-top: 3px solid #f48024;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
+            height: 56px;
+        }
 
-        /* Main Layout */
-        .main-container { max-width: 1264px; margin: 56px auto 0; display: flex; align-items: flex-start; }
-        .left-sidebar { width: 164px; flex-shrink: 0; padding-top: 25px; border-right: 1px solid var(--border-color); }
-        .main-content { flex-grow: 1; padding: 24px; border-left: 1px solid var(--border-color); width: 100%; }
-        .right-sidebar { width: 300px; flex-shrink: 0; padding: 24px 0 0 24px; }
+        .search-box {
+            transition: all 0.3s ease;
+            border: 1px solid #babfc4;
+        }
 
-        /* Sidebar CSS */
-        .sidebar-sticky { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-x: hidden; overflow-y: auto; padding-top: 1rem; }
-        .nav-link-sb { color: #525960; font-size: 14px; padding: 8px 12px; margin-bottom: 4px; border-radius: 6px; transition: all 0.2s ease; display: block; text-decoration: none; }
-        .nav-link-sb:hover { color: #0c0d0e; background-color: #f1f2f3; transform: translateX(3px); }
-        .nav-link-sb.active { font-weight: 600; color: #0c0d0e; background-color: #e3e6e8; border-left: 3px solid #f48024; }
-        .sidebar-heading { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #6a737c; margin: 15px 0 5px; padding-left: 10px; }
+        .search-box:focus {
+            border-color: #3b4045;
+            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+        }
+
+        .btn-auth {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .avatar-img {
+            object-fit: cover;
+        }
+
+        /* ========================================================= */
+        /* BẢN VÁ LỖI SIDEBAR: Đổi align-items từ flex-start sang stretch */
+        /* ========================================================= */
+        .main-container {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* Chỉnh lại cột Sidebar trái */
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            /* Đảm bảo nội dung luôn đủ dài để cuộn */
+        }
+
+        /* Thêm tính năng Cố định (Sticky) cho cả cột Sidebar bên Phải */
+        .right-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            padding: 24px 0 20px 24px;
+
+            position: -webkit-sticky;
+            position: sticky;
+            top: 60px;
+            /* Bắt đầu dính cách viền trên 60px */
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        /* Ẩn scrollbar xấu xí cho sidebar phải */
+        .right-sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .right-sidebar::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        .right-sidebar:hover::-webkit-scrollbar-thumb {
+            background: #d6d9dc;
+        }
+
+        /* ========================================================= */
 
         /* Content CSS */
-        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .page-title { font-size: 27px; font-weight: 400; }
-        .btn-primary-custom { background-color: var(--blue-btn); color: white; padding: 10px 14px; border-radius: 3px; text-decoration: none; font-size: 13px; }
-        .btn-primary-custom:hover { background-color: #0074cc; color: white; }
-        .filters-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .total-questions { font-size: 17px; }
-        .filter-btn-group { display: flex; border: 1px solid #9fa6ad; border-radius: 3px; }
-        .filter-item { padding: 10px 12px; background: #fff; border-right: 1px solid #9fa6ad; color: #6a737c; text-decoration: none; }
-        .filter-item.active { background-color: #e3e6e8; color: #3b4045; font-weight: 500; }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 27px;
+            font-weight: 400;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--blue-btn);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #0074cc;
+            color: white;
+        }
+
+        .filters-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .total-questions {
+            font-size: 17px;
+        }
+
+        .filter-btn-group {
+            display: flex;
+            border: 1px solid #9fa6ad;
+            border-radius: 3px;
+        }
+
+        .filter-item {
+            padding: 10px 12px;
+            background: #fff;
+            border-right: 1px solid #9fa6ad;
+            color: #6a737c;
+            text-decoration: none;
+        }
+
+        .filter-item.active {
+            background-color: #e3e6e8;
+            color: #3b4045;
+            font-weight: 500;
+        }
 
         /* Question Item */
-        .question-item { display: flex; padding: 16px; border-top: 1px solid var(--border-color); }
-        .stats-container { width: 108px; margin-right: 16px; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; color: var(--gray-sub); }
-        .stat-box.votes { color: var(--black-text); font-weight: 500; }
-        .stat-box.status-answered { border: 1px solid #2f6f44; color: #2f6f44; padding: 4px 6px; border-radius: 3px; }
-        .question-summary { flex-grow: 1; }
-        .question-title { font-size: 17px; color: var(--blue-link); text-decoration: none; margin-bottom: 5px; display: block; }
-        .question-excerpt { color: #3b4045; margin-bottom: 8px; line-height: 1.4; }
-        .meta-container { display: flex; justify-content: space-between; align-items: center; }
-        .tag { background-color: var(--blue-tag-bg); color: var(--blue-tag-text); padding: 4px 6px; border-radius: 3px; font-size: 12px; text-decoration: none; margin-right: 4px;}
-        .user-card { font-size: 12px; color: var(--gray-sub); display: flex; align-items: center; gap: 5px; }
+        .question-item {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stats-container {
+            width: 108px;
+            margin-right: 16px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            color: var(--gray-sub);
+        }
+
+        .stat-box.votes {
+            color: var(--black-text);
+            font-weight: 500;
+        }
+
+        .stat-box.status-answered {
+            border: 1px solid #2f6f44;
+            color: #2f6f44;
+            padding: 4px 6px;
+            border-radius: 3px;
+        }
+
+        .question-summary {
+            flex-grow: 1;
+        }
+
+        .question-title {
+            font-size: 17px;
+            color: var(--blue-link);
+            text-decoration: none;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .question-excerpt {
+            color: #3b4045;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .meta-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag {
+            background-color: var(--blue-tag-bg);
+            color: var(--blue-tag-text);
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-decoration: none;
+            margin-right: 4px;
+        }
+
+        .user-card {
+            font-size: 12px;
+            color: var(--gray-sub);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
         /* Widgets */
-        .widget { border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid; font-size: 13px; }
-        .widget-yellow { background-color: #fdf7e2; border-color: #f1e5bc; }
-        .widget-header { padding: 12px 15px; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.05); background-color: rgba(0,0,0,0.02); }
-        .widget-list { list-style: none; }
-        .widget-list li { padding: 12px 15px; display: flex; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .widget {
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: 1px solid;
+            font-size: 13px;
+        }
+
+        .widget-yellow {
+            background-color: #fdf7e2;
+            border-color: #f1e5bc;
+        }
+
+        .widget-header {
+            padding: 12px 15px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .widget-list {
+            list-style: none;
+        }
+
+        .widget-list li {
+            padding: 12px 15px;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
         .popular-tags-box {
             margin-top: 20px;
         }
@@ -92,15 +306,55 @@
         }
 
         /* Footer */
-        .footer-devquery { background-color: #242729; color: #ffffff; margin-top: 40px; padding: 25px 0 15px 0; border-top: 1px solid #34495e; }
-        .footer-content { max-width: 1264px; margin: 0 auto; padding: 0 20px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 15px; }
-        .footer-section h5 { color: #f48024; font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
-        .footer-section ul { list-style: none; }
-        .footer-section ul li { margin-bottom: 6px; color: #ffffff; font-size: 13px; }
-        .footer-bottom { border-top: 1px solid #34495e; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .footer-devquery {
+            background-color: #242729;
+            color: #ffffff;
+            margin-top: 40px;
+            padding: 25px 0 15px 0;
+            border-top: 1px solid #34495e;
+        }
+
+        .footer-content {
+            max-width: 1264px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section h5 {
+            color: #f48024;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 6px;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
+
 <body>
 
     <div th:replace="~{Common/header :: header}"></div>
@@ -133,42 +387,36 @@
                 </div>
 
                 <div class="filter-btn-group">
-                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='newest')}"
-                        class="filter-item"
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='newest')}" class="filter-item"
                         th:classappend="${currentSort == 'newest' and currentFilter != 'unanswered'} ? ' active' : ''">
                         Newest
                     </a>
 
-                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='active')}"
-                        class="filter-item"
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='active')}" class="filter-item"
                         th:classappend="${currentSort == 'active'} ? ' active' : ''">
-                         Active
+                        Active
                     </a>
 
-                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='views')}"
-                        class="filter-item"
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='views')}" class="filter-item"
                         th:classappend="${currentSort == 'views'} ? ' active' : ''">
                         Views
                     </a>
 
-                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='voted')}"
-                        class="filter-item"
+                    <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, tab='voted')}" class="filter-item"
                         th:classappend="${currentSort == 'voted'} ? ' active' : ''">
                         Voted
                     </a>
 
                     <a th:href="@{/home(q=${currentKeyword}, tag=${currentTag}, filter='unanswered')}"
-                        class="filter-item"
-                        th:classappend="${currentFilter == 'unanswered'} ? ' active' : ''">
+                        class="filter-item" th:classappend="${currentFilter == 'unanswered'} ? ' active' : ''">
                         Unanswered
                     </a>
                 </div>
             </div>
 
-             <div th:each="q : ${questions}" class="question-item">
+            <div th:each="q : ${questions}" class="question-item">
                 <div class="stats-container">
-                    <div class="stat-box votes"
-                        th:text="|${q.score != null ? q.score : 0} votes|">
+                    <div class="stat-box votes" th:text="|${q.score != null ? q.score : 0} votes|">
                         0 votes
                     </div>
 
@@ -178,123 +426,133 @@
                         0 answers
                     </div>
 
-                    <div class="stat-box"
-                        th:text="|${q.viewCount != null ? q.viewCount : 0} views|">
+                    <div class="stat-box" th:text="|${q.viewCount != null ? q.viewCount : 0} views|">
                         0 views
                     </div>
                 </div>
 
                 <div class="question-summary">
-                    <a th:href="@{/question(id=${q.questionId})}"
-                    class="question-title"
-                    th:text="${q.title}">
-                    Question title
+                    <a th:href="@{/question(id=${q.questionId})}" class="question-title" th:text="${q.title}">
+                        Question title
                     </a>
 
                     <p class="question-excerpt"
-                    th:text="${q.body == null ? '' : (#strings.length(q.body) > 180 ? #strings.substring(q.body, 0, 180) + '...' : q.body)}">
-                    Question body
-                     </p>
+                        th:text="${q.body == null ? '' : (#strings.length(q.body) > 180 ? #strings.substring(q.body, 0, 180) + '...' : q.body)}">
+                        Question body
+                    </p>
 
-                <div class="meta-container">
-                    <div class="tags" th:with="tags=${questionTags[q.questionId]}">
-                        <a th:each="t : ${tags}"
-                        th:href="@{/home(tag=${t})}"
-                        class="tag"
-                        th:text="${t}">
-                        java
-                        </a>
+                    <div class="meta-container">
+                        <div class="tags" th:with="tags=${questionTags[q.questionId]}">
+                            <a th:each="t : ${tags}" th:href="@{/home(tag=${t})}" class="tag" th:text="${t}">
+                                java
+                            </a>
+                        </div>
+
+                        <div class="user-card">
+                            <span>asked</span>
+                            <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'MMM dd, yyyy') : ''}">
+                                today
+                            </span>
+                        </div>
                     </div>
-
-                <div class="user-card">
-                    <span>asked</span>
-                    <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'MMM dd, yyyy') : ''}">
-                        today
-                    </span>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
             <div th:if="${questions == null or #lists.isEmpty(questions)}" class="text-center mt-5">
                 <h5>No questions found</h5>
                 <p class="text-secondary">Try another keyword or filter.</p>
                 <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Back to home</a>
             </div>
-        <nav th:if="${totalPage > 1}" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
-                    <a class="page-link"
-                    th:href="@{/home(page=${currentPage - 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
-                    Previous
-                    </a>
-                </li>
+            <nav th:if="${totalPage > 1}" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
+                        <a class="page-link"
+                            th:href="@{/home(page=${currentPage - 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                            Previous
+                        </a>
+                    </li>
 
-                <li class="page-item"
-                    th:each="i : ${#numbers.sequence(1, totalPage)}"
-                    th:classappend="${i == currentPage} ? ' active' : ''">
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPage)}"
+                        th:classappend="${i == currentPage} ? ' active' : ''">
                         <a class="page-link"
                             th:href="@{/home(page=${i}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}"
                             th:text="${i}">
                             1
                         </a>
-                </li>
+                    </li>
 
-                <li class="page-item" th:classappend="${currentPage >= totalPage} ? ' disabled' : ''">
-                    <a class="page-link"
-                        th:href="@{/home(page=${currentPage + 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
-                        Next
-                    </a>
-                </li>
-            </ul>
-        </nav>
+                    <li class="page-item" th:classappend="${currentPage >= totalPage} ? ' disabled' : ''">
+                        <a class="page-link"
+                            th:href="@{/home(page=${currentPage + 1}, q=${currentKeyword}, tag=${currentTag}, tab=${currentSort}, filter=${currentFilter})}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
-    <div class="widget widget-yellow">
-        <div class="widget-header">The Dev Blog</div>
-        <div class="widget-content">
-            <ul class="widget-list">
-                <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A Guide</span></li>
-                <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
-            </ul>
-        </div>
-    </div>
+            <div class="widget widget-yellow">
+                <div class="widget-header">The Dev Blog</div>
+                <div class="widget-content">
+                    <ul class="widget-list">
+                        <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A
+                                Guide</span></li>
+                        <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
+                    </ul>
+                </div>
+            </div>
 
-    <div class="popular-tags-box">
-        <h3>Popular tags</h3>
+            <div class="popular-tags-box">
+                <h3>Popular tags</h3>
 
-        <div class="popular-tags-list">
-            <a th:each="popTag : ${popularTags}"
-               th:href="@{/home(tag=${popTag})}"
-               class="tag"
-               th:classappend="${popTag == currentTag} ? ' active-tag' : ''"
-               th:text="${popTag}">
-                java
-            </a>
-        </div>
+                <div class="popular-tags-list">
+                    <a th:each="popTag : ${popularTags}" th:href="@{/home(tag=${popTag})}" class="tag"
+                        th:classappend="${popTag == currentTag} ? ' active-tag' : ''" th:text="${popTag}">
+                        java
+                    </a>
+                </div>
 
-        <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}"
-           class="text-secondary mt-2">
-            No popular tags yet.
-        </p>
-    </div>
+                <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}" class="text-secondary mt-2">
+                    No popular tags yet.
+                </p>
+            </div>
         </aside>
     </div>
 
     <footer class="footer-devquery">
         <div class="footer-content">
             <div class="footer-grid">
-                <div class="footer-section"><h5>Company</h5><ul><li>About</li><li>Blog</li></ul></div>
-                <div class="footer-section"><h5>Products</h5><ul><li>DevQuery</li><li>API Reference</li></ul></div>
-                <div class="footer-section"><h5>Community</h5><ul><li>Questions</li><li>Tags</li></ul></div>
+                <div class="footer-section">
+                    <h5>Company</h5>
+                    <ul>
+                        <li>About</li>
+                        <li>Blog</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Products</h5>
+                    <ul>
+                        <li>DevQuery</li>
+                        <li>API Reference</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Community</h5>
+                    <ul>
+                        <li>Questions</li>
+                        <li>Tags</li>
+                    </ul>
+                </div>
             </div>
             <div class="footer-bottom">
                 <div class="fw-bold" style="color: #f48024; font-size: 16px;">DevQuery</div>
-                <div style="font-size: 12px;">&copy; 2026 DevQuery. Made with <i class="fa-solid fa-heart" style="color: #f48024;"></i></div>
+                <div style="font-size: 12px;">&copy; 2026 DevQuery. Made with <i class="fa-solid fa-heart"
+                        style="color: #f48024;"></i></div>
             </div>
         </div>
     </footer>
 
 </body>
+
 </html>

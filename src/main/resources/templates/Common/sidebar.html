@@ -1,72 +1,148 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head><meta charset="UTF-8"></head>
+
 <body>
-    <nav th:fragment="sidebar(activeTab)" class="d-none d-md-block bg-light sidebar">
+    <div th:fragment="sidebar(activeTab)" class="sidebar-sticky">
         <style>
-            .sidebar-sticky { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-x: hidden; overflow-y: auto; padding-top: 1rem; border-right: 1px solid #dee2e6; }
-            .nav-link-sb { color: #525960; font-size: 14px; padding: 8px 12px; margin-bottom: 4px; border-radius: 6px; transition: all 0.2s ease; display: block; text-decoration: none;}
-            .nav-link-sb:hover { color: #0c0d0e; background-color: #f1f2f3; transform: translateX(3px); }
-            .nav-link-sb.active { font-weight: 600; color: #0c0d0e; background-color: #e3e6e8; border-left: 3px solid #f48024; }
-            .sidebar-heading { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #6a737c; margin-top: 15px; margin-bottom: 5px; padding-left: 10px; }
+            /* CORE FEATURE: Sticky positioning property */
+            .sidebar-sticky {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
+                position: -webkit-sticky;
+                position: sticky !important;
+                top: 60px !important; /* Stick to the top with a 60px offset (exactly the Header's height) */
+                height: calc(100vh - 60px); /* Sidebar stretches the full height of the screen */
+                overflow-x: hidden;
+                overflow-y: auto;
+                padding-bottom: 20px;
+            }
+
+            /* Make the sidebar's scrollbar smooth and subtle */
+            .sidebar-sticky::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .sidebar-sticky::-webkit-scrollbar-thumb {
+                background: transparent;
+                border-radius: 10px;
+            }
+
+            .sidebar-sticky:hover::-webkit-scrollbar-thumb {
+                background: #d6d9dc;
+            }
+
+            /* Header (Public, Personal) */
+            .sidebar-heading {
+                font-size: 11px;
+                font-weight: normal;
+                text-transform: uppercase;
+                color: #6a737c;
+                margin: 16px 0 4px 12px;
+            }
+
+            /* Menu link styles */
+            .nav-link-sb {
+                display: flex;
+                align-items: center;
+                color: #525960;
+                font-size: 13px;
+                padding: 8px 12px 8px 30px;
+                margin-bottom: 2px;
+                transition: background-color 0.1s ease, color 0.1s ease;
+                text-decoration: none;
+                border-right: 3px solid transparent;
+            }
+
+            .nav-link-home {
+                padding-left: 12px !important;
+            }
+
+            /* Hover effect */
+            .nav-link-sb:hover {
+                color: #0c0d0e;
+                background-color: #f8f9f9;
+            }
+
+            /* Active effect (Currently selected) */
+            .nav-link-sb.active {
+                font-weight: 700;
+                color: #0c0d0e;
+                background-color: #f1f2f3;
+                border-right: 3px solid #f48024; /* Stack Overflow standard orange border */
+            }
+
+            /* Icon alignment */
+            .nav-icon {
+                width: 18px;
+                text-align: center;
+                margin-right: 8px;
+                font-size: 14px;
+                color: #6a737c;
+            }
+
+            .nav-link-sb.active .nav-icon {
+                color: #0c0d0e;
+            }
         </style>
 
-        <div class="sidebar-sticky">
-            <ul class="nav flex-column">
-                <li class="sidebar-heading">Public</li>
-                
-                <li class="nav-item">
-                    <a th:href="@{/home}" class="nav-link-sb" th:classappend="${activeTab == 'home' ? 'active' : ''}">
-                        <i class="fa-solid fa-house me-2"></i> Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a th:href="@{/system-rules}" class="nav-link-sb" th:classappend="${activeTab == 'rules' ? 'active' : ''}">
-                        <i class="fa-solid fa-scale-balanced me-2"></i> System Rules
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a th:href="@{/tags}" class="nav-link-sb" th:classappend="${activeTab == 'tags' ? 'active' : ''}">
-                        <i class="fa-solid fa-tags me-2"></i> Tags
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a th:href="@{/users}" class="nav-link-sb" th:classappend="${activeTab == 'users' ? 'active' : ''}">
-                        <i class="fa-solid fa-users me-2"></i> Users
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a th:href="@{/bounties}" class="nav-link-sb" th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
-                        <i class="fa-solid fa-coins me-2"></i> Bounties
-                    </a>
-                </li>
+        <ul class="nav flex-column pe-2">
+            <li class="sidebar-heading">Public</li>
 
-                <th:block sec:authorize="isAuthenticated()">
-                    <li class="sidebar-heading">Personal</li>
-                    
-                    <li class="nav-item">
-                        <a th:href="@{/profile}" class="nav-link-sb" th:classappend="${activeTab == 'profile' ? 'active' : ''}">
-                            <i class="fa-solid fa-user me-2"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/saves}" class="nav-link-sb" th:classappend="${activeTab == 'saves' ? 'active' : ''}">
-                            <i class="fa-solid fa-bookmark me-2"></i> Saves
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/recommended-questions}" class="nav-link-sb" th:classappend="${activeTab == 'recommended' ? 'active' : ''}">
-                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Recommended
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/blog}" class="nav-link-sb" th:classappend="${activeTab == 'blog' ? 'active' : ''}">
-                            <i class="fa-solid fa-book-open me-2"></i> Dev Blog
-                        </a>
-                    </li>
-                </th:block>
-            </ul>
-        </div>
-    </nav>
+            <li class="nav-item">
+                <a th:href="@{/home}" class="nav-link-sb nav-link-home"
+                    th:classappend="${activeTab == 'home' ? 'active' : ''}">
+                    <i class="fa-solid fa-house nav-icon"></i> Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/tags}" class="nav-link-sb" th:classappend="${activeTab == 'tags' ? 'active' : ''}">
+                    <i class="fa-solid fa-tags nav-icon"></i> Tags
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/users}" class="nav-link-sb" th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                    <i class="fa-solid fa-users nav-icon"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/bounties}" class="nav-link-sb"
+                    th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
+                    <i class="fa-solid fa-coins nav-icon"></i> Bounties
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/system-rules}" class="nav-link-sb" 
+                    th:classappend="${activeTab == 'rules' ? 'active' : ''}">
+                    <i class="fa-solid fa-scale-balanced nav-icon"></i> System Rules
+                </a>
+            </li>
+
+            <th:block sec:authorize="isAuthenticated()">
+                <li class="sidebar-heading">Personal</li>
+                <li class="nav-item">
+                    <a th:href="@{/profile}" class="nav-link-sb"
+                        th:classappend="${activeTab == 'profile' ? 'active' : ''}">
+                        <i class="fa-solid fa-user nav-icon"></i> Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/saves}" class="nav-link-sb" th:classappend="${activeTab == 'saves' ? 'active' : ''}">
+                        <i class="fa-solid fa-bookmark nav-icon"></i> Saves
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/recommended-questions}" class="nav-link-sb"
+                        th:classappend="${activeTab == 'recommended' ? 'active' : ''}">
+                        <i class="fa-solid fa-wand-magic-sparkles nav-icon"></i> Recommended
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/blog}" class="nav-link-sb" th:classappend="${activeTab == 'blog' ? 'active' : ''}">
+                        <i class="fa-solid fa-book-open nav-icon"></i> Dev Blog
+                    </a>
+                </li>
+            </th:block>
+        </ul>
+    </div>
 </body>
+
 </html>

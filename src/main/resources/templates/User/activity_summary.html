@@ -1,143 +1,232 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="${uPro.username + ' - Activity - DevQuery'}">Activity - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .user-name { font-size: 34px; font-weight: normal; margin-bottom: 4px; }
-        .user-meta { list-style: none; padding: 0; margin: 0; color: #6a737c; font-size: 13px; }
-        .profile-tabs { border-bottom: none; margin-bottom: 20px; }
-        .profile-tabs .nav-link { color: #525960; border-radius: 20px; padding: 6px 12px; margin-right: 5px; border: none; font-size: 13px; }
-        .profile-tabs .nav-link:hover { background-color: #e3e6e8; color: #0c0d0e; }
-        .profile-tabs .nav-link.active { background-color: #f48024; color: white; }
-        .list-group-item.active { background-color: #f48024 !important; border-color: #f48024 !important; }
+        body {
+            background-color: #fff;
+            padding-top: 60px;
+            color: #232629;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
+        }
+
+        .user-name {
+            font-size: 34px;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .user-meta {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #6a737c;
+            font-size: 13px;
+        }
+
+        .profile-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+
+        .profile-tabs .nav-link {
+            color: #525960;
+            border-radius: 100px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            font-size: 13px;
+        }
+
+        .profile-tabs .nav-link:hover {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+        }
+
+        .profile-tabs .nav-link.active {
+            background-color: #f48024;
+            color: white;
+            font-weight: 500;
+        }
+
+        .activity-nav .list-group-item {
+            border: none;
+            padding: 6px 12px;
+            margin-bottom: 2px;
+            border-radius: 100px;
+            color: #525960;
+            font-size: 13px;
+            background-color: transparent;
+        }
+
+        .activity-nav .list-group-item:hover {
+            background-color: #f8f9f9;
+            color: #0c0d0e;
+        }
+
+        .activity-nav .list-group-item.active {
+            background-color: #e3e6e8;
+            color: #0c0d0e;
+            font-weight: bold;
+        }
+
+        .so-panel {
+            border: 1px solid #d6d9dc;
+            border-radius: 5px;
+            background: #fff;
+            height: 100%;
+        }
+
+        .so-panel-header {
+            padding: 15px;
+            font-size: 21px;
+            font-weight: 400;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #232629;
+        }
+
+        .so-panel-body {
+            padding: 15px;
+        }
+
+        .so-link {
+            color: #0074cc;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .so-link:hover {
+            color: #0a95ff;
+        }
+
+        /* Bố cục Sidebar dính chuẩn SO */
+        .main-container {
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            background-color: #fff;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid #d6d9dc;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
     </style>
 </head>
-<body style="padding-top: 60px; background-color: #f8f9fa;">
+
+<body style="padding-top: 60px; background-color: #fff;">
 
     <div th:replace="~{Common/header :: header}"></div>
 
-    <div class="container-fluid" style="max-width: 1264px; margin: 0 auto; background-color: #fff;">
-        <div class="row">
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar p-0 pt-4" style="border-right: 1px solid #d6d9dc; min-height: 100vh;">
-                <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
-            </nav>
+    <div class="main-container">
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
+        </div>
 
-            <main class="col-md-10 px-md-4 pt-4">
-                
-                <div th:replace="~{Common/profileTemplate :: profileTemplate('activity')}"></div>
+        <main class="main-content">
 
-                <div class="row mt-4">
-                    <div class="col-md-2">
-                        <div class="list-group list-group-flush" style="font-size: 14px;">
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='summary')}" th:classappend="${currentActivityTab == 'summary' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Summary</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='questions')}" th:classappend="${currentActivityTab == 'questions' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Questions</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='answers')}" th:classappend="${currentActivityTab == 'answers' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Answers</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='comments')}" th:classappend="${currentActivityTab == 'comments' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Comments</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='tags')}" th:classappend="${currentActivityTab == 'tags' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Tags</a>
-                            <a th:href="@{/activity(id=${uPro.userId}, tab='follows')}" th:classappend="${currentActivityTab == 'follows' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Follows</a>
-                            
-                            <th:block sec:authorize="isAuthenticated()">
-                                <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/activity(id=${uPro.userId}, tab='votes')}" th:classappend="${currentActivityTab == 'votes' ? 'active text-white' : ''}" class="list-group-item list-group-item-action">Votes</a>
-                            </th:block>
-                        </div>
+            <div th:replace="~{Common/profileTemplate :: profileTemplate('activity')}"></div>
+
+            <div class="row mt-4">
+                <div class="col-md-2">
+                    <div class="list-group list-group-flush activity-nav">
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='summary')}"
+                            th:classappend="${currentActivityTab == 'summary' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Summary</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='questions')}"
+                            th:classappend="${currentActivityTab == 'questions' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Questions</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='answers')}"
+                            th:classappend="${currentActivityTab == 'answers' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Answers</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='comments')}"
+                            th:classappend="${currentActivityTab == 'comments' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Comments</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='tags')}"
+                            th:classappend="${currentActivityTab == 'tags' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Tags</a>
+                        <a th:href="@{/activity(id=${uPro.userId}, tab='follows')}"
+                            th:classappend="${currentActivityTab == 'follows' ? 'active' : ''}"
+                            class="list-group-item list-group-item-action">Follows</a>
+                        <th:block sec:authorize="isAuthenticated()">
+                            <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}"
+                                th:href="@{/activity(id=${uPro.userId}, tab='votes')}"
+                                th:classappend="${currentActivityTab == 'votes' ? 'active' : ''}"
+                                class="list-group-item list-group-item-action">Votes</a>
+                        </th:block>
                     </div>
+                </div>
 
-                    <div class="col-md-10">
-                        <h4 class="mb-4" style="font-weight: 400; font-size: 21px;">Summary</h4>
-
-                        <div class="row">
-                            <div class="col-md-7 mb-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-header bg-white border-0 pt-3 pb-0" style="font-weight: 600;">Questions (Last 6 Months)</div>
-                                    <div class="card-body">
-                                        <canvas id="activityChart" height="200"></canvas>
-                                    </div>
-                                </div>
+                <div class="col-md-10 ps-md-4">
+                    <div class="row">
+                        <div class="col-md-7 mb-4">
+                            <div class="so-panel">
+                                <div class="so-panel-header">Questions (Last 6 Months)</div>
+                                <div class="so-panel-body"><canvas id="activityChart" height="200"></canvas></div>
                             </div>
+                        </div>
 
-                            <div class="col-md-5 mb-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
-                                        <span style="font-weight: 600;">Top Tags</span>
-                                        <a th:href="@{/activity(id=${uPro.userId}, tab='tags')}" style="font-size: 13px; text-decoration: none; color: #0074cc;">View all</a>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="tagsChart" height="250"></canvas>
-                                    </div>
-                                </div>
+                        <div class="col-md-5 mb-4">
+                            <div class="so-panel">
+                                <div class="so-panel-header">Top Tags <a
+                                        th:href="@{/activity(id=${uPro.userId}, tab='tags')}" class="so-link">View all
+                                        tags</a></div>
+                                <div class="so-panel-body"><canvas id="tagsChart" height="250"></canvas></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>                                
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:inline="javascript">
-        const activityLabels = [];
-        const activityData = [];
-        
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        Chart.defaults.color = '#6a737c';
+
+        const activityLabels = []; const activityData = [];
         /*[# th:each="entry : ${chartActivityMap}"]*/
-        activityLabels.unshift(/*[[${entry.key}]]*/ 'Month');
-        activityData.unshift(/*[[${entry.value}]]*/ 0);
+        activityLabels.unshift(/*[[${entry.key}]]*/ 'Month'); activityData.unshift(/*[[${entry.value}]]*/ 0);
         /*[/]*/
 
         const ctxActivity = document.getElementById('activityChart').getContext('2d');
         new Chart(ctxActivity, {
             type: 'bar',
-            data: {
-                labels: activityLabels,
-                datasets: [{
-                    label: 'Number of Questions',
-                    data: activityData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                plugins: { legend: { display: false } }
-            }
+            data: { labels: activityLabels, datasets: [{ label: 'Questions', data: activityData, backgroundColor: 'rgba(0, 116, 204, 0.75)', borderColor: 'rgba(0, 116, 204, 1)', borderWidth: 1, borderRadius: 3, barPercentage: 0.6 }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f2f3', drawBorder: false } }, x: { grid: { display: false, drawBorder: false } } }, plugins: { legend: { display: false } } }
         });
 
-        const tagLabels = [];
-        const tagData = [];
-        
+        const tagLabels = []; const tagData = [];
         /*[# th:each="entry : ${chartTopTagsMap}"]*/
-        tagLabels.push(/*[[${entry.key}]]*/ 'Tag');
-        tagData.push(/*[[${entry.value}]]*/ 0);
+        tagLabels.push(/*[[${entry.key}]]*/ 'Tag'); tagData.push(/*[[${entry.value}]]*/ 0);
         /*[/]*/
 
         const ctxTags = document.getElementById('tagsChart').getContext('2d');
         new Chart(ctxTags, {
-            type: 'bar', 
-            data: {
-                labels: tagLabels,
-                datasets: [{
-                    label: 'Total Score',
-                    data: tagData,
-                    backgroundColor: 'rgba(244, 128, 36, 0.7)', 
-                    borderColor: 'rgba(244, 128, 36, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                scales: { x: { beginAtZero: true } },
-                plugins: { legend: { display: false } }
-            }
+            type: 'bar',
+            data: { labels: tagLabels, datasets: [{ label: 'Score', data: tagData, backgroundColor: 'rgba(244, 128, 36, 0.75)', borderColor: 'rgba(244, 128, 36, 1)', borderWidth: 1, borderRadius: 3, barPercentage: 0.6 }] },
+            options: { indexAxis: 'y', responsive: true, scales: { x: { beginAtZero: true, grid: { color: '#f1f2f3', drawBorder: false } }, y: { grid: { display: false, drawBorder: false } } }, plugins: { legend: { display: false } } }
         });
     </script>
-    
     <div th:replace="~{Common/footer :: footer}"></div>
 </body>
+
 </html>
