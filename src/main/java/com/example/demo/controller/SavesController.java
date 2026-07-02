@@ -75,9 +75,12 @@ public class SavesController {
         // Paginating Collections
         int colSize = 5;
         int totalColPages = (int) Math.ceil((double) allCollections.size() / colSize);
-        if (totalColPages == 0) totalColPages = 1;
-        if (colPage < 1) colPage = 1;
-        if (colPage > totalColPages) colPage = totalColPages;
+        if (totalColPages == 0)
+            totalColPages = 1;
+        if (colPage < 1)
+            colPage = 1;
+        if (colPage > totalColPages)
+            colPage = totalColPages;
 
         int start = (colPage - 1) * colSize;
         int end = Math.min(start + colSize, allCollections.size());

@@ -70,19 +70,16 @@
                 </form>
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
-
                     <th:block sec:authorize="isAuthenticated()">
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center py-0" th:href="@{/profile}">
                                 <img th:src="${loggedInUser.avatarUrl != null ? loggedInUser.avatarUrl : '/assets/img/Avatar.png'}"
                                     alt="Avatar" width="32" height="32"
-                                    class="rounded-circle bg-light border avatar-img" style="object-fit: cover;" />
-
+                                    class="rounded-circle bg-light border avatar-img" />
                                 <span class="ms-2 fw-bold text-dark small"
                                     th:text="${loggedInUser != null ? loggedInUser.username : 'User'}">User</span>
                             </a>
                         </li>
-
                         <li class="nav-item position-relative me-3">
                             <a class="nav-link text-secondary" href="#">
                                 <i class="fa-solid fa-inbox fa-lg"></i>
@@ -90,7 +87,6 @@
                                     th:text="${unreadNotification}">2</span>
                             </a>
                         </li>
-
                         <li class="nav-item me-4">
                             <form th:action="@{/auth/logout}" method="post" class="m-0">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth">
@@ -101,17 +97,176 @@
                     </th:block>
 
                     <th:block sec:authorize="isAnonymous()">
-                        <li class="nav-item">
-                            <a class="btn btn-outline-primary btn-sm btn-auth px-3" th:href="@{/auth/login}">Log in</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary btn-sm btn-auth px-3 me-4" th:href="@{/auth/register}">Sign up</a>
-                        </li>
+                        <li class="nav-item"><a class="btn btn-outline-primary btn-sm btn-auth px-3"
+                                th:href="@{/auth/login}">Log in</a></li>
+                        <li class="nav-item"><a class="btn btn-primary btn-sm btn-auth px-3 me-4"
+                                th:href="@{/auth/register}">Sign up</a></li>
                     </th:block>
-
                 </ul>
             </div>
         </div>
+
+        <style id="global-dark-mode">
+            body.dark-theme {
+                background-color: #2d3135 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .navbar-devquery {
+                background-color: #232629 !important;
+                border-bottom: 1px solid #4a4e51 !important;
+            }
+
+            body.dark-theme .main-container {
+                background-color: #2d3135 !important;
+                border-color: #4a4e51 !important;
+            }
+
+            body.dark-theme .left-sidebar {
+                border-color: #4a4e51 !important;
+            }
+
+            body.dark-theme .nav-link-sb {
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme .nav-link-sb:hover {
+                background-color: #3b4045 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .nav-link-sb.active {
+                background-color: #3b4045 !important;
+                color: #f1f2f3 !important;
+                border-left-color: #f48024 !important;
+            }
+
+            body.dark-theme .sidebar-heading,
+            body.dark-theme .nav-icon {
+                color: #848d95 !important;
+            }
+
+            body.dark-theme .nav-link-sb.active .nav-icon {
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .saves-sidebar-item {
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme .saves-sidebar-item:hover {
+                background-color: #3b4045 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .saves-sidebar-item.active {
+                background-color: #4a4e51 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .profile-tabs .nav-link {
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme .profile-tabs .nav-link:hover {
+                background-color: #3b4045 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .profile-tabs .nav-link.active {
+                background-color: #f48024 !important;
+                color: white !important;
+            }
+
+            /* Bổ sung màu cho phần tên Profile */
+            body.dark-theme .user-name {
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .user-meta {
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme .border-bottom,
+            body.dark-theme .border-top {
+                border-color: #4a4e51 !important;
+            }
+
+            body.dark-theme .prefs-container,
+            body.dark-theme .so-list-container,
+            body.dark-theme .saved-item-card,
+            body.dark-theme .so-panel,
+            body.dark-theme .badge-item-card,
+            body.dark-theme .empty-state-box {
+                background-color: #232629 !important;
+                border-color: #4a4e51 !important;
+            }
+
+            body.dark-theme .prefs-row,
+            body.dark-theme .so-list-item {
+                border-color: #4a4e51 !important;
+            }
+
+            body.dark-theme .prefs-row:hover,
+            body.dark-theme .so-list-item:hover,
+            body.dark-theme .saved-item-card:hover {
+                background-color: #2d3135 !important;
+            }
+
+            body.dark-theme h1,
+            body.dark-theme h2,
+            body.dark-theme h3,
+            body.dark-theme h4,
+            body.dark-theme h5,
+            body.dark-theme .prefs-title,
+            body.dark-theme .theme-label,
+            body.dark-theme .text-dark {
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .text-muted,
+            body.dark-theme .prefs-desc {
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme input.form-control,
+            body.dark-theme select.form-select {
+                background-color: #1a1b1d !important;
+                border-color: #4a4e51 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .input-group-text {
+                background-color: #232629 !important;
+                border-color: #4a4e51 !important;
+                color: #848d95 !important;
+            }
+
+            body.dark-theme kbd {
+                background: #3b4045 !important;
+                border-color: #4a4e51 !important;
+                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .btn-outline-secondary {
+                border-color: #4a4e51 !important;
+                color: #babfc4 !important;
+            }
+
+            body.dark-theme .btn-outline-secondary:hover {
+                background-color: #3b4045 !important;
+                color: #f1f2f3 !important;
+            }
+        </style>
+
+        <script>
+            (function () {
+                var savedTheme = localStorage.getItem('devquery-theme') || 'light';
+                if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.body.classList.add('dark-theme');
+                }
+            })();
+        </script>
     </nav>
 </body>
 
