@@ -46,7 +46,7 @@ public class SecurityConfig {
                                                 // failure
                                                 .requestMatchers("/", "/home", "/search", "/tags", "/tags/**",
                                                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
-                                                                "/forgot-password", "/reset-password", "/oauth2/**",
+                                                                "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
                                                                 "/login/oauth2/**")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")

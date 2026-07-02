@@ -94,27 +94,17 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a th:href="@{/system-rules}" class="nav-link-sb" th:classappend="${activeTab == 'rules' ? 'active' : ''}">
+                    <i class="fa-solid fa-book-open-reader nav-icon"></i> Guide
+                </a>
+            </li>
+            <li class="nav-item">
                 <a th:href="@{/tags}" class="nav-link-sb" th:classappend="${activeTab == 'tags' ? 'active' : ''}">
                     <i class="fa-solid fa-tags nav-icon"></i> Tags
                 </a>
             </li>
-            <li class="nav-item">
-                <a th:href="@{/users}" class="nav-link-sb" th:classappend="${activeTab == 'users' ? 'active' : ''}">
-                    <i class="fa-solid fa-users nav-icon"></i> Users
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/bounties}" class="nav-link-sb"
-                    th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
-                    <i class="fa-solid fa-coins nav-icon"></i> Bounties
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/system-rules}" class="nav-link-sb" 
-                    th:classappend="${activeTab == 'rules' ? 'active' : ''}">
-                    <i class="fa-solid fa-scale-balanced nav-icon"></i> System Rules
-                </a>
-            </li>
+            
+            
 
             <th:block sec:authorize="isAuthenticated()">
                 <li class="sidebar-heading">Personal</li>
