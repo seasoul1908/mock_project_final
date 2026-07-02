@@ -173,6 +173,23 @@
             color: #0074cc;
             text-decoration: underline;
         }
+        .forgot-password-row {
+    text-align: right;
+    margin-top: 6px;
+    margin-bottom: 14px;
+}
+
+.forgot-password-link {
+    color: #6a737c;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.forgot-password-link:hover {
+    color: #3b4045;
+    text-decoration: underline;
+}
     </style>
 </head>
 
@@ -205,10 +222,13 @@
             <label>Email</label>
             <input name="email" type="email" placeholder="you@example.com" required>
 
-            <label for="password">Password
-                 <a th:href="@{/forgot-password}">Forgot password</a>
-            </label>
+            <label for="password">Password</label>
             <input name="password" type="password" placeholder="********" required>
+            <div class="forgot-password-row">
+                <a th:href="@{/forgot-password}" class="forgot-password-link">
+                    Forgot password?
+                </a>
+            </div>
 
             <button type="submit">Login</button>
         </form>
