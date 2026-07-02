@@ -52,6 +52,10 @@
                             <a class="nav-link" th:classappend="${activeTab == 'saves' ? 'active' : ''}"
                                 th:href="@{/saves(id=${uPro.userId})}">Saves</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
+                                th:href="@{/settings/preferences}">Preferences</a>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -4,7 +4,6 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +20,13 @@ import java.util.Map;
 @Controller
 public class ActivityController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public ActivityController(UserService userService, UserRepository userRepository) {
+        this.userService = userService;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/activity")
     public String showActivity(
@@ -63,7 +64,7 @@ public class ActivityController {
         switch (tab) {
             case "summary":
                 htmlPage = "User/activity_summary";
-                
+
                 List<Map<String, Object>> chartList = userRepository.getQuestionsActivityChart(targetUserId);
                 Map<String, Integer> chartActivityMap = new LinkedHashMap<>();
                 for (Map<String, Object> row : chartList) {
@@ -71,7 +72,8 @@ public class ActivityController {
                 }
                 model.addAttribute("chartActivityMap", chartActivityMap);
 
-                Page<Map<String, Object>> tagsPage = userRepository.getTagsActivityByUser(targetUserId, PageRequest.of(0, 5));
+                Page<Map<String, Object>> tagsPage = userRepository.getTagsActivityByUser(targetUserId,
+                        PageRequest.of(0, 5));
                 Map<String, Integer> chartTopTagsMap = new LinkedHashMap<>();
                 for (Map<String, Object> row : tagsPage.getContent()) {
                     chartTopTagsMap.put((String) row.get("tagName"), ((Number) row.get("score")).intValue());
@@ -120,7 +122,8 @@ public class ActivityController {
         }
 
         if (!htmlPage.contains("summary")) {
-            int totalPage = (int) ((totalRecords % pageSize == 0) ? (totalRecords / pageSize) : (totalRecords / pageSize + 1));
+            int totalPage = (int) ((totalRecords % pageSize == 0) ? (totalRecords / pageSize)
+                    : (totalRecords / pageSize + 1));
             model.addAttribute("totalPage", totalPage);
             model.addAttribute("currentPage", pageIndex);
             model.addAttribute("totalRecords", totalRecords);
