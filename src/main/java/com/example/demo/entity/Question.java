@@ -61,6 +61,15 @@ public class Question {
     @Column(name = "bounty_expires_at")
     private Timestamp bountyExpiresAt;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
+    @Column(name = "deleted_at")
+    private Timestamp deletedAt;
+
+    @Column(name = "deleted_by")
+    private Long deletedBy;
+
     public Question() {
     }
 
@@ -159,4 +168,13 @@ public class Question {
         return bountyAmount > 0 && bountyExpiresAt != null
                 && bountyExpiresAt.after(new Timestamp(System.currentTimeMillis()));
     }
+
+    public boolean isIsDeleted() { return isDeleted; }
+    public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
+
+    public Timestamp getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(Timestamp deletedAt) { this.deletedAt = deletedAt; }
+
+    public Long getDeletedBy() { return deletedBy; }
+    public void setDeletedBy(Long deletedBy) { this.deletedBy = deletedBy; }
 }

@@ -224,4 +224,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Transactional
         @Query(value = "INSERT INTO User_Profile (user_id, avatar_url) VALUES (:userId, :avatarUrl)", nativeQuery = true)
         void insertAvatarOnly(@Param("userId") long userId, @Param("avatarUrl") String avatarUrl);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Users SET Reputation = ISNULL(Reputation, 0) + :delta WHERE user_id = :userId", nativeQuery = true)
+        void addReputation(@Param("userId") long userId, @Param("delta") int delta);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO Reputation_History (user_id, delta, reason, event_type, related_post_type, related_post_id, actor_user_id) " +
+                "VALUES (:userId, :delta, :reason, :eventType, :postType, :postId, :actorUserId)", nativeQuery = true)
+        void insertReputationHistory(@Param("userId") long userId, @Param("delta") int delta,
+                @Param("reason") String reason, @Param("eventType") String eventType,
+                @Param("postType") String postType, @Param("postId") Long postId,
+                @Param("actorUserId") Long actorUserId);
 }

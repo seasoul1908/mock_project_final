@@ -41,4 +41,12 @@ public interface BookmarkRepository extends JpaRepository<com.example.demo.entit
     @Transactional
     @Query(value = "DELETE FROM Bookmarks WHERE user_id = :userId AND question_id = :questionId", nativeQuery = true)
     void deleteBookmarkPermanent(@Param("userId") long userId, @Param("questionId") long questionId);
+
+    @Query(value = "SELECT COUNT(*) FROM Bookmarks WHERE user_id = :userId AND question_id = :questionId", nativeQuery = true)
+    int countBookmark(@Param("userId") long userId, @Param("questionId") long questionId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO Bookmarks (user_id, question_id, created_at) VALUES (:userId, :questionId, GETDATE())", nativeQuery = true)
+    void insertBookmark(@Param("userId") long userId, @Param("questionId") long questionId);
 }

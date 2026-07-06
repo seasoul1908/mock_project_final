@@ -4,6 +4,8 @@ import com.example.demo.entity.Notification;
 import com.example.demo.entity.Question;
 import com.example.demo.entity.Tag;
 import com.example.demo.entity.User;
+import com.example.demo.entity.Answer;
+import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.TagRepository;
@@ -31,6 +33,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Override
     @Transactional
@@ -127,5 +132,121 @@ public class QuestionServiceImpl implements QuestionService {
                 notificationRepository.save(noti);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void editQuestion(long questionId, long userId, String title, String body, String codeSnippet, boolean isAdmin) {
+        if (title == null || title.trim().length() < 10) {
+            throw new IllegalArgumentException("Title must be at least 10 characters");
+        }
+        if (body == null || body.trim().length() < 30) {
+            throw new IllegalArgumentException("Body must be at least 30 characters");
+        }
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+        if (question.getUserId() != userId && !isAdmin) {
+            throw new IllegalStateException("You can only edit your own question");
+        }
+
+        question.setTitle(title.trim());
+        question.setBody(body.trim());
+        if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
+            question.setCodeSnippet(codeSnippet.trim());
+        }
+        question.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(long questionId, long userId, boolean isAdmin) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+        if (question.getUserId() != userId && !isAdmin) {
+            throw new IllegalStateException("You can only delete your own question");
+        }
+
+        // Soft-delete: the is_deleted column already exists. Related answers/comments
+        // stay in the DB but become inaccessible because the question is hidden.
+        questionRepository.softDeleteQuestion(questionId, userId);
+    }
+
+    @Override
+    @Transactional
+    public void addBounty(long questionId, long userId, int amount, int days) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Bounty amount must be greater than 0");
+        }
+        if (days <= 0) {
+            days = 7;
+        }
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+        if (question.getUserId() != userId) {
+            throw new IllegalStateException("Only the question owner can add a bounty");
+        }
+        if (question.hasActiveBounty()) {
+            throw new IllegalStateException("This question already has an active bounty");
+        }
+
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        int currentRep = owner.getReputation() != null ? owner.getReputation() : 0;
+        if (currentRep < amount) {
+            throw new IllegalStateException("You do not have enough reputation to offer this bounty");
+        }
+
+        // Deduct reputation immediately (committed bounty)
+        userRepository.addReputation(userId, -amount);
+        userRepository.insertReputationHistory(userId, -amount,
+                "Placed bounty on question", "bounty", "question", questionId, userId);
+
+        long now = System.currentTimeMillis();
+        question.setBountyAmount(amount);
+        question.setBountyAwarderId(userId);
+        question.setBountyStartedAt(new Timestamp(now));
+        question.setBountyExpiresAt(new Timestamp(now + (long) days * 24 * 60 * 60 * 1000));
+        questionRepository.save(question);
+    }
+
+    @Override
+    @Transactional
+    public void awardBounty(long questionId, long answerId, long userId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+        if (question.getUserId() != userId) {
+            throw new IllegalStateException("Only the question owner can award the bounty");
+        }
+        if (!question.hasActiveBounty()) {
+            throw new IllegalStateException("There is no active bounty on this question");
+        }
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+        if (answer.getQuestionId() != questionId) {
+            throw new IllegalArgumentException("Answer does not belong to this question");
+        }
+
+        int amount = question.getBountyAmount();
+        long authorId = answer.getUserId();
+
+        // Transfer bounty reputation to the answer author
+        userRepository.addReputation(authorId, amount);
+        userRepository.insertReputationHistory(authorId, amount,
+                "Bounty awarded on answer", "bounty", "answer", answerId, userId);
+
+        // Reset bounty fields
+        question.setBountyAmount(0);
+        question.setBountyAwarderId(null);
+        question.setBountyStartedAt(null);
+        question.setBountyExpiresAt(null);
+        questionRepository.save(question);
     }
 }
