@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <title>Tags - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --border-color: #d6d9dc;
-            --blue-tag-bg: #e1ecf4;
-            --blue-tag-text: #39739d;
+        /* Đã xóa :root cục bộ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
             font-size: 13px;
-            background: #fff;
-            color: #0c0d0e;
+            background-color: var(--bg-body, #fff);
+            color: var(--text-primary, #0c0d0e);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container-custom {
@@ -30,27 +33,33 @@
             width: 164px;
             flex-shrink: 0;
             padding-top: 5px;
-            border-right: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color, #d6d9dc);
+            transition: border-color 0.3s ease;
         }
 
         .main-content {
             flex-grow: 1;
             padding: 24px;
-            border-left: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color, #d6d9dc);
             min-width: 0;
             align-items: stretch;
+            transition: border-color 0.3s ease;
         }
 
         .tags-header h1 {
             font-size: 27px;
             font-weight: 400;
             margin-bottom: 8px;
+            color: var(--text-primary, #0c0d0e);
+            transition: color 0.3s ease;
         }
+
         .tags-header p {
-            color: #3b4045;
+            color: var(--text-secondary, #3b4045);
             line-height: 1.6;
             max-width: 640px;
             margin-bottom: 16px;
+            transition: color 0.3s ease;
         }
 
         .tags-controls {
@@ -66,63 +75,78 @@
             position: relative;
             width: 300px;
         }
+
         .search-box i {
             position: absolute;
             left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6a737c;
+            color: var(--icon-color, #6a737c);
             font-size: 13px;
+            transition: color 0.3s ease;
         }
+
         .search-box input {
             width: 100%;
             padding: 8px 12px 8px 32px;
-            border: 1px solid #babfc4;
+            border: 1px solid var(--border-color, #babfc4);
+            background-color: var(--bg-input, #fff);
+            color: var(--text-primary, #0c0d0e);
             border-radius: 4px;
             font-size: 13px;
             outline: none;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+
         .search-box input:focus {
-            border-color: #6bbbf7;
-            box-shadow: 0 0 0 4px rgba(0,149,255,0.15);
+            border-color: var(--link-hover, #6bbbf7);
+            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
         }
 
         .sort-buttons {
             display: flex;
-            border: 1px solid #9fa6ad;
+            border: 1px solid var(--border-color, #9fa6ad);
             border-radius: 3px;
             overflow: hidden;
+            transition: border-color 0.3s ease;
         }
+
         .sort-buttons a {
             padding: 8px 12px;
             font-size: 13px;
-            color: #6a737c;
+            color: var(--text-secondary, #6a737c);
             text-decoration: none;
-            border-right: 1px solid #9fa6ad;
-            background: #fff;
+            border-right: 1px solid var(--border-color, #9fa6ad);
+            background-color: transparent;
             cursor: pointer;
-            transition: background 0.1s;
+            transition: all 0.2s ease;
         }
+
         .sort-buttons a:last-child {
             border-right: none;
         }
+
         .sort-buttons a:hover {
-            background: #f8f9f9;
-            color: #525960;
+            background-color: var(--btn-hover-bg, #f8f9f9);
+            color: var(--text-primary, #525960);
         }
+
         .sort-buttons a.active {
-            background: #e3e6e8;
+            background-color: var(--border-color, #e3e6e8);
             font-weight: 500;
-            color: #3b4045;
+            color: var(--text-primary, #3b4045);
         }
 
         .search-result-count {
             font-size: 13px;
-            color: #6a737c;
+            color: var(--text-muted, #6a737c);
             margin-bottom: 12px;
+            transition: color 0.3s ease;
         }
+
         .search-result-count strong {
-            color: #3b4045;
+            color: var(--text-primary, #3b4045);
+            transition: color 0.3s ease;
         }
 
         .tags-grid {
@@ -130,42 +154,55 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
+
         @media (max-width: 1100px) {
-            .tags-grid { grid-template-columns: repeat(3, 1fr); }
+            .tags-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
+
         @media (max-width: 800px) {
-            .tags-grid { grid-template-columns: repeat(2, 1fr); }
+            .tags-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
+
         @media (max-width: 500px) {
-            .tags-grid { grid-template-columns: 1fr; }
+            .tags-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .tag-card {
-            background: #fff;
-            border: 1px solid #e3e6e8;
+            background-color: var(--bg-panel, #fff);
+            border: 1px solid var(--border-color, #e3e6e8);
             border-radius: 4px;
             padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            transition: box-shadow 0.15s;
+            transition: all 0.3s ease;
         }
+
         .tag-card:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .tag-badge {
             display: inline-block;
-            background: var(--blue-tag-bg);
-            color: var(--blue-tag-text);
+            background-color: var(--tag-bg, #e1ecf4);
+            color: var(--tag-text, #39739d);
+            border: 1px solid var(--border-color, transparent);
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 500;
             text-decoration: none;
+            transition: all 0.3s ease;
         }
+
         .tag-badge:hover {
-            background: #d0e3f1;
+            background-color: var(--border-color, #d0e3f1);
         }
 
         .tag-card-header {
@@ -176,40 +213,103 @@
 
         .tag-desc {
             font-size: 12px;
-            color: #3b4045;
+            color: var(--text-secondary, #3b4045);
             line-height: 1.5;
             flex: 1;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            transition: color 0.3s ease;
         }
+
         .tag-desc em {
-            color: #9fa6ad;
+            color: var(--text-muted, #9fa6ad);
+            transition: color 0.3s ease;
         }
 
         .tag-stats {
             font-size: 11px;
-            color: #838c95;
+            color: var(--text-muted, #838c95);
             margin-top: 5px;
+            transition: color 0.3s ease;
         }
 
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
-            color: #6a737c;
+            color: var(--text-muted, #6a737c);
+            transition: color 0.3s ease;
         }
+
         .empty-state i {
             font-size: 48px;
             margin-bottom: 16px;
-            color: #babfc4;
+            color: var(--icon-color, #babfc4);
             display: block;
+            transition: color 0.3s ease;
+        }
+
+        /* =================================================== */
+        /* DARK MODE TUYỆT ĐỐI                                 */
+        /* =================================================== */
+        body.dark-theme .tags-header p {
+            color: var(--text-secondary) !important;
+        }
+
+        body.dark-theme .search-box input {
+            background-color: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .sort-buttons,
+        body.dark-theme .sort-buttons a {
+            border-color: var(--border-color) !important;
+            background-color: transparent !important;
+            color: var(--text-secondary) !important;
+        }
+
+        body.dark-theme .sort-buttons a:hover {
+            background-color: var(--btn-hover-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        body.dark-theme .sort-buttons a.active {
+            background-color: var(--btn-hover-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        body.dark-theme .tag-card {
+            background-color: var(--bg-panel) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .tag-badge {
+            background-color: var(--tag-bg) !important;
+            color: var(--tag-text) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+
+        body.dark-theme .tag-badge:hover {
+            background-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .tag-desc {
+            color: var(--text-secondary) !important;
+        }
+
+        body.dark-theme .tag-stats,
+        body.dark-theme .search-result-count,
+        body.dark-theme .empty-state {
+            color: var(--text-muted) !important;
         }
     </style>
 </head>
-<body>
 
+<body>
     <div th:replace="~{Common/header :: header}"></div>
 
     <div class="container-custom">
@@ -221,7 +321,7 @@
             <div class="tags-header">
                 <h1>Tags</h1>
                 <p>
-                    A tag is a keyword or label that categorizes your question with other, similar questions. 
+                    A tag is a keyword or label that categorizes your question with other, similar questions.
                     Using the right tags makes it easier for others to find and answer your question.
                 </p>
             </div>
@@ -230,20 +330,25 @@
                 <div class="tags-controls">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchInput" name="search" placeholder="Filter by tag name" th:value="${keyword}" />
+                        <input type="text" id="searchInput" name="search" placeholder="Filter by tag name"
+                            th:value="${keyword}" />
                     </div>
 
                     <div class="sort-buttons">
-                        <a th:href="@{/tags(sort='popular', search=${keyword})}" th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
-                        <a th:href="@{/tags(sort='name', search=${keyword})}" th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
-                        <a th:href="@{/tags(sort='newest', search=${keyword})}" th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
+                        <a th:href="@{/tags(sort='popular', search=${keyword})}"
+                            th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
+                        <a th:href="@{/tags(sort='name', search=${keyword})}"
+                            th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
+                        <a th:href="@{/tags(sort='newest', search=${keyword})}"
+                            th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
                     </div>
                 </div>
             </form>
 
             <div th:if="${keyword != null && !keyword.isEmpty()}">
                 <p class="search-result-count">
-                    Found <strong th:text="${tagList.size()}">0</strong> tags for keyword "<strong th:text="${keyword}"></strong>"
+                    Found <strong th:text="${tagList.size()}">0</strong> tags for keyword "<strong
+                        th:text="${keyword}"></strong>"
                 </p>
             </div>
 
@@ -261,8 +366,10 @@
                         <a th:href="@{'/tags/' + ${tag.id}}" class="tag-badge" th:text="${tag.tagName}">TagName</a>
                     </div>
                     <p class="tag-desc">
-                        <span th:if="${tag.description != null && !tag.description.isEmpty()}" th:text="${tag.description}"></span>
-                        <em th:unless="${tag.description != null && !tag.description.isEmpty()}">No description available.</em>
+                        <span th:if="${tag.description != null && !tag.description.isEmpty()}"
+                            th:text="${tag.description}"></span>
+                        <em th:unless="${tag.description != null && !tag.description.isEmpty()}">No description
+                            available.</em>
                     </p>
                     <div class="tag-stats">
                         <span th:text="${tag.questionCount}">0</span> questions
@@ -279,7 +386,7 @@
         let timer;
         const searchInput = document.getElementById('searchInput');
 
-        if(searchInput) {
+        if (searchInput) {
             searchInput.addEventListener('input', function () {
                 clearTimeout(timer);
                 timer = setTimeout(() => {
@@ -297,4 +404,5 @@
         }
     </script>
 </body>
+
 </html>

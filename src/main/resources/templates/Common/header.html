@@ -49,7 +49,7 @@
 
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center me-4 ms-4" th:href="@{/home}">
-                <i class="fa-brands fa-stack-overflow fa-lg me-2" style="color: #f48024;"></i>
+                <i class="fa-brands fa-stack-overflow fa-lg me-2"></i>
                 <span class="fw-bold text-dark" style="font-family: Arial, sans-serif;">DevQuery</span>
             </a>
 
@@ -106,111 +106,168 @@
             </div>
         </div>
 
-        <style id="global-dark-mode">
-            body.dark-theme {
-                background-color: #2d3135 !important;
-                color: #f1f2f3 !important;
+        <style id="devquery-semantic-classes">
+            /* Semantic Classes for Light Mode */
+            .bg-white {
+                background-color: #ffffff;
             }
 
-            body.dark-theme .navbar-devquery {
-                background-color: #232629 !important;
-                border-bottom: 1px solid #4a4e51 !important;
+            .bg-light {
+                background-color: #f8f9f9;
+            }
+
+            .text-dark {
+                color: #212529;
+            }
+
+            .text-secondary {
+                color: #6a737c;
+            }
+
+            .border {
+                border-color: #d6d9dc;
+            }
+
+            .so-link {
+                color: #0074cc;
+            }
+
+            .bg-primary {
+                background-color: #0a95ff;
+                color: #fff;
+            }
+
+            .chip-gold {
+                background-color: #fffdf0;
+                border-color: #f1c40f;
+                color: #8a6d3b;
+            }
+
+            .sticker-gold,
+            .text-warning {
+                color: #f1c40f;
+            }
+
+            .chip-silver {
+                background-color: #f8f9f9;
+                border-color: #adb5bd;
+                color: #555;
+            }
+
+            .sticker-silver {
+                color: #adb5bd;
+            }
+
+            .chip-bronze {
+                background-color: #fff5ee;
+                border-color: #d35400;
+                color: #a0522d;
+            }
+
+            .sticker-bronze {
+                color: #d35400;
+            }
+
+            .answered-accepted {
+                background-color: #d1f7c4;
+                color: #148a4c;
+                border-color: #148a4c;
+            }
+
+            .post-tag {
+                background-color: #e1ecf4;
+                color: #39739d;
+            }
+
+            .text-brand,
+            .text-devquery {
+                color: #f48024;
+            }
+        </style>
+
+        <style id="global-dark-mode">
+            /* =================================================== */
+            /* ĐỊNH NGHĨA BIẾN CHO LIGHT MODE (MẶC ĐỊNH)           */
+            /* =================================================== */
+            :root {
+                --bg-body: #ffffff;
+                --bg-panel: #ffffff;
+                --bg-input: #ffffff;
+                --border-color: #d6d9dc;
+
+                --text-primary: #232629;
+                --text-secondary: #525960;
+                --text-muted: #6a737c;
+                --icon-color: #6a737c;
+
+                --link-color: #0074cc;
+                --link-hover: #0a95ff;
+                --btn-hover-bg: #f8f9f9;
+
+                --tag-bg: #e1ecf4;
+                --tag-text: #39739d;
+
+                --gold-bg: #fdf7e2;
+                --gold-border: #f1e5bc;
+                --gold-text: #8a6d3b;
+
+                --silver-bg: #f8f9f9;
+                --silver-border: #adb5bd;
+                --silver-text: #555555;
+
+                --bronze-bg: #fff5ee;
+                --bronze-border: #d35400;
+                --bronze-text: #a0522d;
+            }
+
+            /* =================================================== */
+            /* ĐỊNH NGHĨA BIẾN CHO DARK MODE                       */
+            /* =================================================== */
+            body.dark-theme {
+                --bg-body: #2d3135;
+                --bg-panel: #232629;
+                --bg-input: #1a1b1d;
+                --border-color: #4a4e51;
+
+                --text-primary: #f1f2f3;
+                --text-secondary: #babfc4;
+                --text-muted: #9fa6ad;
+                --icon-color: #babfc4;
+
+                --link-color: #379fef;
+                --link-hover: #58a6ff;
+                --btn-hover-bg: #3b4045;
+
+                --tag-bg: #373c3f;
+                --tag-text: #9cc3db;
+
+                --gold-bg: #3b3315;
+                --gold-border: #d4a81e;
+                --gold-text: #f1c40f;
+
+                --silver-bg: #2d3135;
+                --silver-border: #b4b8bc;
+                --silver-text: #c4c8cc;
+
+                --bronze-bg: #3b2a1e;
+                --bronze-border: #ab825f;
+                --bronze-text: #c98c62;
+            }
+
+            body.dark-theme {
+                background-color: var(--bg-body) !important;
+                color: var(--text-primary) !important;
             }
 
             body.dark-theme .main-container {
-                background-color: #2d3135 !important;
-                border-color: #4a4e51 !important;
+                background-color: var(--bg-body) !important;
+                border-color: var(--border-color) !important;
             }
 
-            body.dark-theme .left-sidebar {
-                border-color: #4a4e51 !important;
-            }
-
-            body.dark-theme .nav-link-sb {
-                color: #babfc4 !important;
-            }
-
-            body.dark-theme .nav-link-sb:hover {
-                background-color: #3b4045 !important;
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .nav-link-sb.active {
-                background-color: #3b4045 !important;
-                color: #f1f2f3 !important;
-                border-left-color: #f48024 !important;
-            }
-
-            body.dark-theme .sidebar-heading,
-            body.dark-theme .nav-icon {
-                color: #848d95 !important;
-            }
-
-            body.dark-theme .nav-link-sb.active .nav-icon {
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .saves-sidebar-item {
-                color: #babfc4 !important;
-            }
-
-            body.dark-theme .saves-sidebar-item:hover {
-                background-color: #3b4045 !important;
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .saves-sidebar-item.active {
-                background-color: #4a4e51 !important;
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .profile-tabs .nav-link {
-                color: #babfc4 !important;
-            }
-
-            body.dark-theme .profile-tabs .nav-link:hover {
-                background-color: #3b4045 !important;
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .profile-tabs .nav-link.active {
-                background-color: #f48024 !important;
-                color: white !important;
-            }
-
-            /* Bổ sung màu cho phần tên Profile */
-            body.dark-theme .user-name {
-                color: #f1f2f3 !important;
-            }
-
-            body.dark-theme .user-meta {
-                color: #babfc4 !important;
-            }
-
+            body.dark-theme .left-sidebar,
             body.dark-theme .border-bottom,
             body.dark-theme .border-top {
-                border-color: #4a4e51 !important;
-            }
-
-            body.dark-theme .prefs-container,
-            body.dark-theme .so-list-container,
-            body.dark-theme .saved-item-card,
-            body.dark-theme .so-panel,
-            body.dark-theme .badge-item-card,
-            body.dark-theme .empty-state-box {
-                background-color: #232629 !important;
-                border-color: #4a4e51 !important;
-            }
-
-            body.dark-theme .prefs-row,
-            body.dark-theme .so-list-item {
-                border-color: #4a4e51 !important;
-            }
-
-            body.dark-theme .prefs-row:hover,
-            body.dark-theme .so-list-item:hover,
-            body.dark-theme .saved-item-card:hover {
-                background-color: #2d3135 !important;
+                border-color: var(--border-color) !important;
             }
 
             body.dark-theme h1,
@@ -218,44 +275,448 @@
             body.dark-theme h3,
             body.dark-theme h4,
             body.dark-theme h5,
-            body.dark-theme .prefs-title,
-            body.dark-theme .theme-label,
-            body.dark-theme .text-dark {
-                color: #f1f2f3 !important;
+            body.dark-theme .text-dark,
+            body.dark-theme .fw-bold,
+            body.dark-theme .user-name {
+                color: var(--text-primary) !important;
+            }
+
+            body.dark-theme p,
+            body.dark-theme .text-secondary,
+            body.dark-theme .user-meta {
+                color: var(--text-secondary) !important;
             }
 
             body.dark-theme .text-muted,
-            body.dark-theme .prefs-desc {
-                color: #babfc4 !important;
+            body.dark-theme .small {
+                color: var(--text-muted) !important;
+            }
+
+            body.dark-theme i.fa-solid,
+            body.dark-theme i.fa-regular,
+            body.dark-theme i.fa-brands,
+            body.dark-theme .nav-icon {
+                color: var(--icon-color) !important;
+            }
+
+            body.dark-theme .active .nav-icon {
+                color: var(--text-primary) !important;
+            }
+
+            /* =================================================== */
+            /* CÁC THÀNH PHẦN CHUNG (NAVBAR, SIDEBAR, FORM, PAGINATION) */
+            /* =================================================== */
+            body.dark-theme a.so-link {
+                color: var(--link-color) !important;
+            }
+
+            body.dark-theme a.so-link:hover {
+                color: var(--link-hover) !important;
+            }
+
+            body.dark-theme .so-panel,
+            body.dark-theme .card,
+            body.dark-theme .edit-card,
+            body.dark-theme .so-list-container,
+            body.dark-theme .prefs-container,
+            body.dark-theme .tag-card {
+                background-color: var(--bg-panel) !important;
+                border-color: var(--border-color) !important;
             }
 
             body.dark-theme input.form-control,
-            body.dark-theme select.form-select {
+            body.dark-theme select.form-select,
+            body.dark-theme .search-box {
                 background-color: #1a1b1d !important;
-                border-color: #4a4e51 !important;
-                color: #f1f2f3 !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
             }
 
-            body.dark-theme .input-group-text {
-                background-color: #232629 !important;
-                border-color: #4a4e51 !important;
-                color: #848d95 !important;
+            body.dark-theme .nav-link-sb:hover,
+            body.dark-theme .saves-sidebar-item:hover,
+            body.dark-theme .list-group-item:hover,
+            body.dark-theme .so-list-item:hover {
+                background-color: var(--btn-hover-bg) !important;
+                color: var(--text-primary) !important;
             }
 
-            body.dark-theme kbd {
-                background: #3b4045 !important;
-                border-color: #4a4e51 !important;
-                color: #f1f2f3 !important;
+            body.dark-theme .nav-link-sb.active {
+                background-color: var(--btn-hover-bg) !important;
+                color: var(--text-primary) !important;
+                border-left-color: #f48024 !important;
             }
 
-            body.dark-theme .btn-outline-secondary {
-                border-color: #4a4e51 !important;
-                color: #babfc4 !important;
+            body.dark-theme .list-group-item {
+                background-color: transparent !important;
+                color: var(--text-secondary) !important;
             }
 
-            body.dark-theme .btn-outline-secondary:hover {
+            body.dark-theme .post-tag,
+            body.dark-theme .badge[style*="background-color: #e1ecf4"] {
+                background-color: var(--tag-bg) !important;
+                color: var(--tag-text) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            body.dark-theme .sticker-gold,
+            body.dark-theme .chip-gold {
+                background-color: var(--gold-bg) !important;
+                border-color: var(--gold-border) !important;
+                color: var(--gold-text) !important;
+            }
+
+            body.dark-theme .sticker-silver,
+            body.dark-theme .chip-silver {
+                background-color: var(--silver-bg) !important;
+                border-color: var(--silver-border) !important;
+                color: var(--silver-text) !important;
+            }
+
+            body.dark-theme .sticker-bronze,
+            body.dark-theme .chip-bronze {
+                background-color: var(--bronze-bg) !important;
+                border-color: var(--bronze-border) !important;
+                color: var(--bronze-text) !important;
+            }
+
+            body.dark-theme .sticker-gold *,
+            body.dark-theme .sticker-silver *,
+            body.dark-theme .sticker-bronze * {
+                color: var(--text-primary) !important;
+            }
+
+            body.dark-theme .navbar-devquery {
+                background-color: var(--bg-panel, #232629) !important;
+                border-bottom: 1px solid var(--border-color, #4a4e51) !important;
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+            }
+
+            body.dark-theme .navbar-devquery .text-dark,
+            body.dark-theme .navbar-devquery .fw-bold {
+                color: var(--text-primary, #f1f2f3) !important;
+                transition: color 0.3s ease;
+            }
+
+            body.dark-theme .navbar-devquery .text-secondary {
+                color: var(--icon-color, #babfc4) !important;
+            }
+
+            body.dark-theme .navbar-devquery .bg-light {
+                background-color: var(--bg-input, #1a1b1d) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .sidebar-heading {
+                color: #a1a8ae !important;
+                font-weight: 600 !important;
+            }
+
+            body.dark-theme .nav-link-sb {
+                color: #c8ccd0 !important;
+            }
+
+            body.dark-theme .nav-icon {
+                color: #a1a8ae !important;
+            }
+
+            body.dark-theme .nav-link-sb.active {
+                color: #ffffff !important;
                 background-color: #3b4045 !important;
-                color: #f1f2f3 !important;
+            }
+
+            body.dark-theme .nav-link-sb.active .nav-icon {
+                color: #ffffff !important;
+            }
+
+            body.dark-theme .s-sidebarwidget,
+            body.dark-theme [style*="background-color: #fdf7e2"],
+            body.dark-theme [style*="background-color: #fffdf0"] {
+                background-color: var(--gold-bg) !important;
+                border-color: var(--gold-border) !important;
+            }
+
+            body.dark-theme .s-sidebarwidget *,
+            body.dark-theme [style*="background-color: #fdf7e2"] * {
+                color: var(--text-primary) !important;
+            }
+
+            body.dark-theme .btn-group .btn,
+            body.dark-theme .btn-group .btn.bg-white {
+                background-color: var(--bg-panel) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-secondary) !important;
+            }
+
+            body.dark-theme .btn-group .btn:hover,
+            body.dark-theme .btn-group .btn.active {
+                background-color: var(--btn-hover-bg) !important;
+                color: var(--text-primary) !important;
+            }
+
+            body.dark-theme .badge.bg-white,
+            body.dark-theme .badge.bg-light,
+            body.dark-theme .badge[style*="background-color: #fff"] {
+                background-color: var(--tag-bg) !important;
+                color: var(--tag-text) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            body.dark-theme input.form-control::placeholder,
+            body.dark-theme .search-box::placeholder {
+                color: var(--text-muted) !important;
+                opacity: 1 !important;
+            }
+
+            /* =================================================== */
+            /* FIX LỖI THANH PHÂN TRANG (BOOTSTRAP PAGINATION)     */
+            /* =================================================== */
+            body.dark-theme .page-link {
+                background-color: var(--bg-panel, #232629) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-secondary, #babfc4) !important;
+                transition: background-color 0.2s ease, color 0.2s ease;
+            }
+
+            body.dark-theme .page-link:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* Trạng thái trang đang chọn (Active) - Đổi sang màu Cam chuẩn SO */
+            body.dark-theme .page-item.active .page-link {
+                background-color: #f48024 !important;
+                border-color: #f48024 !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }
+
+            /* Trạng thái vô hiệu hóa (Disabled) ở nút Prev/Next */
+            body.dark-theme .page-item.disabled .page-link {
+                background-color: var(--bg-body, #2d3135) !important;
+                color: var(--text-muted, #9fa6ad) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+                opacity: 0.5 !important;
+            }
+
+            body.dark-theme i.text-warning,
+            body.dark-theme .text-warning {
+                color: var(--gold-text, #f1c40f) !important;
+            }
+
+            body.dark-theme i.text-primary,
+            body.dark-theme .text-primary {
+                color: var(--link-color, #379fef) !important;
+            }
+
+            body.dark-theme i.text-success,
+            body.dark-theme .text-success {
+                color: #48a868 !important;
+            }
+
+            body.dark-theme i.text-danger,
+            body.dark-theme .text-danger {
+                color: #d0393e !important;
+            }
+
+            /* =================================================== */
+            /* FIX TRIỆT ĐỂ TRANG GUIDE (Bóp chết các màu trắng)   */
+            /* =================================================== */
+
+            /* 1. Ép nền các khối Card, Hero, Item thành Panel Tối */
+            body.dark-theme .page-hero,
+            body.dark-theme .section-card,
+            body.dark-theme .guide-item,
+            body.dark-theme .workflow-item {
+                background-color: var(--bg-panel, #232629) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            /* 2. Tiêu đề "Forum Rules" đang bị trắng toát -> Khử ngay! */
+            body.dark-theme .section-header {
+                background-color: var(--bg-input, #1a1b1d) !important;
+                border-bottom-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .section-header h2 {
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            body.dark-theme .section-header span {
+                color: var(--text-muted, #9fa6ad) !important;
+            }
+
+            /* 3. Vòng tròn Số thứ tự và Khối Icon */
+            body.dark-theme .rule-number,
+            body.dark-theme .guide-icon,
+            body.dark-theme .workflow-step {
+                background-color: var(--tag-bg, #373c3f) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* 4. Viền kẻ giữa các rule */
+            body.dark-theme .rule-item {
+                border-bottom-color: var(--border-color, #4a4e51) !important;
+            }
+
+            /* 5. Nút bấm Outline (Log in, Ask a Question) */
+            body.dark-theme .btn-outline-custom {
+                background-color: transparent !important;
+                border-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-secondary, #babfc4) !important;
+            }
+
+            body.dark-theme .btn-outline-custom:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* 6. Ép màu cho các Widget cột bên phải (Quick Tips, Page Purpose) */
+            body.dark-theme .widget-yellow {
+                background-color: var(--gold-bg, #3b3315) !important;
+                border-color: var(--gold-border, #d4a81e) !important;
+            }
+
+            body.dark-theme .widget-blue {
+                background-color: var(--tag-bg, #373c3f) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .widget-header {
+                background-color: transparent !important;
+                border-bottom-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            body.dark-theme .widget-list li {
+                border-bottom-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-secondary, #babfc4) !important;
+            }
+
+            body.dark-theme .tags-header p,
+            body.dark-theme .tag-description,
+            body.dark-theme .q-excerpt,
+            body.dark-theme .tag-desc {
+                color: var(--text-secondary, #babfc4) !important;
+            }
+
+            /* 2. Thẻ Tag lớn và Tag nhỏ (Chuyển sang nền tối, chữ xanh nhạt) */
+            body.dark-theme .tag-name-badge,
+            body.dark-theme .tag-badge,
+            body.dark-theme .q-tag {
+                background-color: var(--tag-bg, #373c3f) !important;
+                color: var(--tag-text, #9cc3db) !important;
+                border: 1px solid var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .tag-badge:hover,
+            body.dark-theme .q-tag:hover {
+                background-color: var(--border-color, #4a4e51) !important;
+            }
+
+            /* 3. Ô Search đặc thù ở trang Tags */
+            body.dark-theme .tags-controls .search-box input {
+                background-color: var(--bg-input, #1a1b1d) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .tags-controls .search-box input:focus {
+                border-color: var(--link-hover, #58a6ff) !important;
+            }
+
+            /* 4. Cụm nút Filter / Sort (Khử nền trắng chói lóa) */
+            body.dark-theme .filter-buttons,
+            body.dark-theme .sort-buttons {
+                border-color: var(--border-color, #4a4e51) !important;
+                background-color: transparent !important;
+            }
+
+            body.dark-theme .filter-buttons a,
+            body.dark-theme .sort-buttons a {
+                background-color: transparent !important;
+                color: var(--text-secondary, #babfc4) !important;
+                border-right-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .filter-buttons a:hover,
+            body.dark-theme .sort-buttons a:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            body.dark-theme .filter-buttons a.active,
+            body.dark-theme .sort-buttons a.active {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            /* 5. Kéo sáng Khối thông số (0 votes, 0 answers...) */
+            body.dark-theme .q-stat,
+            body.dark-theme .q-meta {
+                color: var(--text-muted, #9fa6ad) !important;
+            }
+
+            body.dark-theme .q-stat strong,
+            body.dark-theme .questions-count {
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* 6. Link Tiêu đề & Phân trang */
+            body.dark-theme .q-title {
+                color: var(--link-color, #379fef) !important;
+            }
+
+            body.dark-theme .pagination a,
+            body.dark-theme .pagination span:not(.current) {
+                background-color: var(--bg-panel, #232629) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-secondary, #babfc4) !important;
+            }
+
+            body.dark-theme .pagination a:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* 7. Các Layout Divider, Card nền... */
+            body.dark-theme .tag-card {
+                background-color: var(--bg-panel, #232629) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .divider {
+                border-top-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .question-item {
+                border-bottom-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .tag-stats,
+            body.dark-theme .search-result-count,
+            body.dark-theme .empty-state,
+            body.dark-theme .empty-questions {
+                color: var(--text-muted, #9fa6ad) !important;
+            }
+
+            /* Nút "Followed" (Đang theo dõi) */
+            body.dark-theme .btn-watch.followed {
+                background-color: transparent !important;
+                color: var(--text-secondary, #babfc4) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .btn-watch.followed:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            body.dark-theme .activity-nav .list-group-item.active,
+            body.dark-theme .list-group-item.active {
+                background-color: var(--border-color, #4a4e51) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+                font-weight: bold !important;
             }
         </style>
 

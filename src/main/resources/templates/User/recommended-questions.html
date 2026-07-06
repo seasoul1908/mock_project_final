@@ -358,7 +358,7 @@
                     <div class="widget-title">Your Interest Profile</div>
 
                     <div th:if="${!#lists.isEmpty(profileTags)}">
-                        <h3 style="margin: 0 0 10px; font-size: 14px; color: var(--muted);">Top tags</h3>
+                        <h3 class="text-muted" style="margin: 0 0 10px; font-size: 14px;">Top tags</h3>
                         <div class="chips" style="margin-bottom: 16px;">
                             <a th:each="tag : ${profileTags}" class="chip" th:href="@{/home(tag=${tag})}">
                                 <i class="fa-solid fa-tag"></i><span th:text="${tag}">tag</span>
@@ -367,7 +367,7 @@
                     </div>
 
                     <div th:if="${!#lists.isEmpty(profileKeywords)}">
-                        <h3 style="margin: 0 0 10px; font-size: 14px; color: var(--muted);">Top keywords</h3>
+                        <h3 class="text-muted" style="margin: 0 0 10px; font-size: 14px;">Top keywords</h3>
                         <div class="chips">
                             <span th:each="keyword : ${profileKeywords}" class="chip">
                                 <i class="fa-solid fa-key"></i><span th:text="${keyword}">keyword</span>
@@ -376,7 +376,7 @@
                     </div>
 
                     <p th:if="${#lists.isEmpty(profileTags) and #lists.isEmpty(profileKeywords)}"
-                       style="margin: 0; color: var(--muted); line-height: 1.6;">
+                       class="text-muted" style="margin: 0; line-height: 1.6;">
                         Hệ thống sẽ bắt đầu xây hồ sơ sở thích sau khi bạn xem một vài câu hỏi.
                     </p>
                 </div>

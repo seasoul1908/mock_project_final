@@ -42,44 +42,44 @@
 
     <!-- Main Content -->
     <main style="flex:1; padding:24px; overflow:auto;">
-        <div class="page-title"><i class="fa-solid fa-gauge me-2" style="color:#f48024;"></i> Admin Dashboard</div>
+        <div class="page-title"><i class="fa-solid fa-gauge me-2 text-warning" ></i> Admin Dashboard</div>
 
         <!-- Stats Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value" th:text="${totalUsers}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-users me-1" style="color:#0a95ff;"></i> Users</div>
+                    <div class="stat-label"><i class="fa-solid fa-users me-1 text-primary"></i> Users</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value" th:text="${totalQuestions}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-circle-question me-1" style="color:#f48024;"></i> Questions</div>
+                    <div class="stat-label"><i class="fa-solid fa-circle-question me-1 text-warning" ></i> Questions</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value" th:text="${totalAnswers}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-comment-dots me-1" style="color:#2fa84f;"></i> Answers</div>
+                    <div class="stat-label"><i class="fa-solid fa-comment-dots me-1 text-success"></i> Answers</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value" th:text="${totalTags}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-tags me-1" style="color:#6c757d;"></i> Tags</div>
+                    <div class="stat-label"><i class="fa-solid fa-tags me-1 text-secondary"></i> Tags</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value text-danger" th:text="${pendingReports}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-flag me-1" style="color:#d0393e;"></i> Reports</div>
+                    <div class="stat-label"><i class="fa-solid fa-flag me-1 text-danger"></i> Reports</div>
                 </div>
             </div>
             <div class="col-6 col-md-4 col-lg-2">
                 <div class="stat-card">
                     <div class="stat-value" th:text="${totalBlogs}">0</div>
-                    <div class="stat-label"><i class="fa-solid fa-newspaper me-1" style="color:#7c5cbf;"></i> Blogs</div>
+                    <div class="stat-label"><i class="fa-solid fa-newspaper me-1 text-secondary"></i> Blogs</div>
                 </div>
             </div>
         </div>

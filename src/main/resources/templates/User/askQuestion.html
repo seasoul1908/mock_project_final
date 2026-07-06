@@ -1,77 +1,177 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Ask a Question - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --border-color: #d6d9dc;
-            --blue: #0074cc;
-            --blue-hover: #005999;
-            --orange: #f48024;
+        /* Đã gỡ bỏ :root cục bộ, kế thừa toàn bộ Biến CSS từ header.html */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            font-size: 13px; background: #f8f9f9; color: #0c0d0e;
+            font-size: 13px;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             padding-top: 56px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+
         .container-custom {
-            max-width: 1264px; margin: 0 auto;
-            display: flex; align-items: flex-start;
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-start;
         }
+
         .left-sidebar {
-            width: 164px; flex-shrink: 0;
-            padding-top: 25px; border-right: 1px solid var(--border-color);
+            width: 164px;
+            flex-shrink: 0;
+            padding-top: 25px;
+            border-right: 1px solid var(--border-color);
+            transition: border-color 0.3s ease;
         }
+
         .main-content {
-            flex-grow: 1; padding: 24px;
-            border-left: 1px solid var(--border-color); min-width: 0;
+            flex-grow: 1;
+            padding: 24px;
+            border-left: 1px solid var(--border-color);
+            min-width: 0;
+            transition: border-color 0.3s ease;
         }
+
         .ask-title-section {
-            font-size: 27px; font-weight: 600; margin-bottom: 24px;
-            display: flex; justify-content: space-between; align-items: center;
+            font-size: 27px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
+
+        /* Khối Hướng dẫn (Guidelines) */
         .card-guidelines {
-            background: #ebf4fc; border: 1px solid #aed6f1;
-            border-radius: 6px; padding: 16px; margin-bottom: 24px;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--link-color);
+            /* Viền xanh nhẹ để phân biệt */
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        .card-guidelines h5 { font-size: 15px; font-weight: bold; color: #005999; margin-bottom: 8px; }
-        .card-guidelines ul { margin: 0; padding-left: 20px; color: #3b4045; }
-        .card-guidelines li { margin-bottom: 4px; }
-        
+
+        .card-guidelines h5 {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--link-color);
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .card-guidelines ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .card-guidelines li {
+            margin-bottom: 4px;
+        }
+
+        /* Khối Nhập liệu (Form Cards) */
         .form-card {
-            background: #fff; border: 1px solid var(--border-color);
-            border-radius: 6px; padding: 24px; margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        .form-card h6 { font-size: 15px; font-weight: bold; margin-bottom: 2px; }
-        .form-card p.hint { color: #6a737c; font-size: 11px; margin-bottom: 10px; }
-        
+
+        .form-card h6 {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .form-card p.hint {
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        /* Bổ sung để fix riêng cho thẻ textarea và input của trang này */
+        .form-control {
+            background-color: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
         .form-control:focus {
-            border-color: #3b4045; box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+            border-color: var(--link-color) !important;
+            box-shadow: 0 0 0 4px rgba(55, 159, 239, 0.15) !important;
         }
-        
+
+        /* Nút bấm */
         .btn-submit {
-            background: var(--blue); color: #fff; font-weight: 500;
-            padding: 10px 16px; border: none; border-radius: 4px;
+            background-color: var(--link-color);
+            color: #fff;
+            font-weight: 500;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
         }
-        .btn-submit:hover { background: var(--blue-hover); color: #fff; }
+
+        .btn-submit:hover {
+            background-color: var(--link-hover);
+            color: #fff;
+        }
+
         .btn-cancel {
-            background: transparent; color: #c02424; font-weight: 500;
-            padding: 10px 16px; border: 1px solid #d6d9dc; border-radius: 4px;
-            text-decoration: none; margin-left: 8px;
+            background-color: transparent;
+            color: #d0393e;
+            font-weight: 500;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            margin-left: 8px;
+            transition: all 0.2s ease;
         }
-        .btn-cancel:hover { background: #fdf2f2; color: #c02424; }
-        
+
+        .btn-cancel:hover {
+            background-color: var(--btn-hover-bg);
+            color: #c02424;
+            border-color: #c02424;
+        }
+
         .alert-error {
-            background: #FDEDED; color: #B42318; border: 1px solid #FDA29B;
-            border-radius: 6px; padding: 12px; margin-bottom: 24px;
+            background-color: var(--bg-panel);
+            color: #d0393e;
+            border: 1px solid #d0393e;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 24px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
     </style>
 </head>
+
 <body>
     <div th:replace="~{Common/header :: header}"></div>
 
@@ -87,7 +187,9 @@
 
             <div class="card-guidelines">
                 <h5>Writing a good question</h5>
-                <p class="mb-2">You’re ready to ask a programming-related question and this form will help guide you through the process.</p>
+                <p class="mb-2 text-secondary">You’re ready to ask a programming-related question and this form will
+                    help guide you
+                    through the process.</p>
                 <ul>
                     <li>Summarize your problem in a one-line title.</li>
                     <li>Describe your problem in more detail.</li>
@@ -101,19 +203,25 @@
                 <div class="form-card">
                     <h6>Title</h6>
                     <p class="hint">Be specific and imagine you’re asking a question to another person.</p>
-                    <input type="text" name="title" class="form-control" placeholder="e.g. Is there an R function for finding the index of an element in a vector?" required th:value="${oldTitle}">
+                    <input type="text" name="title" class="form-control"
+                        placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+                        required th:value="${oldTitle}">
                 </div>
 
                 <div class="form-card">
                     <h6>Body</h6>
-                    <p class="hint">Introduce the problem and expand on what you put in the title. Minimum 30 characters.</p>
-                    <textarea name="body" class="form-control" rows="8" placeholder="Please describe details of your question here..." required th:text="${oldBody}"></textarea>
+                    <p class="hint">Introduce the problem and expand on what you put in the title. Minimum 30
+                        characters.</p>
+                    <textarea name="body" class="form-control" rows="8"
+                        placeholder="Please describe details of your question here..." required
+                        th:text="${oldBody}"></textarea>
                 </div>
 
                 <div class="form-card">
                     <h6>Tags</h6>
                     <p class="hint">Add up to 5 tags to describe what your question is about. Separated by commas.</p>
-                    <input type="text" name="tags" class="form-control" placeholder="e.g. java, spring-boot, docker" th:value="${oldTags}">
+                    <input type="text" name="tags" class="form-control" placeholder="e.g. java, spring-boot, docker"
+                        th:value="${oldTags}">
                 </div>
 
                 <div class="mb-4">
@@ -127,4 +235,5 @@
     <div th:replace="~{Common/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
