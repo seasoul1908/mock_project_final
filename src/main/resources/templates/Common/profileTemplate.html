@@ -13,12 +13,12 @@
             <div class="d-flex">
                 <div class="me-4">
                     <img th:src="${not #strings.isEmpty(uPro.avatarUrl) ? uPro.avatarUrl : '/assets/img/Avatar.png'}"
-                        alt="Avatar"
-                        style="width: 144px; height: 144px; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.15); object-fit: cover;">
+                        alt="Avatar" class="rounded-circle shadow-sm"
+                        style="width: 144px; height: 144px; object-fit: cover;">
                 </div>
 
                 <div class="pt-1">
-                    <h1 class="user-name" style="margin-bottom: 8px;" th:text="${uPro.username}">Username</h1>
+                    <h1 class="user-name mb-2" th:text="${uPro.username}">Username</h1>
 
                     <div class="user-meta mb-3">
                         <i class="fa-solid fa-cake-candles me-1"></i> Member since <span
@@ -63,7 +63,7 @@
             <div class="pt-2">
                 <th:block sec:authorize="isAuthenticated()">
                     <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/edit-profile}"
-                        class="btn btn-outline-secondary btn-sm" style="border-color: #9fa6ad; color: #525960;">
+                        class="btn btn-outline-secondary btn-sm text-secondary">
                         <i class="fas fa-pencil-alt me-1"></i> Edit profile
                     </a>
                 </th:block>

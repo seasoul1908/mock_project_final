@@ -9,8 +9,10 @@
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
                 position: -webkit-sticky;
                 position: sticky !important;
-                top: 60px !important; /* Stick to the top with a 60px offset (exactly the Header's height) */
-                height: calc(100vh - 60px); /* Sidebar stretches the full height of the screen */
+                top: 60px !important;
+                /* Stick to the top with a 60px offset (exactly the Header's height) */
+                height: calc(100vh - 60px);
+                /* Sidebar stretches the full height of the screen */
                 overflow-x: hidden;
                 overflow-y: auto;
                 padding-bottom: 20px;
@@ -67,7 +69,8 @@
                 font-weight: 700;
                 color: #0c0d0e;
                 background-color: #f1f2f3;
-                border-right: 3px solid #f48024; /* Stack Overflow standard orange border */
+                border-right: 3px solid #f48024;
+                /* Stack Overflow standard orange border */
             }
 
             /* Icon alignment */
@@ -94,7 +97,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a th:href="@{/system-rules}" class="nav-link-sb" th:classappend="${activeTab == 'rules' ? 'active' : ''}">
+                <a th:href="@{/system-rules}" class="nav-link-sb"
+                    th:classappend="${activeTab == 'rules' ? 'active' : ''}">
                     <i class="fa-solid fa-book-open-reader nav-icon"></i> Guide
                 </a>
             </li>
@@ -103,8 +107,8 @@
                     <i class="fa-solid fa-tags nav-icon"></i> Tags
                 </a>
             </li>
-            
-            
+
+
 
             <th:block sec:authorize="isAuthenticated()">
                 <li class="sidebar-heading">Personal</li>

@@ -235,7 +235,7 @@
     </style>
 </head>
 
-<body style="padding-top: 60px; background-color: #fff;">
+<body style="padding-top: 60px" >
     <div th:replace="~{Common/header :: header}"></div>
     <div class="main-container">
         <div class="left-sidebar d-none d-md-block">
@@ -257,8 +257,7 @@
                 <div class="col-md-10 ps-md-4">
                     <th:block th:if="${currentTab == 'reputation'}">
                         <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                            <h3 class="fw-bold" style="font-size: 24px; font-weight: 400; margin-bottom: 0;">Reputation
-                                History</h3>
+                            <h3 class="fw-normal fs-4 mb-0">Reputation History</h3>
                             <div class="text-muted" style="font-size: 15px;">
                                 Total Reputation: <span class="fw-bold text-dark ms-1"><i
                                         class="fa-solid fa-star text-warning"></i>
@@ -321,15 +320,14 @@
 
                     <th:block th:if="${currentTab == 'badges'}">
                         <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                            <h3 class="fw-bold" style="font-size: 24px; font-weight: 400; margin-bottom: 0;">Earned
-                                Badges</h3>
+                            <h3 class="fw-normal fs-4 mb-0">Earned Badges</h3>
                             <form th:action="@{/badge}" method="get" class="d-flex align-items-center">
                                 <input type="hidden" name="id" th:value="${uPro.userId}">
                                 <input type="hidden" name="tab" value="badges">
                                 <label for="sortBadges" class="me-2 text-muted small mb-0 text-nowrap">Sort by:</label>
                                 <select name="sort" id="sortBadges" class="form-select form-select-sm shadow-sm"
                                     onchange="this.form.submit()"
-                                    style="width: auto; border-radius: 3px; border-color: #d6d9dc;">
+                                    style="width: auto; border-radius: 3px">
                                     <option value="newest" th:selected="${currentSort == 'newest'}">Newest</option>
                                     <option value="name" th:selected="${currentSort == 'name'}">Name</option>
                                 </select>
@@ -342,8 +340,8 @@
                         </th:block>
                         <th:block th:if="${not #lists.isEmpty(myBadges)}">
                             <div class="badge-title-group mt-4">
-                                <h5 class="mb-0 fw-bold" style="color: #ab825f; font-size: 16px;"><i
-                                        class="fa-solid fa-medal" style="color: #d1a684;"></i> Bronze Badges</h5>
+                                <h5 class="mb-0 fw-bold" style="font-size: 16px;"><i
+                                        class="fa-solid fa-medal"></i> Bronze Badges</h5>
                             </div>
                             <div class="row mb-4">
                                 <th:block th:with="bronzeList=${myBadges.?[type.toLowerCase() == 'bronze']}">
@@ -354,12 +352,12 @@
                                                 <span class="fw-bold text-dark" style="font-size: 14px;"
                                                     th:text="${badge.name}"></span>
                                                 <div class="badge-custom-tooltip">
-                                                    <div class="fw-bold mb-2 pb-1"
-                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                    <div class="fw-bold mb-2 pb-1 border-bottom"
+                                                        style="font-size: 14px;"
                                                         th:text="${badge.name}"></div>
                                                     <div style="font-size: 12px; margin-bottom: 4px;"><span
                                                             class="text-muted">Level:</span> <span
-                                                            class="text-capitalize fw-bold" style="color: #d1a684;"
+                                                            class="text-capitalize fw-bold"
                                                             th:text="${badge.type}"></span></div>
                                                     <div style="font-size: 12px; line-height: 1.4;"
                                                         th:text="${badge.description}"></div>
@@ -370,8 +368,8 @@
                                 </th:block>
                             </div>
                             <div class="badge-title-group mt-4">
-                                <h5 class="mb-0 fw-bold" style="color: #838c95; font-size: 16px;"><i
-                                        class="fa-solid fa-medal" style="color: #b4b8bc;"></i> Silver Badges</h5>
+                                <h5 class="mb-0 fw-bold" style="font-size: 16px;"><i
+                                        class="fa-solid fa-medal"></i> Silver Badges</h5>
                             </div>
                             <div class="row mb-4">
                                 <th:block th:with="silverList=${myBadges.?[type.toLowerCase() == 'silver']}">
@@ -382,12 +380,12 @@
                                                 <span class="fw-bold text-dark" style="font-size: 14px;"
                                                     th:text="${badge.name}"></span>
                                                 <div class="badge-custom-tooltip">
-                                                    <div class="fw-bold mb-2 pb-1"
-                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                    <div class="fw-bold mb-2 pb-1 border-bottom"
+                                                        style="font-size: 14px;"
                                                         th:text="${badge.name}"></div>
                                                     <div style="font-size: 12px; margin-bottom: 4px;"><span
                                                             class="text-muted">Level:</span> <span
-                                                            class="text-capitalize fw-bold" style="color: #b4b8bc;"
+                                                            class="text-capitalize fw-bold"
                                                             th:text="${badge.type}"></span></div>
                                                     <div style="font-size: 12px; line-height: 1.4;"
                                                         th:text="${badge.description}"></div>
@@ -398,8 +396,8 @@
                                 </th:block>
                             </div>
                             <div class="badge-title-group mt-4">
-                                <h5 class="mb-0 fw-bold" style="color: #d4a81e; font-size: 16px;"><i
-                                        class="fa-solid fa-medal" style="color: #ffcc01;"></i> Gold Badges</h5>
+                                <h5 class="mb-0 fw-bold" style="font-size: 16px;"><i
+                                        class="fa-solid fa-medal"></i> Gold Badges</h5>
                             </div>
                             <div class="row mb-4">
                                 <th:block th:with="goldList=${myBadges.?[type.toLowerCase() == 'gold']}">
@@ -410,12 +408,12 @@
                                                 <span class="fw-bold text-dark" style="font-size: 14px;"
                                                     th:text="${badge.name}"></span>
                                                 <div class="badge-custom-tooltip">
-                                                    <div class="fw-bold mb-2 pb-1"
-                                                        style="font-size: 14px; border-bottom: 1px solid #e3e6e8;"
+                                                    <div class="fw-bold mb-2 pb-1 border-bottom"
+                                                        style="font-size: 14px;"
                                                         th:text="${badge.name}"></div>
                                                     <div style="font-size: 12px; margin-bottom: 4px;"><span
                                                             class="text-muted">Level:</span> <span
-                                                            class="text-capitalize fw-bold" style="color: #ffcc01;"
+                                                            class="text-capitalize fw-bold"
                                                             th:text="${badge.type}"></span></div>
                                                     <div style="font-size: 12px; line-height: 1.4;"
                                                         th:text="${badge.description}"></div>
@@ -429,10 +427,10 @@
                     </th:block>
 
                     <th:block th:if="${currentTab == 'privileges'}">
-                        <h3 style="font-size: 21px; font-weight: 400; margin-bottom: 10px;">Privileges</h3>
+                        <h3 class="fs-4 fw-normal mb-2">Privileges</h3>
                         <p class="text-muted mb-4">You unlock new privileges as you gain reputation.</p>
                         <div class="so-list-container mb-4" style="padding: 15px;">
-                            <h5 class="text-primary mb-2" style="font-size: 15px; color: #0074cc !important;"><i
+                            <h5 class="text-primary mb-2 so-link" style="font-size: 15px;"><i
                                     class="fa-solid fa-trophy text-warning"></i> Next Privilege</h5>
                             <th:block th:if="${isMaxLevel != null and isMaxLevel}">
                                 <p class="text-success fw-bold mb-0 mt-2">🎉 Congratulations! You have unlocked all
@@ -441,10 +439,10 @@
                             <th:block th:unless="${isMaxLevel != null and isMaxLevel}">
                                 <p class="mb-2 mt-2" style="font-size: 14px;">You need <strong
                                         th:text="${pointsNeeded + ' more reputation'}"></strong> to unlock: <span
-                                        class="badge bg-warning text-dark" style="font-weight: normal;"
+                                        class="badge bg-warning text-dark fw-normal"
                                         th:text="${nextPriv.name}"></span></p>
                                 <div class="progress"
-                                    style="height: 15px; background-color: #e3e6e8; border-radius: 3px;">
+                                    style="height: 15px;  border-radius: 3px">
                                     <div class="progress-bar bg-success" role="progressbar"
                                         th:style="|width: ${progressPercent}%|" th:aria-valuenow="${progressPercent}"
                                         aria-valuemin="0" aria-valuemax="100"
@@ -455,23 +453,22 @@
                         </div>
                         <table class="table table-borderless so-list-container">
                             <thead>
-                                <tr style="border-bottom: 1px solid #d6d9dc; background-color: #f8f9fa;">
-                                    <th style="width: 150px; font-size: 13px; color: #525960; padding: 12px;">Reputation
+                                <tr class="border-bottom">
+                                    <th style="width: 150px; font-size: 13px;  padding: 12px" class="text-secondary">Reputation
                                     </th>
-                                    <th style="font-size: 13px; color: #525960; padding: 12px;">Privilege</th>
+                                    <th style="font-size: 13px;  padding: 12px" class="text-secondary">Privilege</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <th:block th:if="${not #lists.isEmpty(privilegesList)}">
                                     <tr th:each="rule : ${privilegesList}"
                                         th:with="isUnlocked=${uPro.reputation >= rule.requiredReputation}"
-                                        style="border-bottom: 1px solid #e3e6e8;">
+                                        class="border-bottom">
                                         <td th:class="${isUnlocked ? 'fw-bold' : 'fw-bold text-muted'}"
                                             th:text="${rule.requiredReputation}" style="padding: 12px;"></td>
                                         <td th:class="${isUnlocked ? '' : 'text-muted'}" style="padding: 12px;">
                                             <th:block th:if="${isUnlocked}">
-                                                <a href="#"
-                                                    style="text-decoration: none; color: #0074cc; font-weight: 500;"
+                                                <a href="#" class="text-decoration-none fw-medium so-link"
                                                     th:text="${rule.name}">Privilege Name</a>
                                                 <span class="text-muted d-block mt-1" style="font-size: 13px;"
                                                     th:text="${rule.description}">Description</span>

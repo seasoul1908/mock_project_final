@@ -238,7 +238,7 @@
     </style>
 </head>
 
-<body style="padding-top: 60px; background-color: #fff;">
+<body style="padding-top: 60px" >
 
     <div th:replace="~{Common/header :: header}"></div>
 
@@ -271,11 +271,11 @@
 
                         <div class="mb-3 px-2">
                             <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-white border-end-0 text-muted"
-                                    style="border-color: #d6d9dc;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i
+                                        class="fa-solid fa-magnifying-glass"></i></span>
                                 <input type="text" id="collectionSearchInput"
                                     class="form-control border-start-0 ps-0 shadow-none"
-                                    placeholder="Find a collection..." style="border-color: #d6d9dc;">
+                                    placeholder="Find a collection...">
                             </div>
                         </div>
 
@@ -338,15 +338,14 @@
                                     th:text="${savedCount + ' saved items'}">0 saved items</span>
                             </div>
                             <div class="input-group input-group-sm mt-1" style="max-width: 400px;">
-                                <span class="input-group-text bg-white border-end-0 text-muted"
-                                    style="border-color: #d6d9dc;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i
+                                        class="fa-solid fa-magnifying-glass"></i></span>
                                 <input type="text" id="savedItemSearchInput"
                                     class="form-control border-start-0 ps-0 shadow-none"
-                                    placeholder="Search in this list..." style="border-color: #d6d9dc;">
+                                    placeholder="Search in this list...">
                             </div>
                         </div>
-                        <button class="btn btn-sm text-white text-nowrap"
-                            style="background-color: #0a95ff; border: none;"
+                        <button class="btn btn-sm text-white text-nowrap bg-primary" style="border: none"
                             onclick="document.getElementById('createListModal').style.display = 'block'">
                             <i class="fa-solid fa-plus me-1"></i> Create new list
                         </button>
@@ -423,7 +422,7 @@
                 <div class="mb-3 mt-3">
                     <label class="form-label fw-bold small">List Name</label>
                     <input type="text" name="listName" class="form-control" placeholder="e.g. Java Tips"
-                        style="border-color: #d6d9dc;" required>
+                        required>
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('createListModal').style.display = 'none'"
@@ -443,8 +442,7 @@
                 <input type="hidden" id="renameCollectionId" name="collectionId" value="">
                 <div class="mb-3 mt-3">
                     <label class="form-label fw-bold small">New List Name</label>
-                    <input type="text" id="renameInput" name="newName" class="form-control"
-                        style="border-color: #d6d9dc;" required>
+                    <input type="text" id="renameInput" name="newName" class="form-control" required>
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('renameListModal').style.display = 'none'"
@@ -464,7 +462,7 @@
                 <input type="hidden" id="moveQuestionId" name="questionId" value="">
                 <div class="mb-4 mt-3">
                     <label class="form-label fw-bold small">Select destination list</label>
-                    <select name="collectionId" class="form-select" style="border-color: #d6d9dc;">
+                    <select name="collectionId" class="form-select">
                         <option value="">-- All saves (No specific list) --</option>
                         <th:block th:each="col : ${allMyCollections}">
                             <option th:value="${col.collectionId}" th:text="${col.name}">Name</option>

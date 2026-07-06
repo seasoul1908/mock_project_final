@@ -11,21 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        /* Base Variables */
-        :root {
-            --orange: #F48024;
-            --blue-link: #0074cc;
-            --blue-btn: #0a95ff;
-            --blue-tag-bg: #e1ecf4;
-            --blue-tag-text: #39739d;
-            --black-text: #0c0d0e;
-            --gray-text: #525960;
-            --gray-sub: #6a737c;
-            --border-color: #d6d9dc;
-            --bg-body: #ffffff;
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
-        }
-
+        /* Reset & Base */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -33,50 +19,24 @@
         }
 
         body {
-            font-family: var(--font-stack);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
             background-color: var(--bg-body);
-            color: var(--black-text);
+            color: var(--text-primary);
             font-size: 13px;
-        }
-
-        /* Navbar CSS */
-        .navbar-devquery {
-            border-top: 3px solid #f48024;
-            background-color: #ffffff;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
-            height: 56px;
-        }
-
-        .search-box {
-            transition: all 0.3s ease;
-            border: 1px solid #babfc4;
-        }
-
-        .search-box:focus {
-            border-color: #3b4045;
-            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
-        }
-
-        .btn-auth {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .avatar-img {
-            object-fit: cover;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* ========================================================= */
-        /* BẢN VÁ LỖI SIDEBAR: Đổi align-items từ flex-start sang stretch */
+        /* LAYOUT & SIDEBARS                                         */
         /* ========================================================= */
         .main-container {
             max-width: 1264px;
             margin: 56px auto 0;
             display: flex;
             align-items: stretch;
+            background-color: var(--bg-body);
         }
 
-        /* Chỉnh lại cột Sidebar trái */
         .left-sidebar {
             width: 164px;
             flex-shrink: 0;
@@ -88,24 +48,19 @@
             padding: 24px;
             width: 100%;
             min-height: 100vh;
-            /* Đảm bảo nội dung luôn đủ dài để cuộn */
         }
 
-        /* Thêm tính năng Cố định (Sticky) cho cả cột Sidebar bên Phải */
         .right-sidebar {
             width: 300px;
             flex-shrink: 0;
             padding: 24px 0 20px 24px;
-
             position: -webkit-sticky;
             position: sticky;
             top: 60px;
-            /* Bắt đầu dính cách viền trên 60px */
             height: calc(100vh - 60px);
             overflow-y: auto;
         }
 
-        /* Ẩn scrollbar xấu xí cho sidebar phải */
         .right-sidebar::-webkit-scrollbar {
             width: 5px;
         }
@@ -116,12 +71,12 @@
         }
 
         .right-sidebar:hover::-webkit-scrollbar-thumb {
-            background: #d6d9dc;
+            background: var(--border-color);
         }
 
         /* ========================================================= */
-
-        /* Content CSS */
+        /* MAIN CONTENT - QUESTIONS & FILTERS                        */
+        /* ========================================================= */
         .content-header {
             display: flex;
             justify-content: space-between;
@@ -132,19 +87,21 @@
         .page-title {
             font-size: 27px;
             font-weight: 400;
+            color: var(--text-primary);
         }
 
         .btn-primary-custom {
-            background-color: var(--blue-btn);
+            background-color: var(--link-color);
             color: white;
             padding: 10px 14px;
             border-radius: 3px;
             text-decoration: none;
             font-size: 13px;
+            transition: background-color 0.2s;
         }
 
         .btn-primary-custom:hover {
-            background-color: #0074cc;
+            background-color: var(--link-hover);
             color: white;
         }
 
@@ -157,25 +114,37 @@
 
         .total-questions {
             font-size: 17px;
+            color: var(--text-primary);
         }
 
         .filter-btn-group {
             display: flex;
-            border: 1px solid #9fa6ad;
+            border: 1px solid var(--border-color);
             border-radius: 3px;
+            overflow: hidden;
         }
 
         .filter-item {
             padding: 10px 12px;
-            background: #fff;
-            border-right: 1px solid #9fa6ad;
-            color: #6a737c;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            color: var(--text-muted);
             text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .filter-item:last-child {
+            border-right: none;
+        }
+
+        .filter-item:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--text-primary);
         }
 
         .filter-item.active {
-            background-color: #e3e6e8;
-            color: #3b4045;
+            background-color: var(--btn-hover-bg);
+            color: var(--text-primary);
             font-weight: 500;
         }
 
@@ -194,17 +163,17 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 6px;
-            color: var(--gray-sub);
+            color: var(--text-muted);
         }
 
         .stat-box.votes {
-            color: var(--black-text);
             font-weight: 500;
+            color: var(--text-primary);
         }
 
         .stat-box.status-answered {
-            border: 1px solid #2f6f44;
-            color: #2f6f44;
+            border: 1px solid #48a868;
+            color: #48a868;
             padding: 4px 6px;
             border-radius: 3px;
         }
@@ -215,16 +184,21 @@
 
         .question-title {
             font-size: 17px;
-            color: var(--blue-link);
+            color: var(--link-color);
             text-decoration: none;
             margin-bottom: 5px;
             display: block;
+            transition: color 0.2s;
+        }
+
+        .question-title:hover {
+            color: var(--link-hover);
         }
 
         .question-excerpt {
-            color: #3b4045;
             margin-bottom: 8px;
             line-height: 1.4;
+            color: var(--text-secondary);
         }
 
         .meta-container {
@@ -233,43 +207,37 @@
             align-items: center;
         }
 
-        .tag {
-            background-color: var(--blue-tag-bg);
-            color: var(--blue-tag-text);
-            padding: 4px 6px;
-            border-radius: 3px;
-            font-size: 12px;
-            text-decoration: none;
-            margin-right: 4px;
-        }
-
         .user-card {
             font-size: 12px;
-            color: var(--gray-sub);
             display: flex;
             align-items: center;
             gap: 5px;
+            color: var(--text-muted);
         }
 
-        /* Widgets */
+        /* ========================================================= */
+        /* RIGHT SIDEBAR WIDGETS & TAGS                              */
+        /* ========================================================= */
         .widget {
             border-radius: 3px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
-            border: 1px solid;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-panel);
             font-size: 13px;
         }
 
         .widget-yellow {
-            background-color: #fdf7e2;
-            border-color: #f1e5bc;
+            background-color: var(--gold-bg);
+            border-color: var(--gold-border);
         }
 
         .widget-header {
             padding: 12px 15px;
             font-weight: bold;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            background-color: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid var(--border-color);
+            background-color: transparent;
+            color: var(--text-primary);
         }
 
         .widget-list {
@@ -280,7 +248,12 @@
             padding: 12px 15px;
             display: flex;
             gap: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .widget-list li:last-child {
+            border-bottom: none;
         }
 
         .popular-tags-box {
@@ -291,7 +264,7 @@
             font-size: 19px;
             font-weight: 400;
             margin-bottom: 12px;
-            color: var(--black-text);
+            color: var(--text-primary);
         }
 
         .popular-tags-list {
@@ -300,12 +273,28 @@
             gap: 6px;
         }
 
-        .tag.active-tag {
-            background-color: #39739d;
-            color: white;
+        .post-tag {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
 
-        /* Footer */
+        .post-tag:hover {
+            background-color: var(--border-color);
+        }
+
+        .post-tag.active-tag {
+            background-color: var(--tag-text);
+            color: var(--bg-body);
+        }
+
+        /* ========================================================= */
+        /* FOOTER OVERRIDES                                          */
+        /* ========================================================= */
         .footer-devquery {
             background-color: #242729;
             color: #ffffff;
@@ -443,7 +432,7 @@
 
                     <div class="meta-container">
                         <div class="tags" th:with="tags=${questionTags[q.questionId]}">
-                            <a th:each="t : ${tags}" th:href="@{/home(tag=${t})}" class="tag" th:text="${t}">
+                            <a th:each="t : ${tags}" th:href="@{/home(tag=${t})}" class="post-tag" th:text="${t}">
                                 java
                             </a>
                         </div>
@@ -460,9 +449,10 @@
 
             <div th:if="${questions == null or #lists.isEmpty(questions)}" class="text-center mt-5">
                 <h5>No questions found</h5>
-                <p class="text-secondary">Try another keyword or filter.</p>
+                <p>Try another keyword or filter.</p>
                 <a th:href="@{/home}" class="btn btn-outline-primary btn-sm">Back to home</a>
             </div>
+
             <nav th:if="${totalPage > 1}" class="mt-4">
                 <ul class="pagination justify-content-center">
                     <li class="page-item" th:classappend="${currentPage <= 1} ? ' disabled' : ''">
@@ -507,13 +497,14 @@
                 <h3>Popular tags</h3>
 
                 <div class="popular-tags-list">
-                    <a th:each="popTag : ${popularTags}" th:href="@{/home(tag=${popTag})}" class="tag"
+                    <a th:each="popTag : ${popularTags}" th:href="@{/home(tag=${popTag})}" class="post-tag"
                         th:classappend="${popTag == currentTag} ? ' active-tag' : ''" th:text="${popTag}">
                         java
                     </a>
                 </div>
 
-                <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}" class="text-secondary mt-2">
+                <p th:if="${popularTags == null or #lists.isEmpty(popularTags)}" class="mt-2"
+                    style="color: var(--text-secondary);">
                     No popular tags yet.
                 </p>
             </div>

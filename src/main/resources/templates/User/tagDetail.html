@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="'[' + ${tag.tagName} + '] - DevQuery'">[TagName] - DevQuery</title>
@@ -12,86 +13,156 @@
             --blue-tag-bg: #e1ecf4;
             --blue-tag-text: #39739d;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            font-size: 13px; background: #fff; color: #0c0d0e;
+            font-size: 13px;
+            background: #fff;
+            color: #0c0d0e;
             padding-top: 56px;
         }
 
         /* Layout */
         .container-custom {
-            max-width: 1264px; margin: 0 auto;
-            display: flex; align-items: stretch;
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
         }
+
         .left-sidebar {
-            width: 164px; flex-shrink: 0;
-            padding-top: 25px; border-right: 1px solid var(--border-color);
+            width: 164px;
+            flex-shrink: 0;
+            padding-top: 25px;
+            border-right: 1px solid var(--border-color);
         }
+
         .main-content {
-            flex-grow: 1; padding: 24px;
-            border-left: 1px solid var(--border-color); min-width: 0;
-            
+            flex-grow: 1;
+            padding: 24px;
+            border-left: 1px solid var(--border-color);
+            min-width: 0;
+
         }
 
         /* Tag Header */
         .tag-name-badge {
-            display: inline-block; background: #e1ecf4; color: #39739d;
-            padding: 6px 12px; border-radius: 4px;
-            font-size: 22px; font-weight: 500; margin-bottom: 12px;
+            display: inline-block;
+            background: #e1ecf4;
+            color: #39739d;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 12px;
             text-decoration: none;
         }
+
         .tag-description {
-            color: #3b4045; line-height: 1.7;
-            max-width: 720px; font-size: 13px; margin-bottom: 16px;
+            color: #3b4045;
+            line-height: 1.7;
+            max-width: 720px;
+            font-size: 13px;
+            margin-bottom: 16px;
         }
 
         /* Action bar */
         .action-bar {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
 
         /* Watch button */
         .btn-watch {
-            padding: 8px 16px; border-radius: 4px; font-size: 13px;
-            font-weight: 500; cursor: pointer; border: 1px solid;
-            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             text-decoration: none;
         }
+
         .btn-watch.not-followed {
-            background: var(--blue); color: #fff; border-color: var(--blue);
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
         }
-        .btn-watch.not-followed:hover { background: #005999; }
+
+        .btn-watch.not-followed:hover {
+            background: #005999;
+        }
+
         .btn-watch.followed {
-            background: #fff; color: #6a737c; border-color: #9fa6ad;
+            background: #fff;
+            color: #6a737c;
+            border-color: #9fa6ad;
         }
-        .btn-watch.followed:hover { background: #f8f9f9; }
+
+        .btn-watch.followed:hover {
+            background: #f8f9f9;
+        }
 
         /* Filter buttons */
         .filter-buttons {
-            display: flex; border: 1px solid #9fa6ad;
-            border-radius: 3px; overflow: hidden;
+            display: flex;
+            border: 1px solid #9fa6ad;
+            border-radius: 3px;
+            overflow: hidden;
         }
+
         .filter-buttons a {
-            padding: 8px 12px; font-size: 13px; color: #6a737c;
-            text-decoration: none; border-right: 1px solid #9fa6ad;
-            background: #fff; transition: background 0.1s;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #6a737c;
+            text-decoration: none;
+            border-right: 1px solid #9fa6ad;
+            background: #fff;
+            transition: background 0.1s;
         }
-        .filter-buttons a:last-child { border-right: none; }
-        .filter-buttons a:hover { background: #f8f9f9; }
+
+        .filter-buttons a:last-child {
+            border-right: none;
+        }
+
+        .filter-buttons a:hover {
+            background: #f8f9f9;
+        }
+
         .filter-buttons a.active {
-            background: #e3e6e8; font-weight: 500; color: #3b4045;
+            background: #e3e6e8;
+            font-weight: 500;
+            color: #3b4045;
         }
 
         /* Divider */
-        .divider { border: none; border-top: 1px solid var(--border-color); margin: 12px 0; }
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 12px 0;
+        }
 
         /* Questions count */
         .questions-count {
-            font-size: 15px; color: #3b4045; margin-bottom: 12px;
+            font-size: 15px;
+            color: #3b4045;
+            margin-bottom: 12px;
         }
-        .questions-count strong { font-weight: 600; }
+
+        .questions-count strong {
+            font-weight: 600;
+        }
 
         /* Question item */
         .question-item {
@@ -112,73 +183,150 @@
             flex-shrink: 0;
             margin-bottom: 6px;
         }
-        .q-stat { font-size: 12px; color: #6a737c; text-align: center; white-space: nowrap; }
-        .q-stat strong { display: block; font-size: 14px; color: #3b4045; }
-        .q-stat.has-answer strong { color: #5eba7d; }
-        .q-stat.negative strong  { color: #d1383d; }
+
+        .q-stat {
+            font-size: 12px;
+            color: #6a737c;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .q-stat strong {
+            display: block;
+            font-size: 14px;
+            color: #3b4045;
+        }
+
+        .q-stat.has-answer strong {
+            color: #5eba7d;
+        }
+
+        .q-stat.negative strong {
+            color: #d1383d;
+        }
 
         /* Content */
-        .q-content { flex: 1; min-width: 0; }
+        .q-content {
+            flex: 1;
+            min-width: 0;
+        }
 
         .q-title {
-            font-size: 15px; color: var(--blue); text-decoration: none;
-            line-height: 1.4; display: block; margin-bottom: 6px;
+            font-size: 15px;
+            color: var(--blue);
+            text-decoration: none;
+            line-height: 1.4;
+            display: block;
+            margin-bottom: 6px;
         }
-        .q-title:hover { color: #005999; }
+
+        .q-title:hover {
+            color: #005999;
+        }
 
         .q-excerpt {
-            font-size: 12px; color: #3b4045; line-height: 1.5;
+            font-size: 12px;
+            color: #3b4045;
+            line-height: 1.5;
             margin-bottom: 8px;
-            display: -webkit-box; -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical; overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .q-footer {
-            display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .q-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .q-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
         .q-tag {
-            background: #e1ecf4; color: #39739d;
-            padding: 2px 6px; border-radius: 3px;
-            font-size: 11px; text-decoration: none;
+            background: #e1ecf4;
+            color: #39739d;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            text-decoration: none;
         }
-        .q-tag:hover { background: #d0e3f1; }
 
-        .q-meta { font-size: 11px; color: #6a737c; }
-        .q-meta strong { color: var(--blue); }
+        .q-tag:hover {
+            background: #d0e3f1;
+        }
+
+        .q-meta {
+            font-size: 11px;
+            color: #6a737c;
+        }
+
+        .q-meta strong {
+            color: var(--blue);
+        }
 
         .closed-badge {
-            display: inline-block; font-size: 11px;
-            background: #f1f2f3; color: #6a737c;
-            border: 1px solid #d6d9dc; border-radius: 3px;
-            padding: 1px 5px; margin-left: 6px;
+            display: inline-block;
+            font-size: 11px;
+            background: #f1f2f3;
+            color: #6a737c;
+            border: 1px solid #d6d9dc;
+            border-radius: 3px;
+            padding: 1px 5px;
+            margin-left: 6px;
         }
 
         /* Empty */
         .empty-questions {
-            padding: 40px 0; text-align: center; color: #6a737c;
+            padding: 40px 0;
+            text-align: center;
+            color: #6a737c;
         }
-        .empty-questions i { font-size: 40px; margin-bottom: 12px; display: block; }
+
+        .empty-questions i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
 
         /* Pagination */
         .pagination {
-            display: flex; gap: 4px;
-            margin-top: 20px; flex-wrap: wrap;
+            display: flex;
+            gap: 4px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
-        .pagination a, .pagination span {
-            padding: 6px 10px; border: 1px solid #d6d9dc;
-            border-radius: 3px; font-size: 13px;
-            text-decoration: none; color: var(--blue); background: #fff;
+
+        .pagination a,
+        .pagination span {
+            padding: 6px 10px;
+            border: 1px solid #d6d9dc;
+            border-radius: 3px;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--blue);
+            background: #fff;
         }
-        .pagination a:hover { background: #f8f9f9; }
+
+        .pagination a:hover {
+            background: #f8f9f9;
+        }
+
         .pagination span.current {
-            background: #f48024; color: #fff;
-            border-color: #f48024; font-weight: 600;
+            background: #f48024;
+            color: #fff;
+            border-color: #f48024;
+            font-weight: 600;
         }
     </style>
 </head>
+
 <body>
     <div th:replace="~{Common/header :: header}"></div>
 
@@ -205,8 +353,10 @@
                     <form method="post" th:action="@{/tags/follow}" style="margin:0;">
                         <input type="hidden" name="tagId" th:value="${tag.id}" />
                         <input type="hidden" name="action" th:value="${isFollowed ? 'unfollow' : 'follow'}" />
-                        <input type="hidden" name="redirectTo" th:value="'/tags/' + ${tag.id} + '?filter=' + ${filter} + '&page=' + ${currentPage}" />
-                        <button type="submit" class="btn-watch" th:classappend="${isFollowed ? 'followed' : 'not-followed'}">
+                        <input type="hidden" name="redirectTo"
+                            th:value="'/tags/' + ${tag.id} + '?filter=' + ${filter} + '&page=' + ${currentPage}" />
+                        <button type="submit" class="btn-watch"
+                            th:classappend="${isFollowed ? 'followed' : 'not-followed'}">
                             <i class="fa-solid" th:classappend="${isFollowed ? 'fa-eye-slash' : 'fa-eye'}"></i>
                             <span th:text="${isFollowed ? 'Unfollow Tag' : 'Follow Tag'}">Follow Tag</span>
                         </button>
@@ -214,13 +364,16 @@
                 </div>
 
                 <div class="filter-buttons">
-                    <a th:href="@{'/tags/' + ${tag.id}(filter='newest')}" th:classappend="${filter == 'newest' ? 'active' : ''}">Newest</a>
-                    <a th:href="@{'/tags/' + ${tag.id}(filter='unanswered')}" th:classappend="${filter == 'unanswered' ? 'active' : ''}">Unanswered</a>
-                    <a th:href="@{'/tags/' + ${tag.id}(filter='voted')}" th:classappend="${filter == 'voted' ? 'active' : ''}">Voted</a>
+                    <a th:href="@{'/tags/' + ${tag.id}(filter='newest')}"
+                        th:classappend="${filter == 'newest' ? 'active' : ''}">Newest</a>
+                    <a th:href="@{'/tags/' + ${tag.id}(filter='unanswered')}"
+                        th:classappend="${filter == 'unanswered' ? 'active' : ''}">Unanswered</a>
+                    <a th:href="@{'/tags/' + ${tag.id}(filter='voted')}"
+                        th:classappend="${filter == 'voted' ? 'active' : ''}">Voted</a>
                 </div>
             </div>
 
-            <hr class="divider"/>
+            <hr class="divider" />
 
             <!-- Questions count -->
             <p class="questions-count">
@@ -254,7 +407,8 @@
 
                         <div class="q-footer">
                             <div class="q-tags">
-                                <a th:each="t : ${q.tags}" th:href="@{'/tags?search=' + ${t}}" class="q-tag" th:text="${t}">tag</a>
+                                <a th:each="t : ${q.tags}" th:href="@{'/tags?search=' + ${t}}" class="q-tag"
+                                    th:text="${t}">tag</a>
                             </div>
                             <div class="q-meta">
                                 asked by <strong th:text="${q.authorName}">Author</strong>
@@ -273,12 +427,15 @@
 
             <!-- Pagination -->
             <div th:if="${totalPages > 1}" class="pagination">
-                <a th:if="${currentPage > 1}" th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${currentPage - 1})}">Prev</a>
+                <a th:if="${currentPage > 1}"
+                    th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${currentPage - 1})}">Prev</a>
                 <th:block th:each="p : ${#numbers.sequence(1, totalPages)}">
                     <span th:if="${p == currentPage}" class="current" th:text="${p}">1</span>
-                    <a th:unless="${p == currentPage}" th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${p})}" th:text="${p}">1</a>
+                    <a th:unless="${p == currentPage}" th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${p})}"
+                        th:text="${p}">1</a>
                 </th:block>
-                <a th:if="${currentPage < totalPages}" th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${currentPage + 1})}">Next</a>
+                <a th:if="${currentPage < totalPages}"
+                    th:href="@{'/tags/' + ${tag.id}(filter=${filter}, page=${currentPage + 1})}">Next</a>
             </div>
         </main>
     </div>
@@ -286,4 +443,5 @@
     <div th:replace="~{Common/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
