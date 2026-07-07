@@ -718,6 +718,89 @@
                 color: var(--text-primary, #f1f2f3) !important;
                 font-weight: bold !important;
             }
+
+            /* =================================================== */
+            /* FIX TRANG CHI TIẾT BÀI VIẾT (View Post Detail)      */
+            /* =================================================== */
+
+            /* 1. Kéo sáng Tên người đăng, Bình luận viên và Tiêu đề (Màu Xanh Sáng) */
+            body.dark-theme .comment-author,
+            body.dark-theme .author-card .fw-bold,
+            body.dark-theme .question-title,
+            body.dark-theme .trending-item {
+                color: var(--link-color, #379fef) !important;
+                font-weight: 600 !important;
+            }
+
+            body.dark-theme .trending-item:hover {
+                color: var(--link-hover, #58a6ff) !important;
+            }
+
+            /* 2. Kéo sáng chữ phần Nội dung câu trả lời và Bình luận (Màu Trắng Sáng) */
+            body.dark-theme .post-text,
+            body.dark-theme .comment-item {
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* 3. Sửa màu nền Khung Code cho dịu mắt, dễ đọc */
+            body.dark-theme .code-block,
+            body.dark-theme pre,
+            body.dark-theme code {
+                background-color: var(--bg-input, #1a1b1d) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+                border: 1px solid var(--border-color, #4a4e51) !important;
+            }
+
+            /* 4. Khối thông tin tác giả (Author Card) nổi bật nhẹ lên khỏi nền */
+            body.dark-theme .author-card {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                border: 1px solid var(--border-color, #4a4e51) !important;
+            }
+
+            /* 5. Khung nhập liệu (Soạn Bình luận & Trả lời) */
+            body.dark-theme .comment-form-inline input,
+            body.dark-theme .answer-form-box textarea {
+                background-color: var(--bg-input, #1a1b1d) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            body.dark-theme .comment-form-inline input:focus,
+            body.dark-theme .answer-form-box textarea:focus {
+                border-color: var(--link-color, #379fef) !important;
+                box-shadow: 0 0 0 3px rgba(55, 159, 239, 0.2) !important;
+            }
+
+            /* 6. Đồng bộ màu các đường kẻ phân cách (Bình luận, Câu trả lời) */
+            body.dark-theme .comments-section,
+            body.dark-theme .comment-item,
+            body.dark-theme .answer-card,
+            body.dark-theme .meta-bar,
+            body.dark-theme .trending-card-header,
+            body.dark-theme .trending-item {
+                border-color: var(--border-color, #4a4e51) !important;
+            }
+
+            /* 7. Nút thao tác (Share, Edit, Delete, Vote...) */
+            body.dark-theme .action-btn,
+            body.dark-theme .vote-btn {
+                color: var(--text-secondary, #babfc4) !important;
+            }
+
+            body.dark-theme .action-btn:hover,
+            body.dark-theme .vote-btn:hover {
+                background-color: var(--btn-hover-bg, #3b4045) !important;
+                color: var(--text-primary, #f1f2f3) !important;
+            }
+
+            /* Giữ lại màu Cam/Đỏ đặc trưng khi Vote */
+            body.dark-theme .vote-btn.active-up {
+                color: #f48024 !important;
+            }
+
+            body.dark-theme .vote-btn.active-down {
+                color: #d0393e !important;
+            }
         </style>
 
         <script>
