@@ -47,7 +47,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/", "/home", "/search", "/tags", "/tags/**",
                                                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
                                                                 "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
-                                                                "/login/oauth2/**")
+                                                                "/login/oauth2/**", "/question", "/question/**", "/question-detail",
+                                                                "/trending")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
                                                 .hasRole("ADMIN")

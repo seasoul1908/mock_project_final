@@ -73,6 +73,78 @@ public class QuestionController {
         }
     }
 
+    @PostMapping("/edit")
+    public String editQuestion(@RequestParam("questionId") long questionId,
+            @RequestParam("title") String title,
+            @RequestParam("body") String body,
+            @RequestParam(value = "codeSnippet", required = false) String codeSnippet) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+        try {
+            questionService.editQuestion(questionId, user.getUserId(), title, body, codeSnippet, isAdmin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/question?id=" + questionId;
+    }
+
+    @PostMapping("/delete")
+    public String deleteQuestion(@RequestParam("questionId") long questionId) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+        try {
+            questionService.deleteQuestion(questionId, user.getUserId(), isAdmin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/home";
+    }
+
+    @PostMapping("/bounty/add")
+    public String addBounty(@RequestParam("questionId") long questionId,
+            @RequestParam("amount") int amount,
+            @RequestParam(value = "days", defaultValue = "7") int days) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            questionService.addBounty(questionId, user.getUserId(), amount, days);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/question?id=" + questionId;
+    }
+
+    @PostMapping("/bounty/award")
+    public String awardBounty(@RequestParam("questionId") long questionId,
+            @RequestParam("answerId") long answerId) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            questionService.awardBounty(questionId, answerId, user.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/question?id=" + questionId + "#answer-" + answerId;
+    }
+
     private User getAuthenticatedUser() {
         org.springframework.security.core.Authentication auth = 
                 org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();

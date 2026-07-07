@@ -18,8 +18,14 @@ public class Report {
     @Column(name = "target_id", nullable = false)
     private Long targetId;
 
+    @Column(name = "reporter_id", nullable = false)
+    private Long reporterId;
+
     @Column(name = "reason", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String reason;
+
+    @Column(name = "note", length = 500)
+    private String note;
 
     @Column(name = "status", length = 20)
     private String status = "open"; // open, resolved, dismissed
@@ -36,8 +42,12 @@ public class Report {
     public void setTargetType(String targetType) { this.targetType = targetType; }
     public Long getTargetId() { return targetId; }
     public void setTargetId(Long targetId) { this.targetId = targetId; }
+    public Long getReporterId() { return reporterId; }
+    public void setReporterId(Long reporterId) { this.reporterId = reporterId; }
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public Date getCreatedAt() { return createdAt; }
