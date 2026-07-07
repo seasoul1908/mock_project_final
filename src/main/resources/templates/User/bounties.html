@@ -195,7 +195,7 @@
                         </div>
                     </div>
                     <div class="question-summary">
-                        <a th:href="@{/question-detail(id=${q.questionId})}" class="question-title" th:text="${q.title}">Question Title</a>
+                        <a th:href="@{/question(id=${q.questionId})}" class="question-title" th:text="${q.title}">Question Title</a>
                         <p class="question-excerpt" th:text="${#strings.abbreviate(q.body, 200)}">Question excerpt</p>
                         
                         <div class="meta-container">

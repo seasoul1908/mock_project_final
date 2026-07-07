@@ -134,6 +134,16 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(value = "SELECT follower_id FROM UserFollow WHERE following_id = :authorId", nativeQuery = true)
     List<Long> findFollowersByAuthorId(@Param("authorId") Long authorId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Questions SET view_count = view_count + 1 WHERE question_id = :questionId", nativeQuery = true)
+    void incrementViewCount(@Param("questionId") long questionId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Questions SET updated_at = GETDATE() WHERE question_id = :questionId", nativeQuery = true)
+    void touchUpdatedAt(@Param("questionId") long questionId);
+
     @Query(value = "SELECT DISTINCT tf.user_id " +
             "FROM TagFollow tf " +
             "JOIN Question_Tags qt ON tf.tag_id = qt.tag_id " +
@@ -146,4 +156,21 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "JOIN Question_Tags qt ON t.tag_id = qt.tag_id " +
             "WHERE qt.question_id = :questionId AND tf.user_id = :userId", nativeQuery = true)
     List<String> findFollowedTagsForQuestion(@Param("questionId") Long questionId, @Param("userId") Long userId);
+
+    // Trending questions: activity score over the last 7 days (score*3 + views + answers*2)
+    @Query(value = "SELECT q.question_id AS questionId, q.title AS title, q.Score AS score, q.view_count AS viewCount, " +
+            "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) AS answerCount, " +
+            "(ISNULL(q.Score, 0) * 3 + ISNULL(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2) AS trendingScore " +
+            "FROM Questions q " +
+            "WHERE ISNULL(q.is_deleted, 0) = 0 " +
+            "AND q.created_at > DATEADD(day, -7, GETDATE()) " +
+            "ORDER BY trendingScore DESC, q.created_at DESC",
+            nativeQuery = true)
+    List<Object[]> findTrendingNative(Pageable pageable);
+
+    // Soft-delete a question (the is_deleted column already exists in the schema)
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Questions SET is_deleted = 1, deleted_at = GETDATE(), deleted_by = :deletedBy WHERE question_id = :questionId", nativeQuery = true)
+    void softDeleteQuestion(@Param("questionId") long questionId, @Param("deletedBy") long deletedBy);
 }

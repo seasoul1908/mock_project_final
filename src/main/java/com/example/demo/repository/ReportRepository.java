@@ -15,6 +15,9 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     List<Report> findAllByOrderByCreatedAtDesc();
 
+    // Deletion suggestions are stored as Reports with note = 'DELETION_SUGGESTION'
+    List<Report> findByNoteOrderByCreatedAtDesc(String note);
+
     @Query("SELECT COUNT(r) FROM Report r WHERE r.status = :status")
     int countByStatus(@Param("status") String status);
 }
