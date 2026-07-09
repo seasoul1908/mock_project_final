@@ -6,9 +6,14 @@
     <title th:text="${uPro.username + ' - Questions - DevQuery'}">Questions - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
     <style>
         /* =================================================== */
-        /* UNIFIED CSS CHO CẢ 7 TRANG ACTIVITY                 */
+        /* UNIFIED CSS FOR ALL 7 ACTIVITY PAGES                */
         /* =================================================== */
         * {
             box-sizing: border-box;
@@ -20,6 +25,7 @@
             background-color: var(--bg-body, #fff);
             padding-top: 60px;
             color: var(--text-primary, #232629);
+            font-size: 13px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -171,7 +177,7 @@
             padding-bottom: 50px;
         }
 
-        /* Khối dành riêng cho Activity Summary & Tags */
+        /* Activity Summary & Tags specific styling */
         .so-panel {
             border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 5px;

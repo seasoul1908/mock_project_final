@@ -18,7 +18,7 @@ public class Collection {
     @Column(name = "Name", nullable = false, length = 100)
     private String name;
 
-    // Để SQL Server tự động tạo ngày giờ (DEFAULT GETDATE())
+    // Database-managed timestamp for entity creation
     @Column(name = "CreatedAt", insertable = false, updatable = false)
     private Timestamp createdAt;
 

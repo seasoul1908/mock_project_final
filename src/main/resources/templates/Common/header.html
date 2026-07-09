@@ -3,6 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
 </head>
 
 <body>
@@ -73,11 +78,10 @@
                     <th:block sec:authorize="isAuthenticated()">
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center py-0" th:href="@{/profile}">
-                                <img th:src="${loggedInUser.avatarUrl != null ? loggedInUser.avatarUrl : '/assets/img/Avatar.png'}"
-                                    alt="Avatar" width="32" height="32"
-                                    class="rounded-circle bg-light border avatar-img" />
+                                <img th:src="${loggedInUser?.avatarUrl ?: '/assets/img/Avatar.png'}" alt="Avatar"
+                                    width="32" height="32" class="rounded-circle bg-light border avatar-img" />
                                 <span class="ms-2 fw-bold text-dark small"
-                                    th:text="${loggedInUser != null ? loggedInUser.username : 'User'}">User</span>
+                                    th:text="${loggedInUser?.username ?: 'User'}">User</span>
                             </a>
                         </li>
                         <li class="nav-item position-relative me-3">
@@ -187,7 +191,7 @@
 
         <style id="global-dark-mode">
             /* =================================================== */
-            /* ĐỊNH NGHĨA BIẾN CHO LIGHT MODE (MẶC ĐỊNH)           */
+            /* Light Mode Variables (Default)                      */
             /* =================================================== */
             :root {
                 --bg-body: #ffffff;
@@ -221,7 +225,7 @@
             }
 
             /* =================================================== */
-            /* ĐỊNH NGHĨA BIẾN CHO DARK MODE                       */
+            /* Dark Mode Variables                                 */
             /* =================================================== */
             body.dark-theme {
                 --bg-body: #2d3135;
@@ -304,7 +308,7 @@
             }
 
             /* =================================================== */
-            /* CÁC THÀNH PHẦN CHUNG (NAVBAR, SIDEBAR, FORM, PAGINATION) */
+            /* Common UI Components                                */
             /* =================================================== */
             body.dark-theme a.so-link {
                 color: var(--link-color) !important;
@@ -468,7 +472,7 @@
             }
 
             /* =================================================== */
-            /* FIX LỖI THANH PHÂN TRANG (BOOTSTRAP PAGINATION)     */
+            /* Bootstrap Pagination Overrides                      */
             /* =================================================== */
             body.dark-theme .page-link {
                 background-color: var(--bg-panel, #232629) !important;
@@ -482,7 +486,7 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* Trạng thái trang đang chọn (Active) - Đổi sang màu Cam chuẩn SO */
+            /* Ensure active pagination items align with the DevQuery brand color */
             body.dark-theme .page-item.active .page-link {
                 background-color: #f48024 !important;
                 border-color: #f48024 !important;
@@ -490,7 +494,7 @@
                 font-weight: 600 !important;
             }
 
-            /* Trạng thái vô hiệu hóa (Disabled) ở nút Prev/Next */
+            /* Reduce opacity for disabled pagination controls to indicate inactivity */
             body.dark-theme .page-item.disabled .page-link {
                 background-color: var(--bg-body, #2d3135) !important;
                 color: var(--text-muted, #9fa6ad) !important;
@@ -519,10 +523,10 @@
             }
 
             /* =================================================== */
-            /* FIX TRIỆT ĐỂ TRANG GUIDE (Bóp chết các màu trắng)   */
+            /* Dark Mode Overrides for Guide Pages                 */
             /* =================================================== */
 
-            /* 1. Ép nền các khối Card, Hero, Item thành Panel Tối */
+            /* Enforce dark panel backgrounds for structural elements to maintain theme consistency */
             body.dark-theme .page-hero,
             body.dark-theme .section-card,
             body.dark-theme .guide-item,
@@ -531,7 +535,7 @@
                 border-color: var(--border-color, #4a4e51) !important;
             }
 
-            /* 2. Tiêu đề "Forum Rules" đang bị trắng toát -> Khử ngay! */
+            /* Override default white backgrounds in section headers for readability */
             body.dark-theme .section-header {
                 background-color: var(--bg-input, #1a1b1d) !important;
                 border-bottom-color: var(--border-color, #4a4e51) !important;
@@ -545,7 +549,6 @@
                 color: var(--text-muted, #9fa6ad) !important;
             }
 
-            /* 3. Vòng tròn Số thứ tự và Khối Icon */
             body.dark-theme .rule-number,
             body.dark-theme .guide-icon,
             body.dark-theme .workflow-step {
@@ -553,12 +556,11 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* 4. Viền kẻ giữa các rule */
             body.dark-theme .rule-item {
                 border-bottom-color: var(--border-color, #4a4e51) !important;
             }
 
-            /* 5. Nút bấm Outline (Log in, Ask a Question) */
+            /* Adapt outline buttons for visibility on dark backgrounds */
             body.dark-theme .btn-outline-custom {
                 background-color: transparent !important;
                 border-color: var(--border-color, #4a4e51) !important;
@@ -570,7 +572,7 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* 6. Ép màu cho các Widget cột bên phải (Quick Tips, Page Purpose) */
+            /* Retain contextual colors (yellow/blue) for widgets without blinding contrast */
             body.dark-theme .widget-yellow {
                 background-color: var(--gold-bg, #3b3315) !important;
                 border-color: var(--gold-border, #d4a81e) !important;
@@ -599,7 +601,7 @@
                 color: var(--text-secondary, #babfc4) !important;
             }
 
-            /* 2. Thẻ Tag lớn và Tag nhỏ (Chuyển sang nền tối, chữ xanh nhạt) */
+            /* Optimize tag readability in dark mode */
             body.dark-theme .tag-name-badge,
             body.dark-theme .tag-badge,
             body.dark-theme .q-tag {
@@ -613,7 +615,6 @@
                 background-color: var(--border-color, #4a4e51) !important;
             }
 
-            /* 3. Ô Search đặc thù ở trang Tags */
             body.dark-theme .tags-controls .search-box input {
                 background-color: var(--bg-input, #1a1b1d) !important;
                 color: var(--text-primary, #f1f2f3) !important;
@@ -624,7 +625,7 @@
                 border-color: var(--link-hover, #58a6ff) !important;
             }
 
-            /* 4. Cụm nút Filter / Sort (Khử nền trắng chói lóa) */
+            /* Ensure filter and sort button groups seamlessly blend into the dark UI */
             body.dark-theme .filter-buttons,
             body.dark-theme .sort-buttons {
                 border-color: var(--border-color, #4a4e51) !important;
@@ -651,7 +652,7 @@
                 border-color: var(--border-color, #4a4e51) !important;
             }
 
-            /* 5. Kéo sáng Khối thông số (0 votes, 0 answers...) */
+            /* Improve legibility of numerical statistics */
             body.dark-theme .q-stat,
             body.dark-theme .q-meta {
                 color: var(--text-muted, #9fa6ad) !important;
@@ -662,7 +663,6 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* 6. Link Tiêu đề & Phân trang */
             body.dark-theme .q-title {
                 color: var(--link-color, #379fef) !important;
             }
@@ -679,7 +679,6 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* 7. Các Layout Divider, Card nền... */
             body.dark-theme .tag-card {
                 background-color: var(--bg-panel, #232629) !important;
                 border-color: var(--border-color, #4a4e51) !important;
@@ -700,7 +699,6 @@
                 color: var(--text-muted, #9fa6ad) !important;
             }
 
-            /* Nút "Followed" (Đang theo dõi) */
             body.dark-theme .btn-watch.followed {
                 background-color: transparent !important;
                 color: var(--text-secondary, #babfc4) !important;
@@ -720,10 +718,10 @@
             }
 
             /* =================================================== */
-            /* FIX TRANG CHI TIẾT BÀI VIẾT (View Post Detail)      */
+            /* Dark Mode Overrides for Post Detail Page            */
             /* =================================================== */
 
-            /* 1. Kéo sáng Tên người đăng, Bình luận viên và Tiêu đề (Màu Xanh Sáng) */
+            /* Highlight author names and titles for quick scannability */
             body.dark-theme .comment-author,
             body.dark-theme .author-card .fw-bold,
             body.dark-theme .question-title,
@@ -736,13 +734,13 @@
                 color: var(--link-hover, #58a6ff) !important;
             }
 
-            /* 2. Kéo sáng chữ phần Nội dung câu trả lời và Bình luận (Màu Trắng Sáng) */
+            /* Optimize primary text content for reading comfort */
             body.dark-theme .post-text,
             body.dark-theme .comment-item {
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* 3. Sửa màu nền Khung Code cho dịu mắt, dễ đọc */
+            /* Reduce contrast of code blocks to prevent eye strain */
             body.dark-theme .code-block,
             body.dark-theme pre,
             body.dark-theme code {
@@ -751,13 +749,12 @@
                 border: 1px solid var(--border-color, #4a4e51) !important;
             }
 
-            /* 4. Khối thông tin tác giả (Author Card) nổi bật nhẹ lên khỏi nền */
+            /* Elevate author cards to visually distinguish them from post content */
             body.dark-theme .author-card {
                 background-color: var(--btn-hover-bg, #3b4045) !important;
                 border: 1px solid var(--border-color, #4a4e51) !important;
             }
 
-            /* 5. Khung nhập liệu (Soạn Bình luận & Trả lời) */
             body.dark-theme .comment-form-inline input,
             body.dark-theme .answer-form-box textarea {
                 background-color: var(--bg-input, #1a1b1d) !important;
@@ -771,7 +768,6 @@
                 box-shadow: 0 0 0 3px rgba(55, 159, 239, 0.2) !important;
             }
 
-            /* 6. Đồng bộ màu các đường kẻ phân cách (Bình luận, Câu trả lời) */
             body.dark-theme .comments-section,
             body.dark-theme .comment-item,
             body.dark-theme .answer-card,
@@ -781,7 +777,7 @@
                 border-color: var(--border-color, #4a4e51) !important;
             }
 
-            /* 7. Nút thao tác (Share, Edit, Delete, Vote...) */
+            /* Subdue action buttons to not distract from content, emphasizing on hover */
             body.dark-theme .action-btn,
             body.dark-theme .vote-btn {
                 color: var(--text-secondary, #babfc4) !important;
@@ -793,7 +789,7 @@
                 color: var(--text-primary, #f1f2f3) !important;
             }
 
-            /* Giữ lại màu Cam/Đỏ đặc trưng khi Vote */
+            /* Preserve brand identity for active upvote/downvote states */
             body.dark-theme .vote-btn.active-up {
                 color: #f48024 !important;
             }
@@ -808,6 +804,10 @@
                 var savedTheme = localStorage.getItem('devquery-theme') || 'light';
                 if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.body.classList.add('dark-theme');
+                }
+                var foucStyle = document.getElementById('anti-fouc');
+                if (foucStyle) {
+                    foucStyle.remove();
                 }
             })();
         </script>

@@ -6,11 +6,16 @@
     <title>Saves - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
     <style>
         body {
             background-color: var(--bg-body);
             padding-top: 60px;
+            font-size: 13px;
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
         }
@@ -153,7 +158,7 @@
             font-weight: 500;
         }
 
-        /* Bố cục Sidebar dính chuẩn SO */
+        /* Stack Overflow-style sticky sidebar layout */
         .main-container {
             max-width: 1264px;
             margin: 0 auto;
@@ -239,13 +244,15 @@
             color: white;
             font-weight: 600;
         }
-        
+
         /* Input group fixes */
-        .input-group-text, .form-control {
+        .input-group-text,
+        .form-control {
             background-color: transparent !important;
             border-color: var(--border-color) !important;
             color: var(--text-primary) !important;
         }
+
         .input-group-text i {
             color: var(--text-secondary) !important;
         }
@@ -435,8 +442,7 @@
             <form th:action="@{/saves/create}" method="post">
                 <div class="mb-3 mt-3">
                     <label class="form-label fw-bold small">List Name</label>
-                    <input type="text" name="listName" class="form-control" placeholder="e.g. Java Tips"
-                        required>
+                    <input type="text" name="listName" class="form-control" placeholder="e.g. Java Tips" required>
                 </div>
                 <div class="text-end mt-4">
                     <button type="button" onclick="document.getElementById('createListModal').style.display = 'none'"
@@ -508,7 +514,7 @@
             if (event.target == document.getElementById('moveBookmarkModal')) document.getElementById('moveBookmarkModal').style.display = "none";
         });
 
-        // Tìm kiếm Collection
+        // Filter collections client-side
         document.addEventListener("DOMContentLoaded", function () {
             const searchInput = document.getElementById("collectionSearchInput");
             const collectionItems = document.querySelectorAll(".collection-item");
@@ -530,7 +536,7 @@
             }
         });
 
-        // Tìm kiếm Bài viết đã lưu
+        // Filter saved bookmarks client-side
         document.addEventListener("DOMContentLoaded", function () {
             const itemSearchInput = document.getElementById("savedItemSearchInput");
             const savedItemRows = document.querySelectorAll(".saved-item-row");
