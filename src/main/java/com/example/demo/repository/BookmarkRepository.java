@@ -13,13 +13,13 @@ import java.util.Map;
 @Repository
 public interface BookmarkRepository extends JpaRepository<com.example.demo.entity.User, Long> {
 
-    // Lấy list bài đã lưu (All saves)
+    /** Retrieve all bookmarked questions for a specific user */
     @Query(value = "SELECT b.question_id, q.title as questionTitle, b.created_at, b.collection_id " +
             "FROM Bookmarks b JOIN Questions q ON b.question_id = q.question_id " +
             "WHERE b.user_id = :userId ORDER BY b.created_at DESC", countQuery = "SELECT COUNT(*) FROM Bookmarks WHERE user_id = :userId", nativeQuery = true)
     Page<Map<String, Object>> getAllBookmarksRaw(@Param("userId") long userId, Pageable pageable);
 
-    // Lấy list bài đã lưu trong 1 Collection cụ thể
+    /** Retrieve bookmarked questions filtered by a specific collection */
     @Query(value = "SELECT b.question_id, q.title as questionTitle, b.created_at, b.collection_id " +
             "FROM Bookmarks b JOIN Questions q ON b.question_id = q.question_id " +
             "WHERE b.user_id = :userId AND b.collection_id = :collectionId ORDER BY b.created_at DESC", countQuery = "SELECT COUNT(*) FROM Bookmarks WHERE user_id = :userId AND collection_id = :collectionId", nativeQuery = true)

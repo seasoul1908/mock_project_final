@@ -279,7 +279,7 @@ VALUES
 (1, 16, N'Lỗi NullPointerException này là do biến chưa được khởi tạo. Bạn check lại kỹ nhé.', 1, 10),
 (2, 16, N'Bạn thử dùng JDBC chuẩn bằng hàm getConnection() xem sao.', 0, 2),
 (3, 16, N'Lỗi vô hạn loop này thường do quên truyền dependency array vào useEffect trong React.', 1, 25);
-
+Select * from Users
 -- 4. Cấp phát 5 Danh hiệu (Badges) cho bạn
 INSERT INTO [dbo].[User_Badges] ([user_id], [badge_id]) 
 VALUES 

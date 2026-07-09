@@ -21,7 +21,7 @@ public class SettingsController {
     @Autowired
     private UserPreferenceRepository prefRepository;
 
-    // LOAD TRANG PREFERENCES
+    // Render Preferences Page
     @GetMapping("/preferences")
     public String showPreferences(Model model) {
         User loggedInUser = (User) model.getAttribute("loggedInUser");
@@ -31,11 +31,11 @@ public class SettingsController {
 
         long userId = loggedInUser.getUserId();
 
-        // Lấy thông tin user profile cho Sidebar
+        // Retrieve user profile data for sidebar rendering
         UserDTO uPro = userService.getUserProfileById(userId);
         model.addAttribute("uPro", uPro);
 
-        // Lấy cài đặt của User (nếu chưa có thì tạo object mới với giá trị mặc định)
+        // Retrieve user preferences or initialize defaults if missing
         UserPreference pref = prefRepository.findById(userId).orElseGet(() -> {
             UserPreference newPref = new UserPreference();
             newPref.setUserId(userId);
@@ -43,10 +43,10 @@ public class SettingsController {
         });
 
         model.addAttribute("pref", pref);
-        return "User/preferences"; // Tùy chỉnh đường dẫn tới file html của ông
+        return "User/preferences";
     }
 
-    // LƯU CÀI ĐẶT
+    // Save Preferences
     @PostMapping("/preferences/save")
     public String savePreferences(@ModelAttribute UserPreference pref, Model model,
             RedirectAttributes redirectAttributes) {
@@ -55,13 +55,13 @@ public class SettingsController {
             return "redirect:/auth/login";
         }
 
-        // Đảm bảo không bị ghi đè userId của người khác
+        // Enforce security by overriding userId with logged-in user's ID
         pref.setUserId(loggedInUser.getUserId());
 
-        // Save vào database
+
         prefRepository.save(pref);
 
-        // Gửi thông báo thành công ra ngoài frontend
+        // Flash success message to the frontend
         redirectAttributes.addFlashAttribute("successMessage", "Your preferences have been saved successfully.");
 
         return "redirect:/settings/preferences";

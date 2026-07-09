@@ -33,7 +33,7 @@ public class SavesController {
     @Autowired
     private BookmarkRepository bookmarkRepository;
 
-    // 1. LOAD GIAO DIỆN CHÍNH
+    // 1. Render Saves Dashboard
     @GetMapping
     public String showSaves(
             @RequestParam(value = "listId", required = false) Integer listId,
@@ -86,7 +86,7 @@ public class SavesController {
         int end = Math.min(start + colSize, allCollections.size());
         List<CollectionDTO> paginatedCols = allCollections.subList(start, end);
 
-        // Cấu hình phân trang bài viết (10 items/trang)
+        // Configure bookmark pagination (10 items per page)
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
         Page<Map<String, Object>> bookmarksPage;
 
@@ -153,7 +153,7 @@ public class SavesController {
         return "User/saves";
     }
 
-    // 2. TẠO COLLECTION MỚI
+    // 2. Create New Collection
     @PostMapping("/create")
     public String createCollection(@RequestParam("listName") String listName, Model model) {
         User user = (User) model.getAttribute("loggedInUser");
@@ -163,7 +163,7 @@ public class SavesController {
         return "redirect:/saves";
     }
 
-    // 3. ĐỔI TÊN COLLECTION
+    // 3. Rename Collection
     @PostMapping("/rename")
     public String renameCollection(
             @RequestParam("collectionId") int collectionId,
@@ -176,7 +176,7 @@ public class SavesController {
         return redirectBack(request);
     }
 
-    // 4. XÓA COLLECTION
+    // 4. Delete Collection
     @GetMapping("/delete")
     public String deleteCollection(@RequestParam("id") int id, Model model) {
         User user = (User) model.getAttribute("loggedInUser");
@@ -186,7 +186,7 @@ public class SavesController {
         return "redirect:/saves";
     }
 
-    // 5. CHUYỂN BÀI VIẾT SANG DANH MỤC KHÁC
+    // 5. Move Bookmark to Another Collection
     @PostMapping("/move")
     public String moveBookmark(
             @RequestParam("questionId") long questionId,
@@ -203,7 +203,7 @@ public class SavesController {
         return redirectBack(request);
     }
 
-    // 6. XÓA BÀI VIẾT KHỎI ĐÃ LƯU
+    // 6. Remove Bookmark
     @GetMapping("/remove")
     public String removeBookmark(
             @RequestParam("questionId") long questionId,
@@ -212,17 +212,17 @@ public class SavesController {
         User user = (User) model.getAttribute("loggedInUser");
         if (user != null) {
             if (fromCollectionId != null) {
-                // Đẩy ra ngoài "All saves"
+                // Remove from specific collection (falls back to 'All saves')
                 bookmarkRepository.removeBookmarkFromCollection(user.getUserId(), questionId);
             } else {
-                // Xóa vĩnh viễn
+                // Permanently delete bookmark
                 bookmarkRepository.deleteBookmarkPermanent(user.getUserId(), questionId);
             }
         }
         return redirectBack(request);
     }
 
-    // Hàm tiện ích tự động quay lại trang cũ
+    /** Utility method to redirect to the previous page */
     private String redirectBack(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         return (referer != null) ? "redirect:" + referer : "redirect:/saves";
