@@ -442,3 +442,6 @@ PRINT '--- HOÀN TẤT THÊM DATA CHO 12 BẢNG ---';
 GO
 
 select * from Users
+UPDATE users
+SET role = 'admin'
+WHERE user_id = 11;
