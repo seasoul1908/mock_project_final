@@ -13,9 +13,9 @@
     </script>
     <style>
         body {
-            background-color: #fff;
+            background-color: var(--bg-body, #fff);
             padding-top: 60px;
-            color: #232629;
+            color: var(--text-primary, #232629);
             font-size: 13px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
             transition: background-color 0.2s ease, color 0.2s ease;
@@ -30,7 +30,7 @@
 
         .user-meta {
             font-size: 13px;
-            color: #6a737c;
+            color: var(--text-secondary, #6a737c);
         }
 
         .profile-tabs {
@@ -39,7 +39,7 @@
         }
 
         .profile-tabs .nav-link {
-            color: #525960;
+            color: var(--text-secondary, #525960);
             border-radius: 100px;
             padding: 6px 12px;
             margin-right: 5px;
@@ -48,13 +48,13 @@
         }
 
         .profile-tabs .nav-link:hover {
-            background-color: #e3e6e8;
-            color: #0c0d0e;
+            background-color: var(--btn-hover-bg, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
         }
 
         .profile-tabs .nav-link.active {
             background-color: #f48024;
-            color: white;
+            color: #fff;
             font-weight: 500;
         }
 
@@ -65,14 +65,14 @@
             margin: 0 auto;
             display: flex;
             align-items: stretch;
-            background-color: #fff;
+            background-color: var(--bg-body, #fff);
             transition: background-color 0.2s ease;
         }
 
         .left-sidebar {
             width: 164px;
             flex-shrink: 0;
-            border-right: 1px solid #d6d9dc;
+            border-right: 1px solid var(--border-color, #d6d9dc);
             transition: border-color 0.2s ease;
         }
 
@@ -82,12 +82,13 @@
             width: 100%;
             min-height: 100vh;
             padding-bottom: 50px;
+            background-color: var(--bg-body, transparent);
         }
 
         .saves-sidebar-item {
             display: block;
             padding: 6px 12px;
-            color: #525960;
+            color: var(--text-secondary, #525960);
             text-decoration: none;
             font-size: 13px;
             border-radius: 100px;
@@ -95,26 +96,26 @@
         }
 
         .saves-sidebar-item:hover {
-            background-color: #f8f9f9;
-            color: #0c0d0e;
+            background-color: var(--btn-hover-bg, #f8f9f9);
+            color: var(--text-primary, #0c0d0e);
         }
 
         .saves-sidebar-item.active {
             font-weight: bold;
-            background-color: #e3e6e8;
-            color: #0c0d0e;
+            background-color: var(--btn-hover-bg, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
         }
 
         .prefs-container {
-            border: 1px solid #d6d9dc;
+            border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 5px;
             margin-top: 20px;
-            background-color: #fff;
+            background-color: var(--bg-panel, #fff);
             transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
         .prefs-row {
-            border-bottom: 1px solid #e3e6e8;
+            border-bottom: 1px solid var(--border-color, #e3e6e8);
             padding: 24px 30px;
             display: flex;
             justify-content: space-between;
@@ -127,7 +128,7 @@
         }
 
         .prefs-row:hover {
-            background-color: #f8f9f9;
+            background-color: var(--btn-hover-bg, #f8f9f9);
         }
 
         .prefs-info {
@@ -138,13 +139,13 @@
         .prefs-title {
             font-weight: 700;
             font-size: 16px;
-            color: #0c0d0e;
+            color: var(--text-primary, #0c0d0e);
             margin-bottom: 6px;
         }
 
         .prefs-desc {
             font-size: 13px;
-            color: #525960;
+            color: var(--text-secondary, #525960);
             margin: 0;
             line-height: 1.5;
         }
@@ -171,7 +172,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #babfc4;
+            background-color: var(--text-secondary, #babfc4);
             transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-radius: 24px;
         }
@@ -183,7 +184,7 @@
             width: 18px;
             left: 3px;
             bottom: 3px;
-            background-color: white;
+            background-color: var(--text-primary, white);
             transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-radius: 50%;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -199,6 +200,19 @@
 
         .toggle-switch input:checked+.toggle-slider:before {
             transform: translateX(18px);
+        }
+        
+        body.dark-theme .toggle-switch input:checked+.toggle-slider {
+            background-color: #2ea043;
+        }
+
+        body.dark-theme .toggle-slider:before {
+            background-color: #fff;
+        }
+
+        body.dark-theme .toggle-slider {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
         }
 
         .theme-selector-group {
@@ -221,13 +235,13 @@
             cursor: pointer;
             width: 16px;
             height: 16px;
-            accent-color: #0074cc;
+            accent-color: var(--link-color, #0074cc);
         }
 
         .theme-mock {
             width: 120px;
             height: 75px;
-            border: 1px solid #d6d9dc;
+            border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 6px;
             position: relative;
             overflow: hidden;
@@ -238,6 +252,10 @@
         .theme-option:hover .theme-mock {
             transform: translateY(-3px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        body.dark-theme .theme-option:hover .theme-mock {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
 
         .theme-mock-header {
@@ -316,7 +334,7 @@
 
         .theme-label {
             font-size: 14px;
-            color: #232629;
+            color: var(--text-primary, #232629);
             margin-top: 10px;
             font-weight: 500;
             transition: color 0.2s;
@@ -333,6 +351,69 @@
             background-color: var(--btn-hover-bg, #e3e6e8);
             color: var(--text-primary, #0c0d0e);
             border-color: var(--border-color, #d6d9dc);
+        }
+        
+        /* Semantic classes replacing inline styles */
+        .page-title {
+            font-size: 27px;
+            color: var(--text-primary, #0c0d0e);
+        }
+        
+        .section-title {
+            font-size: 21px;
+            font-weight: 400;
+            margin-top: 10px;
+            margin-bottom: 16px;
+            color: var(--text-primary, #0c0d0e);
+        }
+        
+        .prefs-alert {
+            font-size: 14px;
+        }
+        
+        .prefs-theme-row {
+            padding-bottom: 30px;
+        }
+        
+        .prefs-theme-info {
+            min-width: 150px;
+        }
+        
+        .shortcut-key {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: var(--bg-panel, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
+            border: 1px solid var(--border-color, #d6d9dc);
+        }
+        
+        .so-link {
+            text-decoration: none;
+            color: var(--link-color, #0074cc);
+        }
+        
+        .so-link:hover {
+            color: var(--link-hover, #0056b3);
+            text-decoration: underline;
+        }
+        
+        .btn-save-prefs {
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.4);
+        }
+        
+        body.dark-theme .btn-save-prefs {
+            box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.1);
+        }
+        
+        body.dark-theme .border-bottom {
+            border-color: var(--border-color) !important;
         }
     </style>
 </head>
@@ -359,20 +440,20 @@
                 <div class="col-md-10 ps-md-4">
 
                     <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
-                        <h2 class="mb-0 fw-bold" style="font-size: 27px;">Preferences</h2>
+                        <h2 class="mb-0 fw-bold page-title">Preferences</h2>
                     </div>
 
-                    <h4 style="font-size: 21px; font-weight: 400; margin-top: 10px; margin-bottom: 16px;">Interface</h4>
+                    <h4 class="section-title">Interface</h4>
 
-                    <div th:if="${successMessage}" class="alert alert-success py-2 mb-4" style="font-size: 14px;">
+                    <div th:if="${successMessage}" class="alert alert-success py-2 mb-4 prefs-alert">
                         <i class="fa-solid fa-check-circle me-2"></i><span th:text="${successMessage}"></span>
                     </div>
 
                     <form th:action="@{/settings/preferences/save}" method="post" th:object="${pref}">
                         <div class="prefs-container">
 
-                            <div class="prefs-row flex-column flex-md-row border-bottom" style="padding-bottom: 30px;">
-                                <div class="prefs-info mb-3 mb-md-0" style="min-width: 150px;">
+                            <div class="prefs-row flex-column flex-md-row border-bottom prefs-theme-row">
+                                <div class="prefs-info mb-3 mb-md-0 prefs-theme-info">
                                     <div class="prefs-title">Theme</div>
                                 </div>
                                 <div class="theme-selector-group flex-grow-1">
@@ -392,7 +473,7 @@
                                     <label class="theme-option theme-system">
                                         <input type="radio" th:field="*{theme}" value="system"
                                             onclick="changeTheme('system')">
-                                        <div class="theme-mock" style="position: relative;">
+                                        <div class="theme-mock">
                                             <div class="theme-mock-header"></div>
                                             <div class="theme-mock-sidebar"></div>
                                             <div class="theme-mock-overlay"></div>
@@ -441,8 +522,7 @@
                             <div class="prefs-row">
                                 <div class="prefs-info">
                                     <div class="prefs-title">Enable keyboard shortcuts</div>
-                                    <p class="prefs-desc">When enabled, press <kbd
-                                            style="font-size: 12px; padding: 2px 6px; border-radius: 4px; font-family: monospace;">?</kbd>
+                                    <p class="prefs-desc">When enabled, press <kbd class="shortcut-key">?</kbd>
                                         for help.</p>
                                 </div>
                                 <label class="toggle-switch">
@@ -504,7 +584,7 @@
                                     <div class="prefs-title">Enable experiments</div>
                                     <p class="prefs-desc">When enabled, you see experiments that may provide an opt-out.
                                         Note that some experiments do not support an opt-out. Learn more in the <a
-                                            href="#" class="so-link" style="text-decoration: none;">Help Center</a>.</p>
+                                            href="#" class="so-link">Help Center</a>.</p>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" th:field="*{experiments}">
@@ -514,8 +594,7 @@
                         </div>
 
                         <div class="mt-4 mb-5">
-                            <button type="submit" class="btn btn-primary text-white"
-                                style="border: none; padding: 10px 18px; font-size: 14px; font-weight: 500; border-radius: 4px; box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.4);">
+                            <button type="submit" class="btn btn-primary text-white btn-save-prefs">
                                 Save preferences
                             </button>
                         </div>
