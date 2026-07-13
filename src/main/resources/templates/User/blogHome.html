@@ -10,22 +10,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        if (localStorage.getItem('devquery-theme') === 'dark') {
-            document.write('<style>body { background-color: #2d3135 !important; }</style>');
-        }
+        /*<![CDATA[*/
+        (function () {
+            var theme = localStorage.getItem('devquery-theme');
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+        /*]]>*/
     </script>
     <style>
         :root {
             --orange: #F48024;
-            --blue-link: #0074cc;
+            --blue-link: var(--link-color, #0074cc);
             --blue-btn: #0a95ff;
-            --blue-tag-bg: #e1ecf4;
-            --blue-tag-text: #39739d;
-            --black-text: #0c0d0e;
-            --gray-text: #525960;
-            --gray-sub: #6a737c;
-            --border-color: #d6d9dc;
-            --bg-body: #ffffff;
+            --blue-tag-bg: var(--tag-bg, #e1ecf4);
+            --blue-tag-text: var(--tag-text, #39739d);
+            --black-text: var(--text-primary, #0c0d0e);
+            --gray-text: var(--text-secondary, #525960);
+            --gray-sub: var(--text-muted, #6a737c);
+            --border-color-local: var(--border-color, #d6d9dc);
+            --bg-body-local: var(--bg-body, #ffffff);
+            --bg-panel-local: var(--bg-panel, #ffffff);
+            --btn-hover-local: var(--btn-hover-bg, #f1f2f3);
             --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         }
 
@@ -35,16 +43,21 @@
             padding: 0;
         }
 
+        body.dark-theme,
+        html[data-theme="dark"] {
+            --border-color: rgba(148, 163, 184, 0.2);
+        }
+
         body {
             font-family: var(--font-stack);
-            background-color: var(--bg-body);
+            background-color: var(--bg-body-local);
             color: var(--black-text);
             font-size: 13px;
         }
 
         .navbar-devquery {
-            border-top: 3px solid #f48024;
-            background-color: #ffffff;
+            border-top: 3px solid var(--orange);
+            background-color: var(--bg-body-local);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
             height: 56px;
         }
@@ -60,13 +73,13 @@
             width: 164px;
             flex-shrink: 0;
             padding-top: 5px;
-            border-right: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color-local);
         }
 
         .main-content {
             flex-grow: 1;
             padding: 24px;
-            border-left: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color-local);
             width: 100%;
         }
 
@@ -80,12 +93,20 @@
             box-shadow: 0 4px 15px rgba(10, 149, 255, 0.15);
         }
 
+        html[data-theme="dark"] .page-header,
+        body.dark-theme .page-header {
+            background: linear-gradient(135deg, #004d8a 0%, #002d5a 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: #f1f2f3;
+        }
+
         /* Blog Card styling */
         .blog-card {
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color-local);
             border-radius: 12px;
             transition: all 0.3s ease;
-            background-color: #fff;
+            background-color: var(--color-surface);
+            color: var(--color-text);
             overflow: hidden;
         }
 
@@ -94,12 +115,17 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
+        html[data-theme="dark"] .blog-card:hover,
+        body.dark-theme .blog-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
         /* Thumbnail Image styling */
         .blog-thumbnail {
             height: 180px;
             object-fit: cover;
             width: 100%;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color-local);
         }
 
         /* Blog Title styling */
@@ -111,7 +137,7 @@
         }
 
         .blog-title a {
-            color: var(--black-text);
+            color: var(--color-text);
             text-decoration: none;
             transition: color 0.2s;
         }
@@ -129,7 +155,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.5;
-            color: var(--gray-text);
+            color: var(--color-muted);
             margin-bottom: 12px;
             height: 4.5em;
         }
@@ -137,11 +163,11 @@
         /* Meta information styling (Author, Date) */
         .blog-meta {
             font-size: 11px;
-            color: var(--gray-sub);
+            color: var(--color-muted);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-top: 1px solid #f1f2f3;
+            border-top: 1px solid var(--border-color);
             padding-top: 8px;
             margin-top: auto;
         }
@@ -155,7 +181,7 @@
 
         .page-link-custom {
             padding: 6px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color-local);
             color: var(--gray-text);
             text-decoration: none;
             margin: 0 4px;
@@ -170,7 +196,32 @@
         }
 
         .page-link-custom:hover:not(.active) {
-            background-color: #f1f2f3;
+            background-color: var(--btn-hover-local);
+        }
+
+        /* Bootstrap Dark Mode Overrides */
+        html[data-theme="dark"] .text-muted,
+        body.dark-theme .text-muted {
+            color: var(--text-muted, #9fa6ad) !important;
+        }
+
+        html[data-theme="dark"] .form-control,
+        html[data-theme="dark"] .form-select,
+        body.dark-theme .form-control,
+        body.dark-theme .form-select {
+            background-color: var(--bg-input, #1a1b1d);
+            color: var(--text-primary, #f1f2f3);
+            border-color: var(--border-color, #4a4e51);
+        }
+
+        html[data-theme="dark"] .form-control:focus,
+        html[data-theme="dark"] .form-select:focus,
+        body.dark-theme .form-control:focus,
+        body.dark-theme .form-select:focus {
+            background-color: var(--bg-input, #1a1b1d);
+            color: var(--text-primary, #f1f2f3);
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25);
         }
     </style>
 </head>
@@ -194,7 +245,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <h4 class="fw-bold mb-0 text-dark">Blog Posts</h4>
+                <h4 class="fw-bold mb-0">Blog Posts</h4>
 
                 <form th:action="@{/blog}" method="get" class="d-flex gap-2">
                     <select name="sort" class="form-select form-select-sm shadow-none" style="width: 150px;"
