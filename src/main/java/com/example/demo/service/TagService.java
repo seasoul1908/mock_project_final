@@ -11,4 +11,5 @@ public interface TagService {
     int countQuestionsByTag(Long tagId, String filter);
     void followOrUnfollowTag(Long userId, Long tagId, String action);
     boolean isFollowing(Long userId, Long tagId);
+    void createTag(String tagName, String description);
 }

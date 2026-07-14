@@ -24,6 +24,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "JOIN Users u ON q.user_id = u.user_id " +
             "LEFT JOIN User_Profile up ON u.user_id = up.user_id " +
             "WHERE qt.tag_id = :tagId " +
+            "AND ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
             "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a2 WHERE a2.question_id = q.question_id)) " +
             "ORDER BY " +
             "CASE WHEN :filter = 'voted' THEN q.Score END DESC, " +
@@ -42,7 +43,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         FROM Questions q
         JOIN Users u ON q.user_id = u.user_id
         LEFT JOIN User_Profile up ON u.user_id = up.user_id
-        WHERE ISNULL(q.is_deleted, 0) = 0
+        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
           AND (:keyword = '' OR q.title LIKE :keywordSearch OR q.body LIKE :keywordSearch)
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
@@ -55,7 +56,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     """, countQuery = """
         SELECT COUNT(q.question_id)
         FROM Questions q
-        WHERE ISNULL(q.is_deleted, 0) = 0
+        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
           AND (:keyword = '' OR q.title LIKE :keywordSearch OR q.body LIKE :keywordSearch)
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
@@ -73,6 +74,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "FROM Questions q " +
             "JOIN Question_Tags qt ON q.question_id = qt.question_id " +
             "WHERE qt.tag_id = :tagId " +
+            "AND ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
             "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a WHERE a.question_id = q.question_id))", nativeQuery = true)
     int countQuestionsByTagNative(
             @Param("tagId") Long tagId,
@@ -102,7 +104,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         FROM Questions q
         JOIN Users u ON q.user_id = u.user_id
         LEFT JOIN User_Profile up ON u.user_id = up.user_id
-        WHERE ISNULL(q.is_deleted, 0) = 0
+        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
           AND ISNULL(q.bounty_amount, 0) > 0
           AND q.bounty_expires_at IS NOT NULL
           AND q.bounty_expires_at > GETDATE()
@@ -162,7 +164,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) AS answerCount, " +
             "(ISNULL(q.Score, 0) * 3 + ISNULL(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2) AS trendingScore " +
             "FROM Questions q " +
-            "WHERE ISNULL(q.is_deleted, 0) = 0 " +
+            "WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
             "AND q.created_at > DATEADD(day, -7, GETDATE()) " +
             "ORDER BY trendingScore DESC, q.created_at DESC",
             nativeQuery = true)
@@ -173,4 +175,11 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Transactional
     @Query(value = "UPDATE Questions SET is_deleted = 1, deleted_at = GETDATE(), deleted_by = :deletedBy WHERE question_id = :questionId", nativeQuery = true)
     void softDeleteQuestion(@Param("questionId") long questionId, @Param("deletedBy") long deletedBy);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM Question_Tags WHERE question_id = :questionId", nativeQuery = true)
+    void deleteQuestionTagsByQuestionId(@Param("questionId") Long questionId);
+
+    List<Question> findByUserIdAndIsDraftTrueAndIsDeletedFalseOrderByCreatedAtDesc(long userId);
 }

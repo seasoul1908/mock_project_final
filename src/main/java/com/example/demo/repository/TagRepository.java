@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
@@ -29,4 +30,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
             "FROM Tags t " +
             "WHERE t.tag_id = :id AND t.IsActive = 1", nativeQuery = true)
     List<Object[]> findTagByIdNative(@Param("id") Long id);
+
+    Optional<Tag> findByTagNameIgnoreCase(String tagName);
 }

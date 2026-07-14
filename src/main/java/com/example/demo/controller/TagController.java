@@ -40,11 +40,13 @@ public class TagController {
         
         User user = getAuthenticatedUser();
         boolean isLoggedIn = (user != null);
+        boolean canCreateTag = isLoggedIn && (user.getReputation() != null && user.getReputation() >= 50);
         
         model.addAttribute("tagList", tagList);
         model.addAttribute("keyword", search);
         model.addAttribute("sort", sort);
         model.addAttribute("isLoggedIn", isLoggedIn);
+        model.addAttribute("canCreateTag", canCreateTag);
         
         return "User/tag";
     }
@@ -98,6 +100,30 @@ public class TagController {
         tagService.followOrUnfollowTag(user.getUserId(), tagId, action);
         
         return "redirect:" + redirectTo;
+    }
+
+    @PostMapping("/new")
+    public String createNewTag(
+            @RequestParam("tagName") String tagName,
+            @RequestParam("description") String description,
+            Model model) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        int rep = user.getReputation() != null ? user.getReputation() : 0;
+        if (rep < 50) {
+            return "redirect:/tags?error=reputation";
+        }
+        if (tagName == null || tagName.trim().isEmpty()) {
+            return "redirect:/tags?error=empty_name";
+        }
+        try {
+            tagService.createTag(tagName.trim(), description.trim());
+        } catch (IllegalArgumentException e) {
+            return "redirect:/tags?error=exists&tagName=" + tagName.trim();
+        }
+        return "redirect:/tags";
     }
 
     private User getAuthenticatedUser() {

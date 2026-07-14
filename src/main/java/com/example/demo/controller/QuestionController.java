@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.entity.Question;
+import com.example.demo.repository.QuestionRepository;
+import com.example.demo.service.UserService;
+import com.example.demo.dto.UserDTO;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -23,11 +28,32 @@ public class QuestionController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
     @GetMapping("/ask")
-    public String showAskForm(Model model) {
+    public String showAskForm(
+            @RequestParam(value = "draftId", required = false) Long draftId,
+            Model model) {
         User user = getAuthenticatedUser();
         if (user == null) {
             return "redirect:/auth/login";
+        }
+        if (draftId != null) {
+            Optional<Question> qOpt = questionRepository.findById(draftId);
+            if (qOpt.isPresent() && qOpt.get().getUserId() == user.getUserId() && qOpt.get().isDraft()) {
+                Question q = qOpt.get();
+                model.addAttribute("oldTitle", q.getTitle());
+                model.addAttribute("oldBody", q.getBody());
+                model.addAttribute("draftId", q.getQuestionId());
+                List<String> tagsList = questionRepository.findTagsByQuestionId(draftId);
+                if (tagsList != null && !tagsList.isEmpty()) {
+                    model.addAttribute("oldTags", String.join(", ", tagsList));
+                }
+            }
         }
         return "User/askQuestion";
     }
@@ -36,7 +62,9 @@ public class QuestionController {
     public String submitQuestion(
             @RequestParam("title") String title,
             @RequestParam("body") String body,
-            @RequestParam("tags") String tags,
+            @RequestParam(value = "tags", required = false) String tags,
+            @RequestParam(value = "draftId", required = false) Long draftId,
+            @RequestParam(value = "action", defaultValue = "publish") String action,
             Model model) {
 
         User user = getAuthenticatedUser();
@@ -44,31 +72,49 @@ public class QuestionController {
             return "redirect:/auth/login";
         }
 
-        // Validate
-        if (title == null || title.trim().length() < 10) {
-            model.addAttribute("error", "Title must be at least 10 characters.");
-            model.addAttribute("oldTitle", title);
-            model.addAttribute("oldBody", body);
-            model.addAttribute("oldTags", tags);
-            return "User/askQuestion";
-        }
+        boolean isDraft = "draft".equalsIgnoreCase(action);
 
-        if (body == null || body.trim().length() < 30) {
-            model.addAttribute("error", "Body must be at least 30 characters.");
-            model.addAttribute("oldTitle", title);
-            model.addAttribute("oldBody", body);
-            model.addAttribute("oldTags", tags);
-            return "User/askQuestion";
+        if (!isDraft) {
+            if (title == null || title.trim().length() < 10) {
+                model.addAttribute("error", "Title must be at least 10 characters.");
+                model.addAttribute("oldTitle", title);
+                model.addAttribute("oldBody", body);
+                model.addAttribute("oldTags", tags);
+                model.addAttribute("draftId", draftId);
+                return "User/askQuestion";
+            }
+
+            if (body == null || body.trim().length() < 30) {
+                model.addAttribute("error", "Body must be at least 30 characters.");
+                model.addAttribute("oldTitle", title);
+                model.addAttribute("oldBody", body);
+                model.addAttribute("oldTags", tags);
+                model.addAttribute("draftId", draftId);
+                return "User/askQuestion";
+            }
+        } else {
+            if (title == null || title.trim().isEmpty()) {
+                title = "Untitled Draft";
+            }
         }
 
         try {
-            questionService.saveQuestion(user.getUserId(), title, body, tags);
-            return "redirect:/home";
+            if (draftId != null) {
+                questionService.saveOrUpdateDraft(draftId, user.getUserId(), title, body, tags, isDraft);
+            } else {
+                questionService.saveQuestion(user.getUserId(), title, body, tags, isDraft);
+            }
+            if (isDraft) {
+                return "redirect:/questions/drafts";
+            } else {
+                return "redirect:/home";
+            }
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("oldTitle", title);
             model.addAttribute("oldBody", body);
             model.addAttribute("oldTags", tags);
+            model.addAttribute("draftId", draftId);
             return "User/askQuestion";
         }
     }
@@ -93,6 +139,20 @@ public class QuestionController {
         return "redirect:/question?id=" + questionId;
     }
 
+    @GetMapping("/drafts")
+    public String showDrafts(Model model) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        List<Question> drafts = questionService.getDraftsByUserId(user.getUserId());
+        UserDTO uPro = userService.getUserProfileById(user.getUserId());
+        model.addAttribute("uPro", uPro);
+        model.addAttribute("drafts", drafts);
+        model.addAttribute("loggedInUser", user);
+        return "User/drafts";
+    }
+
     @PostMapping("/delete")
     public String deleteQuestion(@RequestParam("questionId") long questionId) {
         User user = getAuthenticatedUser();
@@ -101,12 +161,20 @@ public class QuestionController {
         }
 
         boolean isAdmin = "ADMIN".equalsIgnoreCase(user.getRole());
+        boolean wasDraft = false;
         try {
+            Optional<Question> qOpt = questionRepository.findById(questionId);
+            if (qOpt.isPresent()) {
+                wasDraft = qOpt.get().isDraft();
+            }
             questionService.deleteQuestion(questionId, user.getUserId(), isAdmin);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        if (wasDraft) {
+            return "redirect:/questions/drafts";
+        }
         return "redirect:/home";
     }
 

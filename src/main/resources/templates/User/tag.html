@@ -311,6 +311,41 @@
         body.dark-theme .empty-state {
             color: var(--text-muted) !important;
         }
+
+        /* Modal Custom Styling */
+        .modal-custom {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content-custom {
+            background-color: var(--bg-panel, #fff);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color, #d6d9dc);
+            width: 400px;
+            border-radius: 5px;
+            color: var(--text-primary);
+        }
+
+        .close-custom {
+            color: var(--text-secondary);
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-custom:hover {
+            color: var(--text-primary);
+        }
     </style>
 </head>
 
@@ -339,16 +374,29 @@
                             th:value="${keyword}" />
                     </div>
 
-                    <div class="sort-buttons">
-                        <a th:href="@{/tags(sort='popular', search=${keyword})}"
-                            th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
-                        <a th:href="@{/tags(sort='name', search=${keyword})}"
-                            th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
-                        <a th:href="@{/tags(sort='newest', search=${keyword})}"
-                            th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="sort-buttons">
+                            <a th:href="@{/tags(sort='popular', search=${keyword})}"
+                                th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
+                            <a th:href="@{/tags(sort='name', search=${keyword})}"
+                                th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
+                            <a th:href="@{/tags(sort='newest', search=${keyword})}"
+                                th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
+                        </div>
+                        
+                        <button th:if="${canCreateTag}" type="button" id="btnCreateTagOpen" class="btn btn-primary btn-sm px-3 text-white" style="border: none; height: 35px; font-weight: 500;"
+                            onclick="document.getElementById('createTagModal').style.display = 'block'">
+                            <i class="fa-solid fa-plus me-1"></i> Create Tag
+                        </button>
                     </div>
                 </div>
             </form>
+
+            <div class="alert alert-danger" th:if="${param.error != null}">
+                <span th:if="${param.error[0] == 'reputation'}">You need at least 50 reputation to create a new tag.</span>
+                <span th:if="${param.error[0] == 'exists'}">Tag already exists!</span>
+                <span th:if="${param.error[0] == 'empty_name'}">Tag name cannot be empty.</span>
+            </div>
 
             <div th:if="${keyword != null && !keyword.isEmpty()}">
                 <p class="search-result-count">
@@ -407,6 +455,37 @@
                 }
             });
         }
+    </script>
+    <!-- Create Tag Modal -->
+    <div id="createTagModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <span onclick="document.getElementById('createTagModal').style.display = 'none'"
+                class="close-custom" id="closeCreateTagModal">&times;</span>
+            <h4 style="margin-top: 0; font-size: 18px; font-weight: 500;">Create a new tag</h4>
+            <form th:action="@{/tags/new}" method="post">
+                <div class="mb-3 mt-3">
+                    <label class="form-label fw-bold small">Tag Name</label>
+                    <input type="text" name="tagName" class="form-control" placeholder="e.g. spring-security" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Describe what this tag is for..." required></textarea>
+                </div>
+                <div class="text-end mt-4">
+                    <button type="button" onclick="document.getElementById('createTagModal').style.display = 'none'"
+                        class="btn btn-outline-secondary btn-sm me-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm text-white" id="btnCreateTagSubmit" style="border: none;">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('click', function (event) {
+            if (event.target == document.getElementById('createTagModal')) {
+                document.getElementById('createTagModal').style.display = "none";
+            }
+        });
     </script>
 </body>
 
