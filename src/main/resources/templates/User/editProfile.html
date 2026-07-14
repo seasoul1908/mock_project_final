@@ -13,8 +13,8 @@
     </script>
     <style>
         body {
-            background-color: #f4f6f8;
-            color: #3b4045;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding-top: 60px;
             font-size: 13px;
@@ -27,7 +27,7 @@
         }
 
         .edit-card {
-            background: #ffffff;
+            background: var(--bg-panel);
             border: none;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -41,7 +41,7 @@
             color: #f48024;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #eff0f1;
+            border-bottom: 2px solid var(--border-color);
             display: flex;
             align-items: center;
         }
@@ -85,8 +85,21 @@
             font-size: 3.5rem;
             color: #adb5bd;
             margin: 0 auto 20px auto;
-            border: 4px solid white;
+            border: 4px solid var(--bg-panel);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-theme .form-control,
+        html[data-theme="dark"] .form-control,
+        body.dark-theme .input-group-text,
+        html[data-theme="dark"] .input-group-text {
+            background-color: var(--bg-body) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .form-control::placeholder {
+            color: var(--text-secondary, #adb5bd) !important;
         }
     </style>
 </head>
@@ -128,7 +141,7 @@
                             <label class="form-label">Display Name</label>
                             <input type="text" class="form-control" name="displayName" th:value="${profile.username}"
                                 required>
-                            <div class="form-text small">Tên này sẽ hiển thị với mọi người trên diễn đàn.</div>
+                            <div class="form-text small">This name will be displayed to everyone on the forum.</div>
                         </div>
 
                         <div class="mb-4">
@@ -136,14 +149,14 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                                 <input type="text" class="form-control" name="location" th:value="${profile.location}"
-                                    placeholder="Ví dụ: Hà Nội, Việt Nam">
+                                    placeholder="e.g., Haiphong, Vietnam">
                             </div>
                         </div>
 
                         <div class="mb-0">
                             <label class="form-label">About Me</label>
                             <textarea class="form-control" name="bio" rows="6"
-                                placeholder="Giới thiệu một chút về bản thân bạn..."
+                                placeholder="Tell us a little bit about yourself..."
                                 th:text="${profile.bio}"></textarea>
                         </div>
                     </div>

@@ -201,7 +201,7 @@
         .toggle-switch input:checked+.toggle-slider:before {
             transform: translateX(18px);
         }
-        
+
         body.dark-theme .toggle-switch input:checked+.toggle-slider {
             background-color: #2ea043;
         }
@@ -352,13 +352,13 @@
             color: var(--text-primary, #0c0d0e);
             border-color: var(--border-color, #d6d9dc);
         }
-        
+
         /* Semantic classes replacing inline styles */
         .page-title {
             font-size: 27px;
             color: var(--text-primary, #0c0d0e);
         }
-        
+
         .section-title {
             font-size: 21px;
             font-weight: 400;
@@ -366,19 +366,19 @@
             margin-bottom: 16px;
             color: var(--text-primary, #0c0d0e);
         }
-        
+
         .prefs-alert {
             font-size: 14px;
         }
-        
+
         .prefs-theme-row {
             padding-bottom: 30px;
         }
-        
+
         .prefs-theme-info {
             min-width: 150px;
         }
-        
+
         .shortcut-key {
             font-size: 12px;
             padding: 2px 6px;
@@ -388,30 +388,30 @@
             color: var(--text-primary, #0c0d0e);
             border: 1px solid var(--border-color, #d6d9dc);
         }
-        
+
         .so-link {
             text-decoration: none;
             color: var(--link-color, #0074cc);
         }
-        
+
         .so-link:hover {
             color: var(--link-hover, #0056b3);
             text-decoration: underline;
         }
-        
+
         .btn-save-prefs {
             border: none;
             padding: 10px 18px;
             font-size: 14px;
             font-weight: 500;
             border-radius: 4px;
-            box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.4);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
         }
-        
+
         body.dark-theme .btn-save-prefs {
-            box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.1);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
         }
-        
+
         body.dark-theme .border-bottom {
             border-color: var(--border-color) !important;
         }
@@ -608,16 +608,26 @@
     <script>
         function changeTheme(themeName) {
             localStorage.setItem('devquery-theme', themeName);
+
+            document.querySelectorAll('style[id*="anti-fouc"]').forEach(function (el) {
+                el.remove();
+            });
+
+            var isDark = false;
             if (themeName === 'dark') {
+                isDark = true;
+            } else if (themeName === 'system') {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-theme');
                 document.body.classList.add('dark-theme');
-            } else if (themeName === 'light') {
-                document.body.classList.remove('dark-theme');
             } else {
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.body.classList.add('dark-theme');
-                } else {
-                    document.body.classList.remove('dark-theme');
-                }
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark-theme');
+                document.body.classList.remove('dark-theme');
             }
         }
     </script>

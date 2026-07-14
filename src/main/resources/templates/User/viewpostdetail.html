@@ -353,6 +353,29 @@
             background: var(--bg-panel);
             text-decoration: underline;
         }
+
+        .post-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #e1ecf4;
+            color: #39739d;
+            font-size: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .post-tag:hover {
+            background-color: #d0e3f1;
+            color: #2c5877;
+        }
+
+        body.dark-theme .post-tag,
+        html[data-theme="dark"] .post-tag {
+            background-color: #3b4045;
+            color: #93c5fd;
+        }
     </style>
 </head>
 
@@ -405,7 +428,7 @@
                     <div th:if="${question.codeSnippet != null and !#strings.isEmpty(question.codeSnippet)}"
                         class="code-block" th:text="${question.codeSnippet}">code</div>
 
-                    <div class="mb-3" th:if="${question.tags != null}">
+                    <div class="mb-3 d-flex gap-2 flex-wrap" th:if="${question.tags != null}">
                         <a th:each="t : ${question.tags}" th:href="@{/home(tag=${t})}" class="post-tag"
                             th:text="${t}">tag</a>
                     </div>
