@@ -168,6 +168,16 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             nativeQuery = true)
     List<Object[]> findTrendingNative(Pageable pageable);
 
+    // Popular questions: all-time activity score (score*3 + views + answers*2 + comments)
+    @Query(value = "SELECT q.question_id AS questionId, q.title AS title, q.Score AS score, q.view_count AS viewCount, " +
+            "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) AS answerCount, " +
+            "(ISNULL(q.Score, 0) * 3 + ISNULL(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2 + (SELECT COUNT(*) FROM Comments c WHERE c.question_id = q.question_id) * 1) AS popularScore " +
+            "FROM Questions q " +
+            "WHERE ISNULL(q.is_deleted, 0) = 0 " +
+            "ORDER BY popularScore DESC, q.created_at DESC",
+            nativeQuery = true)
+    List<Object[]> findPopularNative(Pageable pageable);
+
     // Soft-delete a question (the is_deleted column already exists in the schema)
     @Modifying
     @Transactional
