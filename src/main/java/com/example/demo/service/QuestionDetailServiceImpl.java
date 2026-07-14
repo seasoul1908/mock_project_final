@@ -13,6 +13,7 @@ import com.example.demo.repository.BookmarkRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.PostEditHistoryRepository;
 import com.example.demo.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +43,9 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostEditHistoryRepository postEditHistoryRepository;
 
     @Override
     public QuestionDetailDTO getQuestionDetail(long questionId, Long currentUserId, boolean isAdmin) {
@@ -178,6 +182,84 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
             dto.setTrendingScore(row[5] != null ? ((Number) row[5]).intValue() : 0);
             result.add(dto);
         }
+        return result;
+    }
+
+    @Override
+    public List<TrendingQuestionDTO> getPopularQuestions(int limit) {
+        List<Object[]> rows = questionRepository.findPopularNative(PageRequest.of(0, Math.max(1, limit)));
+        List<TrendingQuestionDTO> result = new ArrayList<>();
+        for (Object[] row : rows) {
+            TrendingQuestionDTO dto = new TrendingQuestionDTO();
+            dto.setQuestionId(((Number) row[0]).longValue());
+            dto.setTitle((String) row[1]);
+            dto.setScore(row[2] != null ? ((Number) row[2]).intValue() : 0);
+            dto.setViewCount(row[3] != null ? ((Number) row[3]).intValue() : 0);
+            dto.setAnswerCount(row[4] != null ? ((Number) row[4]).intValue() : 0);
+            dto.setTrendingScore(row[5] != null ? ((Number) row[5]).intValue() : 0); // we use trendingScore field for Popular score
+            result.add(dto);
+        }
+        return result;
+    }
+
+    @Override
+    public List<com.example.demo.dto.PostEditHistoryDTO> getQuestionHistory(long questionId) {
+        List<com.example.demo.entity.PostEditHistory> historyList =
+                postEditHistoryRepository.findByPostTypeAndPostIdOrderByEditedAtDesc("question", questionId);
+
+        List<com.example.demo.dto.PostEditHistoryDTO> result = new ArrayList<>();
+
+        for (com.example.demo.entity.PostEditHistory history : historyList) {
+            com.example.demo.dto.PostEditHistoryDTO dto = new com.example.demo.dto.PostEditHistoryDTO();
+            dto.setHistoryId(history.getHistoryId());
+            dto.setPostType(history.getPostType());
+            dto.setPostId(history.getPostId());
+            dto.setTitle(history.getTitle());
+            dto.setBody(history.getBody());
+            dto.setCodeSnippet(history.getCodeSnippet());
+            dto.setTags(history.getTags());
+            dto.setEditorId(history.getEditorId());
+            dto.setEditedAt(history.getEditedAt());
+
+            userRepository.findById(history.getEditorId()).ifPresent(user -> {
+                dto.setEditorName(user.getUsername());
+                dto.setEditorAvatar(user.getDisplayAvatar());
+            });
+
+            result.add(dto);
+        }
+
+        // If history list is empty, append a fallback entry from the original question
+        boolean hasOriginal = !result.isEmpty() && result.get(result.size() - 1).getHistoryId() == 0;
+
+        if (!hasOriginal) {
+            Optional<Question> questionOpt = questionRepository.findById(questionId);
+            if (questionOpt.isPresent()) {
+                Question question = questionOpt.get();
+                com.example.demo.dto.PostEditHistoryDTO dto = new com.example.demo.dto.PostEditHistoryDTO();
+                dto.setHistoryId(0); // 0 means virtual or original creation
+                dto.setPostType("question");
+                dto.setPostId(questionId);
+                dto.setTitle(question.getTitle());
+                dto.setBody(question.getBody());
+                dto.setCodeSnippet(question.getCodeSnippet());
+
+                List<String> tagsList = questionRepository.findTagsByQuestionId(questionId);
+                dto.setTags(tagsList != null ? String.join(",", tagsList) : "");
+
+                dto.setEditorId(question.getUserId());
+                dto.setEditedAt(question.getCreatedAt() != null ? question.getCreatedAt() : new java.sql.Timestamp(System.currentTimeMillis()));
+
+                userRepository.findById(question.getUserId()).ifPresent(user -> {
+                    dto.setEditorName(user.getUsername());
+                    dto.setEditorAvatar(user.getDisplayAvatar());
+                });
+
+                // Add to the end (since it's sorted desc, oldest version is at the end)
+                result.add(dto);
+            }
+        }
+
         return result;
     }
 
