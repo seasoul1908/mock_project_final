@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Users - DevQuery</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --orange: #f48024;
+            --blue: #0074cc;
+            --text: #0c0d0e;
+            --gray: #6a737c;
+            --border: #d6d9dc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont,
+                "Segoe UI Adjusted", "Segoe UI",
+                "Liberation Sans", sans-serif;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+         .main-container {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: stretch;
+            min-height: calc(100vh - 56px);
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex: 0 0 164px;
+            padding-top: 5px;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 40px 24px;
+            border-left: 1px solid var(--border);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 28px;
+        }
+
+        .user-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 280px;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px 8px 38px;
+            border: 1px solid #babfc4;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #6bbbf7;
+            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+        }
+
+        .filter-group {
+            display: flex;
+            border: 1px solid #babfc4;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .filter-btn {
+            padding: 8px 14px;
+            color: #3b4045;
+            text-decoration: none;
+            background: white;
+            border-right: 1px solid #babfc4;
+        }
+
+        .filter-btn:last-child {
+            border-right: none;
+        }
+
+        .filter-btn:hover {
+            background: #f1f2f3;
+            color: #0c0d0e;
+        }
+
+        .filter-btn.active {
+            background: #e3e6e8;
+            font-weight: 600;
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            width: 100%;
+        }
+
+        .user-card {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px 12px;
+            min-width: 0;
+            height: 92px;
+            display: flex;
+            align-items: flex-start;
+            box-sizing: border-box;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }   
+       
+
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .username {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 17px;
+            margin-bottom: 2px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .location {
+            color: #3b4045;
+            font-size: 11px;
+            line-height: 15px;
+            margin-bottom: 3px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+
+        .reputation {
+            font-size: 12px;
+            font-weight: 700;
+            color: #3b4045;
+            margin-right: 3px;
+            flex-shrink: 0;
+        }
+
+        .empty-users {
+            text-align: center;
+            padding: 70px 20px;
+            color: var(--gray);
+        }
+
+        .pagination-area {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            padding: 6px 11px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: #3b4045;
+            text-decoration: none;
+        }
+
+        .page-btn:hover {
+            background: #f1f2f3;
+        }
+
+        .page-btn.active {
+            color: white;
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+
+    @media (max-width: 1100px) {
+        .user-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 800px) {
+        .user-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 500px) {
+        .user-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+       .user-stats {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 16px;
+            max-width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 11px;
+            color: #6a737c;
+        }
+
+        
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .gold {
+            background-color: #ffcc01;
+        }
+
+        .silver {
+            background-color: #b4b8bc;
+        }
+
+        .bronze {
+            background-color: #d1a684;
+        }
+/* =================================================== */
+/* USER PAGE - DARK MODE                               */
+/* =================================================== */
+
+body.dark-theme .page-title {
+    color: var(--text-primary) !important;
+}
+
+/* SEARCH BOX */
+body.dark-theme .search-box input {
+    background-color: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.dark-theme .search-box input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+body.dark-theme .search-box i {
+    color: var(--icon-color) !important;
+}
+
+body.dark-theme .search-box input:focus {
+    border-color: #6bbbf7 !important;
+    box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+}
+
+/* FILTER */
+body.dark-theme .filter-group {
+    border-color: var(--border-color) !important;
+}
+
+body.dark-theme .filter-btn {
+    background-color: transparent !important;
+    color: var(--text-secondary) !important;
+    border-right-color: var(--border-color) !important;
+}
+
+body.dark-theme .filter-btn:hover {
+    background-color: var(--btn-hover-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+body.dark-theme .filter-btn.active {
+    background-color: var(--btn-hover-bg) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+/* USER CARD */
+body.dark-theme .user-card {
+    background-color: var(--bg-panel) !important;
+    border-color: var(--border-color) !important;
+}
+
+body.dark-theme .username {
+    color: var(--link-color, #6bbbf7) !important;
+}
+
+body.dark-theme .location {
+    color: var(--text-secondary) !important;
+}
+
+body.dark-theme .user-stats {
+    color: var(--text-secondary) !important;
+}
+
+body.dark-theme .reputation {
+    color: var(--text-primary) !important;
+}
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{Common/header :: header}"></div>
+
+<div class="main-container">
+
+    <div class="left-sidebar">
+        <div th:replace="~{Common/sidebar :: sidebar('users')}"></div>
+    </div>
+
+    <main class="main-content">
+
+        <h1 class="page-title">Users</h1>
+
+        <div class="user-toolbar">
+
+            <form id="searchForm" th:action="@{/users}" method="get">
+
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input id="userSearch"
+                           type="text"
+                           name="search"
+                           placeholder="Filter by user"
+                           autocomplete="off"
+                           th:value="${search}">
+                </div>
+
+                <input id="currentFilter"
+                       type="hidden"
+                       name="filter"
+                       th:value="${currentFilter}">
+
+            </form>
+
+            <div class="filter-group">
+
+                <a th:href="@{/users(search=${search}, filter='reputation')}"
+                   class="filter-btn"
+                   th:classappend="${currentFilter == 'reputation'} ? 'active'">
+                    Reputation
+                </a>
+
+                <a th:href="@{/users(search=${search}, filter='voted')}"
+                   class="filter-btn"
+                   th:classappend="${currentFilter == 'voted'} ? 'active'">
+                    Votes
+                </a>
+
+                <a th:href="@{/users(search=${search}, filter='new')}"
+                   class="filter-btn"
+                   th:classappend="${currentFilter == 'new'} ? 'active'">
+                    New users
+                </a>
+
+            </div>
+
+        </div>
+
+        <div id="userListContainer">
+
+            <div th:fragment="userList">
+
+                <div th:if="${#lists.isEmpty(users)}"
+                     class="empty-users">
+
+                    <i class="fa-solid fa-users fa-3x mb-3"></i>
+                    <h5>No users found.</h5>
+
+                </div>
+
+                <div th:unless="${#lists.isEmpty(users)}"
+                     class="user-grid">
+
+                    <div th:each="user : ${users}"
+                         class="user-card">
+
+                        <img class="user-avatar"
+                             th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                                ? user.avatarUrl
+                                : '/assets/img/Avatar.png'}"
+                             alt="Avatar">
+
+                        <div class="user-info">
+
+                            <div class="username"
+                                 th:text="${user.username}">
+                                Username
+                            </div>
+
+                            <div th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                                 class="location"
+                                 th:text="${user.location}">
+                                Location
+                            </div>
+
+                    <div class="user-stats">
+
+                        <span class="reputation"th:text="${user.reputation != null ? user.reputation : 0}">0</span>
+
+                            <th:block th:if="${user.goldBadges > 0}">
+                                <span class="badge-dot gold"></span>
+                                <span th:text="${user.goldBadges}">0</span>
+                            </th:block>
+
+                            <th:block th:if="${user.silverBadges > 0}">
+                                <span class="badge-dot silver"></span>
+                                <span th:text="${user.silverBadges}">0</span>
+                            </th:block>
+
+                            <th:block th:if="${user.bronzeBadges > 0}">
+                                <span class="badge-dot bronze"></span>
+                                <span th:text="${user.bronzeBadges}">0</span>
+                            </th:block>
+
+                    </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div th:if="${userPage.totalPages > 1}"
+                     class="pagination-area">
+
+                    <a th:each="pageNumber : ${#numbers.sequence(0, userPage.totalPages - 1)}"
+                       th:href="@{/users(page=${pageNumber}, search=${search}, filter=${currentFilter})}"
+                       class="page-btn"
+                       th:classappend="${pageNumber == userPage.number} ? 'active'"
+                       th:text="${pageNumber + 1}">
+                        1
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<div th:replace="~{Common/footer :: footer}"></div>
+
+<script>
+    const searchInput = document.getElementById("userSearch");
+    const filterInput = document.getElementById("currentFilter");
+    const userListContainer = document.getElementById("userListContainer");
+
+    let searchTimer;
+
+    searchInput.addEventListener("input", function () {
+        clearTimeout(searchTimer);
+
+        const keyword = this.value.trim();
+
+        if (keyword.length === 0) {
+            searchTimer = setTimeout(() => loadUsers(""), 300);
+            return;
+        }
+
+        if (keyword.length < 3) {
+            return;
+        }
+
+        searchTimer = setTimeout(() => loadUsers(keyword), 400);
+    });
+
+    function loadUsers(keyword) {
+        const params = new URLSearchParams();
+
+        params.append("search", keyword);
+        params.append("filter", filterInput.value);
+
+        fetch("/users/search?" + params.toString())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Unable to load users");
+                }
+
+                return response.text();
+            })
+            .then(html => {
+                userListContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error("User search error:", error);
+            });
+    }
+</script>
+<script>
+    if (localStorage.getItem('devquery-theme') === 'dark') {
+        document.write('<style>body { background-color: #2d3135 !important; }</style>');
+    }
+    </script>
+</body>
+</html>
