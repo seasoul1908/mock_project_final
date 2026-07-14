@@ -347,6 +347,36 @@
                 flex-wrap: wrap;
             }
         }
+        body.dark-theme {
+            --ink: #f8fafc;
+            --muted: #94a3b8;
+            --border: #4a4e51;
+            --panel: #232629;
+            --soft: #1a1b1d;
+            --tag-bg: #3b4045;
+            --tag-text: #93c5fd;
+            --highlight: linear-gradient(135deg, #2d3135 0%, #1a1b1d 100%);
+        }
+
+        /* Force fix the transparent background issues on specific elements */
+        body.dark-theme .insight-card {
+            background-color: var(--panel);
+            border: 1px solid var(--border);
+        }
+
+        body.dark-theme .chip {
+            background-color: var(--soft);
+            border: 1px solid var(--border);
+            color: var(--ink);
+        }
+
+        body.dark-theme .hero {
+            border-color: var(--border);
+        }
+
+        body.dark-theme .question-excerpt {
+            color: var(--muted);
+        }
     </style>
 </head>
 

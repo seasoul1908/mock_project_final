@@ -3,19 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <script>
-        if (localStorage.getItem('devquery-theme') === 'dark') {
-            document.write('<style>body { background-color: #2d3135 !important; }</style>');
-        }
-    </script>
 </head>
 
 <body>
     <nav th:fragment="header" class="navbar navbar-expand-lg navbar-light fixed-top navbar-devquery">
+        <script>
+            (function () {
+                try {
+                    var theme = localStorage.getItem('devquery-theme');
+                    var isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+                    if (theme === 'dark' || (theme === 'system' && isSystemDark) || (!theme && isSystemDark)) {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        document.documentElement.classList.add('dark-theme');
+                        document.body.classList.add('dark-theme');
+
+                        document.write('<style id="anti-fouc-header">.navbar-devquery { background-color: #232629 !important; border-bottom: 1px solid #4a4e51 !important; transition: none !important; } * { transition: background-color 0s !important; }</style>');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        document.documentElement.classList.remove('dark-theme');
+                        document.body.classList.remove('dark-theme');
+                    }
+                } catch (e) { }
+            })();
+        </script>
         <style>
             .navbar-devquery {
-                border-top: 3px solid #f48024;
-                background-color: #ffffff;
+                border-top: 3px solid var(--orange, #f48024);
+                background-color: var(--bg-panel, #ffffff);
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
                 height: 56px;
             }
@@ -798,19 +813,6 @@
                 color: #d0393e !important;
             }
         </style>
-
-        <script>
-            (function () {
-                var savedTheme = localStorage.getItem('devquery-theme') || 'light';
-                if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.body.classList.add('dark-theme');
-                }
-                var foucStyle = document.getElementById('anti-fouc');
-                if (foucStyle) {
-                    foucStyle.remove();
-                }
-            })();
-        </script>
     </nav>
 </body>
 
