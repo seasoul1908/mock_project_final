@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.dto.QuestionDTO;
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-
-import com.example.demo.dto.GithubUser;
-import com.example.demo.dto.GoogleUser;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -17,9 +17,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.example.demo.dto.GithubUser;
+import com.example.demo.dto.GoogleUser;
+import com.example.demo.dto.QuestionDTO;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserPageDTO;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -383,4 +387,26 @@ public class UserService {
             e.printStackTrace();
         }
     }
+    public Page<UserPageDTO> getUsersForUserPage(String keyword, String filter, int page) {
+    if (keyword == null) {
+        keyword = "";
+    }
+
+    keyword = keyword.trim();
+
+    if (filter == null
+            || (!filter.equals("reputation")
+            && !filter.equals("voted")
+            && !filter.equals("new"))) {
+        filter = "reputation";
+    }
+
+    if (page < 0) {
+        page = 0;
+    }
+
+    Pageable pageable = PageRequest.of(page, 15);
+
+    return userRepository.findUsersForUserPage(keyword, filter, pageable);
+}
 }
