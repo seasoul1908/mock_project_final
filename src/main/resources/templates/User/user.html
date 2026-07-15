@@ -431,10 +431,11 @@ body.dark-theme .reputation {
                          class="user-card">
 
                         <img class="user-avatar"
-                             th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
-                                ? user.avatarUrl
-                                : '/assets/img/Avatar.png'}"
-                             alt="Avatar">
+                            th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                            ? user.avatarUrl
+                            : '/assets/img/avatar/default-avatar.jpg'}"
+                                onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                            alt="Avatar">
 
                         <div class="user-info">
 
