@@ -112,7 +112,7 @@
 
         <div th:if="${ERROR != null}" class="alert alert-danger shadow-sm" th:text="${ERROR}"></div>
 
-        <form th:action="@{/edit-profile}" method="POST" enctype="multipart/form-data">
+        <form id="editProfileForm" th:action="@{/edit-profile}" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-3 text-center mb-4">
                     <div class="edit-card h-100 p-3" style="margin-bottom: 0;">
@@ -225,6 +225,60 @@
             document.getElementById('deleteAvatarFlag').value = "true";
             document.getElementById('avatarFile').value = '';
         }
+        // Handle form submission
+        document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default page reload
+
+            var form = this;
+            var formData = new FormData(form);
+            var submitBtn = form.querySelector('.btn-save');
+            var originalBtnText = submitBtn.innerHTML;
+
+            // Set loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            // Send form data via AJAX
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(function (response) {
+                    if (response.ok) {
+                        // --- Real-time Header UI Update ---
+
+                        // Update avatar in header
+                        var headerAvatar = document.querySelector('.navbar-devquery .avatar-img');
+                        var previewAvatar = document.getElementById('avatarPreview').src;
+                        if (headerAvatar) {
+                            headerAvatar.src = previewAvatar;
+                        }
+
+                        // Update display name in header
+                        var headerName = document.querySelector('.navbar-devquery .nav-link span.fw-bold');
+                        var inputName = form.querySelector('input[name="displayName"]').value;
+                        if (headerName && inputName) {
+                            headerName.textContent = inputName;
+                        }
+
+                        // Success notification
+                        alert('Profile updated successfully!');
+                        var profileUrl = document.querySelector('a.btn-light').href; // Get URL from Cancel button
+                        window.location.href = profileUrl;
+                    } else {
+                        alert('Failed to save changes. Please try again.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    alert('Connection error!');
+                })
+                .finally(function () {
+                    // Restore button state
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                });
+        });
     </script>
 
     <div th:replace="~{Common/footer :: footer}"></div>
