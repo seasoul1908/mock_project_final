@@ -17,9 +17,8 @@
 
             <div class="d-flex">
                 <div class="me-4">
-                    <img th:src="${not #strings.isEmpty(uPro.avatarUrl) ? uPro.avatarUrl : '/assets/img/Avatar.png'}"
-                        alt="Avatar" class="rounded-circle shadow-sm"
-                        style="width: 144px; height: 144px; object-fit: cover;">
+                    <img th:src="${uPro.avatarUrl != null and !#strings.isEmpty(uPro.avatarUrl) ? uPro.avatarUrl : '/assets/img/avatar/default-avatar.jpg'}" 
+                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';" alt="Avatar" class="rounded-circle shadow-sm" style="width: 144px; height: 144px; object-fit: cover;">
                 </div>
 
                 <div class="pt-1">
