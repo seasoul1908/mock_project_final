@@ -5,8 +5,10 @@ import com.example.demo.entity.Question;
 import com.example.demo.entity.Tag;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Answer;
+import com.example.demo.entity.PostEditHistory;
 import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.NotificationRepository;
+import com.example.demo.repository.PostEditHistoryRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
@@ -36,6 +38,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private AnswerRepository answerRepository;
+
+    @Autowired
+    private PostEditHistoryRepository postEditHistoryRepository;
 
     @Override
     @Transactional
@@ -100,6 +105,19 @@ public class QuestionServiceImpl implements QuestionService {
         // Create Notifications
         createNotifications(user, savedQuestion);
 
+        // Save Original version history entry
+        String finalTags = (tagsStr != null) ? tagsStr.trim() : "";
+        postEditHistoryRepository.save(new PostEditHistory(
+            "question",
+            savedQuestion.getQuestionId(),
+            savedQuestion.getTitle(),
+            savedQuestion.getBody(),
+            savedQuestion.getCodeSnippet(),
+            finalTags,
+            userId,
+            new Timestamp(System.currentTimeMillis())
+        ));
+
         return savedQuestion;
     }
 
@@ -155,9 +173,26 @@ public class QuestionServiceImpl implements QuestionService {
         question.setBody(body.trim());
         if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
             question.setCodeSnippet(codeSnippet.trim());
+        } else {
+            question.setCodeSnippet(null);
         }
         question.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         questionRepository.save(question);
+
+        // Save history entry
+        List<String> tagsList = questionRepository.findTagsByQuestionId(questionId);
+        String tagsStr = (tagsList != null) ? String.join(",", tagsList) : "";
+
+        postEditHistoryRepository.save(new PostEditHistory(
+            "question",
+            questionId,
+            question.getTitle(),
+            question.getBody(),
+            question.getCodeSnippet(),
+            tagsStr,
+            userId,
+            new Timestamp(System.currentTimeMillis())
+        ));
     }
 
     @Override

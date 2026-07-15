@@ -417,10 +417,27 @@
                 </div>
 
                 <div class="post-body">
-                    <h1 class="question-title" th:text="${question.title}">Question title</h1>
+                    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+                        <h1 class="question-title mb-0" th:text="${question.title}" style="flex: 1; min-width: 250px;">Question title</h1>
+                        <div class="d-flex gap-2">
+                            <!-- Share button -->
+                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#shareUrl">
+                                <i class="fa-solid fa-share-nodes"></i> Share
+                            </button>
+                            <!-- Revisions button -->
+                            <a th:href="@{/question/{id}/history(id=${question.questionId})}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Revisions
+                            </a>
+                        </div>
+                    </div>
 
                     <div th:if="${question.isClosed}" class="closed-banner">
                         <i class="fa-solid fa-lock"></i> This question is closed.
+                    </div>
+
+                    <!-- Edited label and timestamp -->
+                    <div th:if="${question.edited}" class="text-muted small mb-2 d-flex align-items-center gap-1">
+                        <i class="fa-solid fa-pen"></i> Edited <span th:text="${question.updatedAt != null ? #dates.format(question.updatedAt, 'MMM dd yyyy HH:mm') : ''}">timestamp</span>
                     </div>
 
                     <div class="post-text" th:text="${question.body}">Question body</div>
@@ -939,23 +956,22 @@
 
         </div>
 
-        <!-- Right sidebar: Popular / Trending Questions -->
-        <div class="right-sidebar" th:if="${trendingQuestions != null and !trendingQuestions.isEmpty()}">
-            <div class="trending-card so-panel">
-                <div class="trending-card-header">
+        <!-- Right sidebar: Popular Questions -->
+        <div class="right-sidebar" th:if="${popularQuestions != null and !popularQuestions.isEmpty()}">
+            <div class="trending-card so-panel border rounded">
+                <div class="trending-card-header d-flex align-items-center gap-2 px-3 py-2"
+                     style="border-bottom: 1px solid var(--border-color); font-weight: 600; font-size: 14px;">
                     <i class="fa-solid fa-chart-line"></i> Popular Questions
                 </div>
-                <div class="trending-list">
-                    <a th:each="tq : ${trendingQuestions}" th:href="@{/question(id=${tq.questionId})}"
-                        class="trending-item" th:text="${tq.title}">Trending title</a>
+                <div class="trending-list d-flex flex-column">
+                    <a th:each="pq : ${popularQuestions}" th:href="@{/question(id=${pq.questionId})}"
+                       class="trending-item text-decoration-none"
+                       style="padding: 10px 14px; border-left: 3px solid var(--blue-link); font-size: 13px; color: var(--blue-link); border-bottom: 1px solid var(--border-color);"
+                       th:text="${pq.title}">Title</a>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div th:replace="~{Common/footer :: footer}"></div>
-
-    <!-- Report Question Modal -->
+        <!-- Report Question Modal -->
     <div class="modal fade" id="reportQuestionModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -1104,7 +1120,8 @@
                 </form>
             </div>
         </div>
-    </div>
+
+
 
 </body>
 
