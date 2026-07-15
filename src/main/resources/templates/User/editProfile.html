@@ -116,8 +116,11 @@
             <div class="row">
                 <div class="col-md-3 text-center mb-4">
                     <div class="edit-card h-100 p-3" style="margin-bottom: 0;">
-                        <img th:src="${profile.displayAvatar != null ? profile.displayAvatar : '/assets/img/Avatar.png'}"
-                            id="avatarPreview" alt="Avatar" class="avatar-placeholder"
+                        <img th:src="${profile.displayAvatar != null and !#strings.isEmpty(profile.displayAvatar) ? profile.displayAvatar : '/assets/img/avatar/default-avatar.jpg'}"
+                            onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                            id="avatarPreview"
+                            alt="Avatar"
+                            class="avatar-placeholder"
                             style="object-fit: cover; width: 140px; height: 140px; padding: 0;">
 
                         <label for="avatarFile" class="btn btn-outline-secondary btn-sm w-100 mb-2">
@@ -218,7 +221,7 @@
             }
         }
         function removeAvatar() {
-            document.getElementById('avatarPreview').src = '/assets/img/Avatar.png';
+            document.getElementById('avatarPreview').src = '/assets/img/avatar/default-avatar.jpg';
             document.getElementById('deleteAvatarFlag').value = "true";
             document.getElementById('avatarFile').value = '';
         }
