@@ -157,7 +157,19 @@
             object-fit: cover;
             flex-shrink: 0;
             margin-right: 10px;
+            transition:.25s;
+
+            cursor:pointer;
         }
+        .user-avatar.active{
+
+    transform:scale(1.25);
+
+    z-index:1200;
+
+    position:relative;
+
+}
 
         .user-info {
             flex: 1;
@@ -349,6 +361,159 @@ body.dark-theme .user-stats {
 body.dark-theme .reputation {
     color: var(--text-primary) !important;
 }
+body.dark-theme .user-popup{
+
+    background:var(--bg-panel);
+
+    border-color:var(--border-color);
+
+    color:var(--text-primary);
+}
+
+body.dark-theme .popup-username{
+
+    color:#6bbbf7;
+}
+
+body.dark-theme .popup-location,
+body.dark-theme .popup-member,
+body.dark-theme .popup-bio{
+
+    color:var(--text-secondary);
+}
+/* ========================= */
+/* USER POPUP */
+/* ========================= */
+
+.user-card{
+    position:relative;
+}
+
+.user-popup{
+
+    position:absolute;
+
+    top:50%;
+
+    left:72px;
+
+    transform:translateY(-50%);
+
+    width:320px;
+
+    background:#fff;
+
+    border:1px solid #d6d9dc;
+
+    border-radius:10px;
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.25);
+
+
+    padding:16px;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:translateY(-50%) scale(.96);
+
+    transition:.22s ease;
+
+    pointer-events:none;
+
+
+    z-index:1000;
+}
+.user-popup.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translateY(-50%) scale(1);
+
+}
+
+.popup-header{
+
+    display:flex;
+
+    gap:14px;
+
+    align-items:flex-start;
+}
+
+.popup-avatar{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    flex-shrink:0;
+}
+
+.popup-user-info{
+
+    flex:1;
+}
+
+.popup-username{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#0074cc;
+
+    margin-bottom:6px;
+}
+
+.popup-location{
+
+    font-size:12px;
+
+    color:#6a737c;
+
+    margin-bottom:4px;
+}
+
+.popup-reputation{
+
+    font-size:12px;
+
+    margin-bottom:4px;
+}
+
+.popup-member{
+
+    font-size:12px;
+
+    color:#6a737c;
+}
+
+.popup-title{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+}
+
+.popup-bio{
+
+    font-size:12px;
+
+    line-height:1.6;
+
+    color:#3b4045;
+}
     </style>
 </head>
 
@@ -438,6 +603,71 @@ body.dark-theme .reputation {
                             alt="Avatar">
 
                         <div class="user-info">
+                            <!-- User Hover Popup -->
+<div class="user-popup">
+
+    <div class="popup-header">
+
+        <img class="popup-avatar"
+             th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                    ? user.avatarUrl
+                    : '/assets/img/avatar/default-avatar.jpg'}"
+             onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+             alt="Avatar">
+
+        <div class="popup-user-info">
+
+            <div class="popup-username"
+                 th:text="${user.username}">
+                Username
+            </div>
+
+            <div class="popup-location"
+                 th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                 th:text="${user.location}">
+                Location
+            </div>
+
+            <div class="popup-reputation">
+                <i class="fa-solid fa-star text-warning"></i>
+
+                <span th:text="${user.reputation}">
+                    0
+                </span>
+
+                reputation
+            </div>
+
+            <div class="popup-member">
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <span th:text="${#dates.format(user.createdAt,'MMM yyyy')}">
+                    Jul 2026
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="popup-body">
+
+        <div class="popup-title">
+            About Me
+        </div>
+
+        <div class="popup-bio"
+             th:text="${#strings.length(user.bio) > 80 ?
+                        #strings.substring(user.bio,0,80)+'...'
+                        : user.bio}">
+            About Me
+        </div>
+
+    </div>
+
+</div>
 
                             <div class="username"
                                  th:text="${user.username}">
@@ -545,11 +775,48 @@ body.dark-theme .reputation {
                 console.error("User search error:", error);
             });
     }
+    function initUserPopup(){
+        const avatars = document.querySelectorAll(".user-avatar");
+
+avatars.forEach(avatar=>{
+
+    const card = avatar.closest(".user-card");
+    const popup = card.querySelector(".user-popup");
+
+    let timer;
+
+    avatar.addEventListener("mouseenter",()=>{
+
+        timer = setTimeout(()=>{
+
+            popup.classList.add("show");
+            avatar.classList.add("active");
+
+        },700);
+
+    });
+
+    avatar.addEventListener("mouseleave",()=>{
+
+        clearTimeout(timer);
+
+        popup.classList.remove("show");
+        avatar.classList.remove("active");
+
+    });
+
+});
+    
+
+}
+
+    initUserPopup();
 </script>
 <script>
     if (localStorage.getItem('devquery-theme') === 'dark') {
         document.write('<style>body { background-color: #2d3135 !important; }</style>');
     }
-    </script>
+</script>
+
 </body>
 </html>
