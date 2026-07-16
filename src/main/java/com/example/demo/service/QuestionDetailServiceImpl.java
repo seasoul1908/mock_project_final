@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.PostEditHistoryDTO;
+import com.example.demo.entity.PostEditHistory;
 import com.example.demo.dto.AnswerViewDTO;
 import com.example.demo.dto.CommentViewDTO;
 import com.example.demo.dto.QuestionDetailDTO;
@@ -310,5 +312,59 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
             dto.setCanDelete(currentUserId.equals(comment.getUserId()) || isAdmin);
         }
         return dto;
+    }
+    @Override
+    public List<PostEditHistoryDTO> getAnswerHistory(long answerId) {
+        List<PostEditHistory> historyList =
+                postEditHistoryRepository.findByPostTypeAndPostIdOrderByEditedAtDesc("answer", answerId);
+
+        List<PostEditHistoryDTO> result = new ArrayList<>();
+
+        for (PostEditHistory history : historyList) {
+            PostEditHistoryDTO dto = new PostEditHistoryDTO();
+            dto.setHistoryId(history.getHistoryId());
+            dto.setPostType(history.getPostType());
+            dto.setPostId(history.getPostId());
+            dto.setTitle(history.getTitle());
+            dto.setBody(history.getBody());
+            dto.setCodeSnippet(history.getCodeSnippet());
+            dto.setTags(history.getTags());
+            dto.setEditorId(history.getEditorId());
+            dto.setEditedAt(history.getEditedAt());
+
+            userRepository.findById(history.getEditorId()).ifPresent(user -> {
+                dto.setEditorName(user.getUsername());
+                dto.setEditorAvatar(user.getDisplayAvatar());
+            });
+
+            result.add(dto);
+        }
+
+        // Fallback: bản gốc nếu answer chưa từng sửa
+        boolean hasOriginal = !result.isEmpty() && result.get(result.size() - 1).getHistoryId() == 0;
+        if (!hasOriginal) {
+            Optional<Answer> answerOpt = answerRepository.findById(answerId);
+            if (answerOpt.isPresent()) {
+                Answer answer = answerOpt.get();
+                PostEditHistoryDTO dto = new PostEditHistoryDTO();
+                dto.setHistoryId(0);
+                dto.setPostType("answer");
+                dto.setPostId(answerId);
+                dto.setBody(answer.getBody());
+                dto.setCodeSnippet(answer.getCodeSnippet());
+                dto.setEditorId(answer.getUserId());
+                dto.setEditedAt(answer.getCreatedAt() != null ? answer.getCreatedAt()
+                        : new java.sql.Timestamp(System.currentTimeMillis()));
+
+                userRepository.findById(answer.getUserId()).ifPresent(user -> {
+                    dto.setEditorName(user.getUsername());
+                    dto.setEditorAvatar(user.getDisplayAvatar());
+                });
+
+                result.add(dto);
+            }
+        }
+
+        return result;
     }
 }
