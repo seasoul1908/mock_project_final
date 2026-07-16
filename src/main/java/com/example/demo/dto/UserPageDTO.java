@@ -1,4 +1,5 @@
 package com.example.demo.dto;
+import java.sql.Timestamp;
 
 public interface  UserPageDTO {
     Long getUserId();
@@ -18,4 +19,8 @@ public interface  UserPageDTO {
     Long getBronzeBadges();
 
     Long getVoteScore();
+
+    String getBio();
+
+    Timestamp getCreatedAt();
 }
