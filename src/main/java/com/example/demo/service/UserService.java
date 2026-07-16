@@ -387,7 +387,7 @@ public class UserService {
             e.printStackTrace();
         }
     }
-    public Page<UserPageDTO> getUsersForUserPage(String keyword, String filter, int page) {
+    public Page<UserPageDTO> getUsersForUserPage(String keyword, String filter, int page,Long currentUserId) {
     if (keyword == null) {
         keyword = "";
     }
@@ -407,6 +407,6 @@ public class UserService {
 
     Pageable pageable = PageRequest.of(page, 15);
 
-    return userRepository.findUsersForUserPage(keyword, filter, pageable);
+    return userRepository.findUsersForUserPage(keyword, filter,currentUserId, pageable);
 }
 }

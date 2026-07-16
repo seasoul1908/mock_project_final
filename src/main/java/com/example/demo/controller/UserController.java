@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.dto.UserPageDTO;
+import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 
 @Controller
@@ -23,8 +24,21 @@ public class UserController {
             @RequestParam(defaultValue = "reputation") String filter,
             @RequestParam(defaultValue = "0") int page,
             Model model) {
+        
+        User loggedInUser = (User) model.getAttribute("loggedInUser");
 
-        Page<UserPageDTO> userPage = userService.getUsersForUserPage(search, filter, page);
+        Long currentUserId = loggedInUser != null
+                ? loggedInUser.getUserId()
+                : null;
+
+        Page<UserPageDTO> userPage =
+                userService.getUsersForUserPage(
+                search,
+                filter,
+                page,
+                currentUserId
+        );
+        
 
         model.addAttribute("users", userPage.getContent());
         model.addAttribute("userPage", userPage);
@@ -40,7 +54,19 @@ public class UserController {
             @RequestParam(defaultValue = "reputation") String filter,
             Model model) {
 
-        Page<UserPageDTO> userPage = userService.getUsersForUserPage(search, filter, 0);
+        User loggedInUser = (User) model.getAttribute("loggedInUser");
+
+        Long currentUserId = loggedInUser != null
+                ? loggedInUser.getUserId()
+                : null;
+
+        Page<UserPageDTO> userPage =
+            userService.getUsersForUserPage(
+                search,
+                filter,
+                0,
+                currentUserId
+            );
 
         model.addAttribute("users", userPage.getContent());
         model.addAttribute("userPage", userPage);
