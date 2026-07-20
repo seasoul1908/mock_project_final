@@ -15,7 +15,7 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -38,21 +38,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             email = username + "@" + provider + ".com"; 
         }
 
-        // Check DB existence
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        
-        if (userOptional.isEmpty()) {
-            // Auto-register new social user
-            User newUser = new User();
-            newUser.setUsername(username);
-            newUser.setEmail(email);
-            newUser.setProvider(provider.toUpperCase());
-            newUser.setRole("member");
-            newUser.setStatus("active");
-            newUser.setPasswordHash(""); // No password needed
-            
-            userRepository.save(newUser);
-        }
+        // The name attribute usually acts as the provider ID
+        String providerId = oAuth2User.getName();
+
+        // Check DB existence or auto-register using the robust logic in UserService
+        userService.loginOrRegister(providerId, email, username, provider.toUpperCase());
 
         return oAuth2User;
     }

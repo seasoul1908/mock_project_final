@@ -1,29 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>System Rules - DevQuery</title>
+    <title>DevQuery Guide</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <style>
-        :root {
-            --orange: #F48024;
-            --blue-link: #0074cc;
-            --blue-btn: #0a95ff;
-            --blue-tag-bg: #e1ecf4;
-            --blue-tag-text: #39739d;
-            --black-text: #0c0d0e;
-            --gray-text: #525960;
-            --gray-sub: #6a737c;
-            --border-color: #d6d9dc;
-            --bg-body: #ffffff;
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        if (localStorage.getItem('devquery-theme') === 'dark' || (localStorage.getItem('devquery-theme') === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.write('<style id="anti-fouc">body { background-color: #2d3135 !important; }<\/style>');
         }
-
+        /*]]>*/
+    </script>
+    <style>
         * {
             box-sizing: border-box;
             margin: 0;
@@ -31,57 +24,35 @@
         }
 
         body {
-            font-family: var(--font-stack);
-            background-color: var(--bg-body);
-            color: var(--black-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background-color: var(--bg-body, #fff);
+            color: var(--text-primary, #232629);
             font-size: 13px;
-        }
-
-        .navbar-devquery {
-            border-top: 3px solid #f48024;
-            background-color: #ffffff;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05);
-            height: 56px;
-        }
-
-        .search-box {
-            transition: all 0.3s ease;
-            border: 1px solid #babfc4;
-        }
-
-        .search-box:focus {
-            border-color: #3b4045;
-            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
-        }
-
-        .btn-auth {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .avatar-img {
-            object-fit: cover;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .main-container {
             max-width: 1264px;
             margin: 56px auto 0;
             display: flex;
-            align-items: flex-start;
+            align-items: stretch;
         }
 
         .left-sidebar {
             width: 164px;
             flex-shrink: 0;
-            padding-top: 25px;
-            border-right: 1px solid var(--border-color);
+            padding-top: 5px;
+            border-right: 1px solid var(--border-color, #d6d9dc);
+            transition: border-color 0.3s ease;
         }
 
         .main-content {
             flex-grow: 1;
             padding: 24px;
-            border-left: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color, #d6d9dc);
             width: 100%;
+            min-width: 0;
+            transition: border-color 0.3s ease;
         }
 
         .right-sidebar {
@@ -90,36 +61,54 @@
             padding: 24px 0 0 24px;
         }
 
-        .page-hero {
-            border: 1px solid #d6d9dc;
+        /* Hero and Card Section styling */
+        .page-hero,
+        .section-card,
+        .guide-item,
+        .workflow-item {
+            border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 8px;
-            background: linear-gradient(135deg, #fff7ed 0%, #ffffff 55%, #eef6ff 100%);
-            padding: 24px;
+            background-color: var(--bg-panel, #ffffff);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .page-hero {
+            padding: 26px;
             margin-bottom: 22px;
         }
 
+        .section-card {
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
         .page-hero h1 {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            color: var(--text-primary, #232629);
+            transition: color 0.3s ease;
         }
 
         .page-hero p {
-            color: var(--gray-text);
+            color: var(--text-secondary, #525960);
             font-size: 14px;
-            max-width: 720px;
-            margin-bottom: 18px;
-            line-height: 1.5;
+            max-width: 760px;
+            margin-bottom: 12px;
+            line-height: 1.55;
+            transition: color 0.3s ease;
         }
 
         .hero-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-top: 18px;
         }
 
         .btn-primary-custom {
-            background-color: var(--blue-btn);
+            background-color: var(--link-color, #0a95ff);
             color: white;
             padding: 10px 14px;
             border-radius: 4px;
@@ -129,47 +118,41 @@
             display: inline-flex;
             align-items: center;
             gap: 7px;
+            transition: background-color 0.2s;
         }
 
         .btn-primary-custom:hover {
-            background-color: #0074cc;
+            background-color: var(--link-hover, #0074cc);
             color: white;
         }
 
         .btn-outline-custom {
-            border: 1px solid #9fa6ad;
-            color: #3b4045;
+            border: 1px solid var(--border-color, #d6d9dc);
+            color: var(--text-secondary, #525960);
             padding: 10px 14px;
             border-radius: 4px;
             text-decoration: none;
             font-size: 13px;
-            background-color: #ffffff;
+            background-color: transparent;
             display: inline-flex;
             align-items: center;
             gap: 7px;
+            transition: all 0.2s ease;
         }
 
         .btn-outline-custom:hover {
-            background-color: #f1f2f3;
-            color: #0c0d0e;
-        }
-
-        .section-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: #ffffff;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            background-color: var(--btn-hover-bg, #f8f9f9);
+            color: var(--text-primary, #0c0d0e);
         }
 
         .section-header {
             padding: 14px 18px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: #f8f9f9;
+            border-bottom: 1px solid var(--border-color, #d6d9dc);
+            background-color: var(--bg-input, #f8f9f9);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .section-header h2 {
@@ -179,10 +162,11 @@
             display: flex;
             align-items: center;
             gap: 9px;
+            color: var(--text-primary, #232629);
         }
 
         .section-header span {
-            color: var(--gray-sub);
+            color: var(--text-muted, #6a737c);
             font-size: 12px;
         }
 
@@ -193,114 +177,89 @@
 
         .rule-item {
             padding: 18px;
-            border-bottom: 1px solid #eff0f1;
+            border-bottom: 1px solid var(--border-color, #eff0f1);
             display: flex;
             gap: 14px;
+            transition: border-color 0.3s ease;
         }
 
         .rule-item:last-child {
             border-bottom: none;
         }
 
-        .rule-number {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background-color: #fff4e8;
-            color: #c45f00;
+        .rule-number,
+        .guide-icon,
+        .workflow-step {
+            background-color: var(--tag-bg, #e1ecf4);
+            color: var(--tag-text, #39739d);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             flex-shrink: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .rule-content h3 {
+        .rule-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+        }
+
+        .guide-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--black-text);
         }
 
-        .rule-content p {
+        .workflow-step {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+        }
+
+        .rule-content h3,
+        .guide-item h3,
+        .workflow-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary, #0c0d0e);
+            transition: color 0.3s ease;
+        }
+
+        .guide-item h3,
+        .workflow-content h3 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .rule-content p,
+        .guide-item p,
+        .workflow-content p {
             font-size: 13px;
-            color: #3b4045;
+            color: var(--text-secondary, #3b4045);
             line-height: 1.55;
             margin-bottom: 8px;
             white-space: pre-line;
+            transition: color 0.3s ease;
+        }
+
+        .guide-item p,
+        .workflow-content p {
+            font-size: 12px;
+            margin: 0;
+            line-height: 1.4;
         }
 
         .rule-meta {
             font-size: 12px;
-            color: var(--gray-sub);
+            color: var(--text-muted, #6a737c);
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-        }
-
-        .notification-list {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .notification-item {
-            padding: 14px 18px;
-            border-bottom: 1px solid #eff0f1;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-unread {
-            background-color: #f5fbff;
-        }
-
-        .notification-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #e1ecf4;
-            color: #39739d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .notification-body {
-            flex-grow: 1;
-        }
-
-        .notification-body p {
-            color: #3b4045;
-            line-height: 1.45;
-            margin-bottom: 5px;
-        }
-
-        .notification-meta {
-            font-size: 12px;
-            color: var(--gray-sub);
-        }
-
-        .notification-type {
-            display: inline-block;
-            padding: 3px 7px;
-            border-radius: 3px;
-            font-size: 11px;
-            background-color: #e1ecf4;
-            color: #39739d;
-            margin-right: 6px;
-        }
-
-        .empty-state {
-            padding: 24px;
-            text-align: center;
-            color: var(--gray-sub);
+            transition: color 0.3s ease;
         }
 
         .guide-grid {
@@ -311,62 +270,50 @@
         }
 
         .guide-item {
-            border: 1px solid #e3e6e8;
-            border-radius: 8px;
             padding: 14px;
-            background-color: #ffffff;
             display: flex;
             gap: 12px;
         }
 
-        .guide-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background-color: #f1f2f3;
-            color: #525960;
+        .workflow-list {
+            padding: 18px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .guide-item h3 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .guide-item p {
-            font-size: 12px;
-            color: var(--gray-sub);
-            margin: 0;
-            line-height: 1.4;
+        .workflow-item {
+            padding: 14px;
+            display: flex;
+            gap: 14px;
         }
 
         .widget {
             border-radius: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
-            border: 1px solid;
+            border: 1px solid var(--border-color, #d6d9dc);
             font-size: 13px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .widget-yellow {
-            background-color: #fdf7e2;
-            border-color: #f1e5bc;
+            background-color: var(--gold-bg, #fdf7e2);
+            border-color: var(--gold-border, #f1e5bc);
         }
 
         .widget-blue {
-            background-color: #f4f8fb;
-            border-color: #d6e4f0;
+            background-color: var(--tag-bg, #f4f8fb);
+            border-color: var(--border-color, #d6e4f0);
         }
 
         .widget-header {
             padding: 12px 15px;
             font-weight: bold;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            background-color: rgba(0,0,0,0.02);
+            border-bottom: 1px solid var(--border-color, #d6d9dc);
+            background-color: transparent;
+            color: var(--text-primary, #0c0d0e);
+            transition: border-color 0.3s ease, color 0.3s ease;
         }
 
         .widget-list {
@@ -379,62 +326,14 @@
             padding: 12px 15px;
             display: flex;
             gap: 10px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            color: #3b4045;
+            border-bottom: 1px solid var(--border-color, #d6d9dc);
+            color: var(--text-secondary, #3b4045);
             line-height: 1.4;
+            transition: border-color 0.3s ease, color 0.3s ease;
         }
 
         .widget-list li:last-child {
             border-bottom: none;
-        }
-
-        .footer-devquery {
-            background-color: #242729;
-            color: #ffffff;
-            margin-top: 40px;
-            padding: 25px 0 15px 0;
-            border-top: 1px solid #34495e;
-        }
-
-        .footer-content {
-            max-width: 1264px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-bottom: 15px;
-        }
-
-        .footer-section h5 {
-            color: #f48024;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 6px;
-            color: #ffffff;
-            font-size: 13px;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #34495e;
-            padding-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         @media (max-width: 992px) {
@@ -446,284 +345,290 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ========================================================================= */
+        /* STRICT DARK MODE OVERRIDES (Bypassing missing instructions)               */
+        /* ========================================================================= */
+        body.dark-theme .page-hero,
+        body.dark-theme .section-card,
+        body.dark-theme .guide-item,
+        body.dark-theme .workflow-item {
+            background-color: var(--bg-panel, #232629) !important;
+            border-color: var(--border-color, #4a4e51) !important;
+        }
+
+        body.dark-theme .section-header {
+            background-color: var(--bg-input, #1a1b1d) !important;
+            border-bottom-color: var(--border-color, #4a4e51) !important;
+        }
+
+        body.dark-theme .section-header h2 {
+            color: var(--text-primary, #f1f2f3) !important;
+        }
+
+        body.dark-theme .section-header span {
+            color: var(--text-muted, #9fa6ad) !important;
+        }
+
+        body.dark-theme .rule-number,
+        body.dark-theme .guide-icon,
+        body.dark-theme .workflow-step {
+            background-color: var(--tag-bg, #373c3f) !important;
+            color: var(--text-primary, #f1f2f3) !important;
+        }
+
+        body.dark-theme .rule-item {
+            border-bottom-color: var(--border-color, #4a4e51) !important;
+        }
+
+        body.dark-theme .rule-content h3,
+        body.dark-theme .guide-item h3,
+        body.dark-theme .workflow-content h3 {
+            color: var(--text-primary, #f1f2f3) !important;
+        }
+
+        body.dark-theme .rule-content p,
+        body.dark-theme .guide-item p,
+        body.dark-theme .workflow-content p {
+            color: var(--text-secondary, #babfc4) !important;
+        }
+
+        body.dark-theme .rule-meta {
+            color: var(--text-muted, #9fa6ad) !important;
+        }
+
+        body.dark-theme .btn-outline-custom {
+            background-color: transparent !important;
+            border-color: var(--border-color, #4a4e51) !important;
+            color: var(--text-secondary, #babfc4) !important;
+        }
+
+        body.dark-theme .btn-outline-custom:hover {
+            background-color: var(--btn-hover-bg, #3b4045) !important;
+            color: var(--text-primary, #f1f2f3) !important;
+        }
+
+        body.dark-theme .widget-yellow {
+            background-color: var(--gold-bg, #3b3315) !important;
+            border-color: var(--gold-border, #d4a81e) !important;
+        }
+
+        body.dark-theme .widget-blue {
+            background-color: var(--tag-bg, #373c3f) !important;
+            border-color: var(--border-color, #4a4e51) !important;
+        }
+
+        body.dark-theme .widget-header {
+            background-color: transparent !important;
+            color: var(--text-primary, #f1f2f3) !important;
+            border-bottom-color: var(--border-color, #4a4e51) !important;
+        }
+
+        body.dark-theme .widget-list li {
+            color: var(--text-secondary, #babfc4) !important;
+            border-bottom-color: var(--border-color, #4a4e51) !important;
+        }
     </style>
 </head>
+
 <body>
 
-<div th:replace="~{Common/header :: header}"></div>
+    <div th:replace="~{Common/header :: header}"></div>
 
-<div class="main-container">
+    <div class="main-container">
 
-    <div class="left-sidebar d-none d-md-block">
-        <div th:replace="~{Common/sidebar :: sidebar('rules')}"></div>
-    </div>
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('rules')}"></div>
+        </div>
 
-    <main class="main-content">
+        <main class="main-content">
 
-        <section class="page-hero">
-            <h1>Welcome to DevQuery</h1>
-            <p>
-                Please review the latest system rules, personal notifications, and quick guide before continuing.
-                These rules help the community stay clear, respectful, and useful for every developer.
-            </p>
+            <section class="page-hero">
+                <h1>DevQuery Guide</h1>
+                <p>DevQuery is a developer Q&amp;A platform where users can ask questions, share answers, explore tags,
+                    and learn from the community.</p>
+                <p>This page introduces the website, explains the community rules, and guides both guests and logged-in
+                    users on how to use DevQuery effectively.</p>
+                <div class="hero-actions">
+                    <a th:href="@{/home}" class="btn-primary-custom"><i class="fa-solid fa-arrow-right"></i> Go to
+                        Home</a>
+                    <a sec:authorize="isAnonymous()" th:href="@{/auth/login}" class="btn-outline-custom"><i
+                            class="fa-solid fa-right-to-bracket"></i> Log in</a>
+                    <a sec:authorize="isAuthenticated()" th:href="@{/questions/ask}" class="btn-outline-custom"><i
+                            class="fa-solid fa-circle-question"></i> Ask a Question</a>
+                </div>
+            </section>
 
-            <div class="hero-actions">
-                <a th:href="@{/home}" class="btn-primary-custom">
-                    <i class="fa-solid fa-arrow-right"></i>
-                    Continue to Home
-                </a>
-
-                <a th:href="@{/questions/ask}" class="btn-outline-custom">
-                    <i class="fa-solid fa-circle-question"></i>
-                    Ask a Question
-                </a>
-            </div>
-        </section>
-
-        <section class="section-card">
-            <div class="section-header">
-                <h2>
-                    <i class="fa-solid fa-scale-balanced" style="color: #f48024;"></i>
-                    Forum Rules
-                </h2>
-                <span th:text="|${#lists.size(rules)} rules|">0 rules</span>
-            </div>
-
-            <div class="rule-list" th:if="${rules != null and !#lists.isEmpty(rules)}">
-                <div class="rule-item" th:each="rule, iter : ${rules}">
-                    <div class="rule-number" th:text="${iter.index + 1}">1</div>
-
-                    <div class="rule-content">
-                        <h3 th:text="${rule.title}">Rule title</h3>
-
-                        <p th:text="${rule.content}">
-                            Rule content
-                        </p>
-
-                        <div class="rule-meta">
-                            <span th:if="${rule.updatedAt != null}">
-                                <i class="fa-regular fa-clock"></i>
-                                Updated
-                                <span th:text="${#temporals.format(rule.updatedAt, 'MMM dd, yyyy')}">Jan 01, 2026</span>
-                            </span>
-
-                            <span th:if="${rule.updatedAt == null and rule.createdAt != null}">
-                                <i class="fa-regular fa-clock"></i>
-                                Created
-                                <span th:text="${#temporals.format(rule.createdAt, 'MMM dd, yyyy')}">Jan 01, 2026</span>
-                            </span>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-scale-balanced text-warning"
+                            style="color: var(--gold-text, #f1c40f) !important;"></i> Forum Rules</h2>
+                    <span th:text="|${#lists.size(rules)} rules|">0 rules</span>
+                </div>
+                <div class="rule-list" th:if="${rules != null and !#lists.isEmpty(rules)}">
+                    <div class="rule-item" th:each="rule, iter : ${rules}">
+                        <div class="rule-number" th:text="${iter.index + 1}">1</div>
+                        <div class="rule-content">
+                            <h3 th:text="${rule.title}">Rule title</h3>
+                            <p th:text="${rule.content}">Rule content</p>
+                            <div class="rule-meta">
+                                <span th:if="${rule.updatedAt != null}"><i class="fa-regular fa-clock"></i> Updated
+                                    <span th:text="${#temporals.format(rule.updatedAt, 'MMM dd, yyyy')}">Jan 01,
+                                        2026</span></span>
+                                <span th:if="${rule.updatedAt == null and rule.createdAt != null}"><i
+                                        class="fa-regular fa-clock"></i> Created <span
+                                        th:text="${#temporals.format(rule.createdAt, 'MMM dd, yyyy')}">Jan 01,
+                                        2026</span></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="empty-state" th:if="${rules == null or #lists.isEmpty(rules)}">
+                    <i class="fa-regular fa-file-lines fa-2x mb-2"
+                        style="color: var(--icon-color, #babfc4) !important;"></i>
+                    <p>No forum rules are available yet.</p>
+                </div>
+            </section>
 
-            <div class="empty-state" th:if="${rules == null or #lists.isEmpty(rules)}">
-                <i class="fa-regular fa-file-lines fa-2x mb-2"></i>
-                <p>No system rules are available yet.</p>
-            </div>
-        </section>
-
-        <section class="section-card">
-            <div class="section-header">
-                <h2>
-                    <i class="fa-solid fa-bell" style="color: #0a95ff;"></i>
-                    Your Notifications
-                </h2>
-                <span th:text="|${unreadNotification} unread|">0 unread</span>
-            </div>
-
-            <div class="notification-list" th:if="${notifications != null and !#lists.isEmpty(notifications)}">
-                <div class="notification-item"
-                     th:each="noti, iter : ${notifications}"
-                     th:if="${iter.index < 5}"
-                     th:classappend="${noti.isRead == false} ? ' notification-unread' : ''">
-
-                    <div class="notification-icon">
-                        <i class="fa-solid fa-inbox"></i>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-compass text-primary"
+                            style="color: var(--link-color, #379fef) !important;"></i> How to Use DevQuery</h2>
+                    <span>Main features</span>
+                </div>
+                <div class="guide-grid">
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-house"></i></div>
+                        <div>
+                            <h3>Home Page</h3>
+                            <p>Browse community questions and sort them by newest, active, views, votes, or unanswered.
+                            </p>
+                        </div>
                     </div>
-
-                    <div class="notification-body">
-                        <p>
-                            <span class="notification-type" th:text="${noti.type}">system</span>
-                            <span th:text="${noti.content}">Notification content</span>
-                        </p>
-
-                        <div class="notification-meta" th:if="${noti.createdAt != null}">
-                            <i class="fa-regular fa-clock"></i>
-                            <span th:text="${#dates.format(noti.createdAt, 'MMM dd, yyyy HH:mm')}">
-                                Jan 01, 2026 10:00
-                            </span>
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <div>
+                            <h3>Search</h3>
+                            <p>Use the search bar to find questions, tags, or users quickly by keyword.</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-tags"></i></div>
+                        <div>
+                            <h3>Tags</h3>
+                            <p>Use tags to filter questions by programming language, framework, or topic.</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-circle-question"></i></div>
+                        <div>
+                            <h3>Ask Question</h3>
+                            <p>Post a clear question with enough context, code, error message, and suitable tags.</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <h3>Users</h3>
+                            <p>Explore user profiles, reputation, badges, questions, answers, and activity.</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="guide-icon"><i class="fa-solid fa-bookmark"></i></div>
+                        <div>
+                            <h3>Saves</h3>
+                            <p>Logged-in users can save useful questions and revisit them later.</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="empty-state" th:if="${notifications == null or #lists.isEmpty(notifications)}">
-                <i class="fa-regular fa-bell fa-2x mb-2"></i>
-                <p>You do not have any notifications yet.</p>
-            </div>
-        </section>
-
-        <section class="section-card">
-            <div class="section-header">
-                <h2>
-                    <i class="fa-solid fa-map" style="color: #2f6f44;"></i>
-                    Website Guide
-                </h2>
-                <span>Quick navigation</span>
-            </div>
-
-            <div class="guide-grid">
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-house"></i>
+            <section class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-route text-success" style="color: #48a868 !important;"></i> DevQuery
+                        Workflow</h2>
+                    <span>User journey</span>
+                </div>
+                <div class="workflow-list">
+                    <div class="workflow-item">
+                        <div class="workflow-step">1</div>
+                        <div class="workflow-content">
+                            <h3>Explore existing questions first</h3>
+                            <p>Before posting a new question, users should search existing questions to check whether
+                                the problem has already been answered.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3>Home</h3>
-                        <p>Browse questions, sort by newest, views, votes, or unanswered posts.</p>
+                    <div class="workflow-item">
+                        <div class="workflow-step">2</div>
+                        <div class="workflow-content">
+                            <h3>Read the forum rules</h3>
+                            <p>Users should understand the community rules so their questions and answers stay clear,
+                                respectful, and useful.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-item">
+                        <div class="workflow-step">3</div>
+                        <div class="workflow-content">
+                            <h3>Ask a clear question</h3>
+                            <p>A good question should include a clear title, context, code, error message, expected
+                                result, and what has already been tried.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-item">
+                        <div class="workflow-step">4</div>
+                        <div class="workflow-content">
+                            <h3>Add suitable tags</h3>
+                            <p>Tags help classify the question and make it easier for users with the right knowledge to
+                                find and answer it.</p>
+                        </div>
+                    </div>
+                    <div class="workflow-item">
+                        <div class="workflow-step">5</div>
+                        <div class="workflow-content">
+                            <h3>Learn from answers and save useful posts</h3>
+                            <p>Users can read answers, revisit saved questions, and use community knowledge to solve
+                                similar problems later.</p>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                    <div>
-                        <h3>Search</h3>
-                        <p>Find questions, tags, and users quickly by using keywords.</p>
-                    </div>
-                </div>
+        </main>
 
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-tags"></i>
-                    </div>
-                    <div>
-                        <h3>Tags</h3>
-                        <p>Use tags to narrow down questions by programming language or topic.</p>
-                    </div>
-                </div>
-
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-circle-question"></i>
-                    </div>
-                    <div>
-                        <h3>Ask Question</h3>
-                        <p>Post a clear question with enough context, code, and suitable tags.</p>
-                    </div>
-                </div>
-
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <div>
-                        <h3>Profile</h3>
-                        <p>View your activity, badges, answers, questions, votes, and reputation.</p>
-                    </div>
-                </div>
-
-                <div class="guide-item">
-                    <div class="guide-icon">
-                        <i class="fa-solid fa-bell"></i>
-                    </div>
-                    <div>
-                        <h3>Notifications</h3>
-                        <p>Check updates related to your account, system messages, and community activity.</p>
-                    </div>
+        <aside class="right-sidebar d-none d-lg-block">
+            <div class="widget widget-yellow">
+                <div class="widget-header">Quick Tips</div>
+                <div class="widget-content">
+                    <ul class="widget-list">
+                        <li><span>💡</span><span>Use a clear title so other users understand your problem
+                                quickly.</span></li>
+                        <li><span>🧩</span><span>Add code, error messages, and expected results when asking
+                                questions.</span></li>
+                        <li><span>🏷️</span><span>Choose suitable tags to help your question reach the right
+                                people.</span></li>
+                        <li><span>🤝</span><span>Be respectful when commenting, answering, or giving feedback.</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </section>
 
-    </main>
-
-    <aside class="right-sidebar d-none d-lg-block">
-
-        <div class="widget widget-yellow">
-            <div class="widget-header">Quick Tips</div>
-            <div class="widget-content">
-                <ul class="widget-list">
-                    <li>
-                        <span>💡</span>
-                        <span>Use a clear title so other users understand your problem quickly.</span>
-                    </li>
-                    <li>
-                        <span>🧩</span>
-                        <span>Add code, error messages, and expected results when asking questions.</span>
-                    </li>
-                    <li>
-                        <span>🏷️</span>
-                        <span>Choose suitable tags to help your question reach the right people.</span>
-                    </li>
-                    <li>
-                        <span>🤝</span>
-                        <span>Be respectful when commenting, answering, or giving feedback.</span>
-                    </li>
-                </ul>
+            <div class="widget widget-blue">
+                <div class="widget-header">Page Purpose</div>
+                <div class="widget-content">
+                    <ul class="widget-list">
+                        <li><span>📌</span><span>This page helps users understand DevQuery rules before using the
+                                forum.</span></li>
+                        <li><span>🧭</span><span>This guide gives guests and users a clear overview of the main website
+                                features.</span></li>
+                        <li><span>🗺️</span><span>The guide helps new users navigate Home, Tags, Search, Users, and
+                                Saves.</span></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-
-        <div class="widget widget-blue">
-            <div class="widget-header">Page Purpose</div>
-            <div class="widget-content">
-                <ul class="widget-list">
-                    <li>
-                        <span>📌</span>
-                        <span>This page helps users understand DevQuery rules before using the forum.</span>
-                    </li>
-                    <li>
-                        <span>🔔</span>
-                        <span>User notifications are displayed here without touching the admin side.</span>
-                    </li>
-                    <li>
-                        <span>🗺️</span>
-                        <span>The guide helps new users navigate Home, Tags, Search, and Profile.</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-    </aside>
-</div>
-
-<footer class="footer-devquery">
-    <div class="footer-content">
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h5>Company</h5>
-                <ul>
-                    <li>About</li>
-                    <li>Blog</li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h5>Products</h5>
-                <ul>
-                    <li>DevQuery</li>
-                    <li>API Reference</li>
-                </ul>
-            </div>
-
-            <div class="footer-section">
-                <h5>Community</h5>
-                <ul>
-                    <li>Questions</li>
-                    <li>Tags</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <div class="fw-bold" style="color: #f48024; font-size: 16px;">DevQuery</div>
-            <div style="font-size: 12px;">
-                &copy; 2026 DevQuery. Made with
-                <i class="fa-solid fa-heart" style="color: #f48024;"></i>
-            </div>
-        </div>
+        </aside>
     </div>
-</footer>
 
+    <div th:replace="~{Common/footer :: footer}"></div>
 </body>
+
 </html>

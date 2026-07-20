@@ -6,13 +6,19 @@
     <title>Edit Profile - DevQuery</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
     <style>
         body {
-            background-color: #f4f6f8;
-            color: #3b4045;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             padding-top: 60px;
-            /* Căn lề cho Header */
+            font-size: 13px;
+            /* Top padding to accommodate fixed header */
         }
 
         .profile-container {
@@ -21,7 +27,7 @@
         }
 
         .edit-card {
-            background: #ffffff;
+            background: var(--bg-panel);
             border: none;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -35,7 +41,7 @@
             color: #f48024;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #eff0f1;
+            border-bottom: 2px solid var(--border-color);
             display: flex;
             align-items: center;
         }
@@ -79,8 +85,21 @@
             font-size: 3.5rem;
             color: #adb5bd;
             margin: 0 auto 20px auto;
-            border: 4px solid white;
+            border: 4px solid var(--bg-panel);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-theme .form-control,
+        html[data-theme="dark"] .form-control,
+        body.dark-theme .input-group-text,
+        html[data-theme="dark"] .input-group-text {
+            background-color: var(--bg-body) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .form-control::placeholder {
+            color: var(--text-secondary, #adb5bd) !important;
         }
     </style>
 </head>
@@ -93,12 +112,15 @@
 
         <div th:if="${ERROR != null}" class="alert alert-danger shadow-sm" th:text="${ERROR}"></div>
 
-        <form th:action="@{/edit-profile}" method="POST" enctype="multipart/form-data">
+        <form id="editProfileForm" th:action="@{/edit-profile}" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-3 text-center mb-4">
                     <div class="edit-card h-100 p-3" style="margin-bottom: 0;">
-                        <img th:src="${profile.displayAvatar != null ? profile.displayAvatar : '/assets/img/Avatar.png'}"
-                            id="avatarPreview" alt="Avatar" class="avatar-placeholder"
+                        <img th:src="${profile.displayAvatar != null and !#strings.isEmpty(profile.displayAvatar) ? profile.displayAvatar : '/assets/img/avatar/default-avatar.jpg'}"
+                            onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                            id="avatarPreview"
+                            alt="Avatar"
+                            class="avatar-placeholder"
                             style="object-fit: cover; width: 140px; height: 140px; padding: 0;">
 
                         <label for="avatarFile" class="btn btn-outline-secondary btn-sm w-100 mb-2">
@@ -122,7 +144,7 @@
                             <label class="form-label">Display Name</label>
                             <input type="text" class="form-control" name="displayName" th:value="${profile.username}"
                                 required>
-                            <div class="form-text small">Tên này sẽ hiển thị với mọi người trên diễn đàn.</div>
+                            <div class="form-text small">This name will be displayed to everyone on the forum.</div>
                         </div>
 
                         <div class="mb-4">
@@ -130,14 +152,14 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
                                 <input type="text" class="form-control" name="location" th:value="${profile.location}"
-                                    placeholder="Ví dụ: Hà Nội, Việt Nam">
+                                    placeholder="e.g., Haiphong, Vietnam">
                             </div>
                         </div>
 
                         <div class="mb-0">
                             <label class="form-label">About Me</label>
                             <textarea class="form-control" name="bio" rows="6"
-                                placeholder="Giới thiệu một chút về bản thân bạn..."
+                                placeholder="Tell us a little bit about yourself..."
                                 th:text="${profile.bio}"></textarea>
                         </div>
                     </div>
@@ -199,10 +221,64 @@
             }
         }
         function removeAvatar() {
-            document.getElementById('avatarPreview').src = '/assets/img/Avatar.png';
+            document.getElementById('avatarPreview').src = '/assets/img/avatar/default-avatar.jpg';
             document.getElementById('deleteAvatarFlag').value = "true";
             document.getElementById('avatarFile').value = '';
         }
+        // Handle form submission
+        document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default page reload
+
+            var form = this;
+            var formData = new FormData(form);
+            var submitBtn = form.querySelector('.btn-save');
+            var originalBtnText = submitBtn.innerHTML;
+
+            // Set loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            // Send form data via AJAX
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(function (response) {
+                    if (response.ok) {
+                        // --- Real-time Header UI Update ---
+
+                        // Update avatar in header
+                        var headerAvatar = document.querySelector('.navbar-devquery .avatar-img');
+                        var previewAvatar = document.getElementById('avatarPreview').src;
+                        if (headerAvatar) {
+                            headerAvatar.src = previewAvatar;
+                        }
+
+                        // Update display name in header
+                        var headerName = document.querySelector('.navbar-devquery .nav-link span.fw-bold');
+                        var inputName = form.querySelector('input[name="displayName"]').value;
+                        if (headerName && inputName) {
+                            headerName.textContent = inputName;
+                        }
+
+                        // Success notification
+                        alert('Profile updated successfully!');
+                        var profileUrl = document.querySelector('a.btn-light').href; // Get URL from Cancel button
+                        window.location.href = profileUrl;
+                    } else {
+                        alert('Failed to save changes. Please try again.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    alert('Connection error!');
+                })
+                .finally(function () {
+                    // Restore button state
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                });
+        });
     </script>
 
     <div th:replace="~{Common/footer :: footer}"></div>

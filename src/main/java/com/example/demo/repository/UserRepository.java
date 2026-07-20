@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.UserPageDTO;
 import com.example.demo.entity.User;
 
 @Repository
@@ -224,4 +225,34 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Transactional
         @Query(value = "INSERT INTO User_Profile (user_id, avatar_url) VALUES (:userId, :avatarUrl)", nativeQuery = true)
         void insertAvatarOnly(@Param("userId") long userId, @Param("avatarUrl") String avatarUrl);
+
+        @Modifying
+        @Transactional
+        @Query(value = "UPDATE Users SET Reputation = ISNULL(Reputation, 0) + :delta WHERE user_id = :userId", nativeQuery = true)
+        void addReputation(@Param("userId") long userId, @Param("delta") int delta);
+
+        @Modifying
+        @Transactional
+        @Query(value = "INSERT INTO Reputation_History (user_id, delta, reason, event_type, related_post_type, related_post_id, actor_user_id) " +
+                "VALUES (:userId, :delta, :reason, :eventType, :postType, :postId, :actorUserId)", nativeQuery = true)
+        void insertReputationHistory(@Param("userId") long userId, @Param("delta") int delta,
+                @Param("reason") String reason, @Param("eventType") String eventType,
+                @Param("postType") String postType, @Param("postId") Long postId,
+                @Param("actorUserId") Long actorUserId);
+        
+        @Query(value = """
+        SELECT u.user_id AS userId, u.username AS username, p.avatar_url AS avatarUrl, p.location AS location, ISNULL(u.Reputation, 0) AS reputation, p.bio AS bio, u.created_at AS createdAt,
+        (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'gold') AS goldBadges,
+        (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'silver') AS silverBadges,
+        (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'bronze') AS bronzeBadges,
+        ISNULL((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) AS voteScore
+        FROM Users u LEFT JOIN User_Profile p ON u.user_id = p.user_id
+        WHERE u.role != 'admin' AND u.role != 'bot' AND u.user_id <> :currentUserId AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%'))
+        ORDER BY CASE WHEN :filter = 'reputation' THEN ISNULL(u.Reputation, 0) END DESC,
+        CASE WHEN :filter = 'voted' THEN ISNULL((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) END DESC,
+        CASE WHEN :filter = 'new' THEN u.created_at END DESC, u.username ASC
+        """, countQuery = """
+        SELECT COUNT(*) FROM Users u WHERE u.role != 'admin' AND u.role != 'bot' AND u.user_id <> :currentUserId AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%'))
+        """, nativeQuery = true)
+        Page<UserPageDTO> findUsersForUserPage(@Param("keyword") String keyword, @Param("filter") String filter,@Param("currentUserId") Long currentUserId, Pageable pageable);
 }

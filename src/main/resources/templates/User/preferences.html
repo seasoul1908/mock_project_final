@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Preferences - DevQuery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark' || (localStorage.getItem('devquery-theme') === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.write('<style id="anti-fouc">body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
+    <style>
+        body {
+            background-color: var(--bg-body, #fff);
+            padding-top: 60px;
+            color: var(--text-primary, #232629);
+            font-size: 13px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Adjusted", "Segoe UI", "Liberation Sans", sans-serif;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        /* ---------------- PROFILE TEMPLATE SPECIFIC STYLES ---------------- */
+        .user-name {
+            font-size: 34px;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .user-meta {
+            font-size: 13px;
+            color: var(--text-secondary, #6a737c);
+        }
+
+        .profile-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+
+        .profile-tabs .nav-link {
+            color: var(--text-secondary, #525960);
+            border-radius: 100px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            font-size: 13px;
+        }
+
+        .profile-tabs .nav-link:hover {
+            background-color: var(--btn-hover-bg, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
+        }
+
+        .profile-tabs .nav-link.active {
+            background-color: #f48024;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* ------------------------------------------------------------------ */
+
+        .main-container {
+            max-width: 1264px;
+            margin: 0 auto;
+            display: flex;
+            align-items: stretch;
+            background-color: var(--bg-body, #fff);
+            transition: background-color 0.2s ease;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-color, #d6d9dc);
+            transition: border-color 0.2s ease;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 50px;
+            background-color: var(--bg-body, transparent);
+        }
+
+        .saves-sidebar-item {
+            display: block;
+            padding: 6px 12px;
+            color: var(--text-secondary, #525960);
+            text-decoration: none;
+            font-size: 13px;
+            border-radius: 100px;
+            margin-bottom: 2px;
+        }
+
+        .saves-sidebar-item:hover {
+            background-color: var(--btn-hover-bg, #f8f9f9);
+            color: var(--text-primary, #0c0d0e);
+        }
+
+        .saves-sidebar-item.active {
+            font-weight: bold;
+            background-color: var(--btn-hover-bg, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
+        }
+
+        .prefs-container {
+            border: 1px solid var(--border-color, #d6d9dc);
+            border-radius: 5px;
+            margin-top: 20px;
+            background-color: var(--bg-panel, #fff);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .prefs-row {
+            border-bottom: 1px solid var(--border-color, #e3e6e8);
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: background-color 0.1s;
+        }
+
+        .prefs-row:last-child {
+            border-bottom: none;
+        }
+
+        .prefs-row:hover {
+            background-color: var(--btn-hover-bg, #f8f9f9);
+        }
+
+        .prefs-info {
+            flex-grow: 1;
+            padding-right: 40px;
+        }
+
+        .prefs-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary, #0c0d0e);
+            margin-bottom: 6px;
+        }
+
+        .prefs-desc {
+            font-size: 13px;
+            color: var(--text-secondary, #525960);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--text-secondary, #babfc4);
+            transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-primary, white);
+            transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: #148a4c;
+        }
+
+        .toggle-switch input:focus+.toggle-slider {
+            box-shadow: 0 0 0 4px rgba(20, 138, 76, 0.2);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        body.dark-theme .toggle-switch input:checked+.toggle-slider {
+            background-color: #2ea043;
+        }
+
+        body.dark-theme .toggle-slider:before {
+            background-color: #fff;
+        }
+
+        body.dark-theme .toggle-slider {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-selector-group {
+            display: flex;
+            gap: 40px;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .theme-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .theme-option input[type="radio"] {
+            margin-bottom: 12px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--link-color, #0074cc);
+        }
+
+        .theme-mock {
+            width: 120px;
+            height: 75px;
+            border: 1px solid var(--border-color, #d6d9dc);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .theme-option:hover .theme-mock {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        body.dark-theme .theme-option:hover .theme-mock {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .theme-mock-header {
+            height: 14px;
+            background: #f1f2f3;
+            border-bottom: 1px solid #d6d9dc;
+            display: flex;
+            align-items: center;
+            padding-left: 6px;
+            gap: 3px;
+        }
+
+        .theme-mock-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #d6d9dc;
+        }
+
+        .theme-mock-sidebar {
+            position: absolute;
+            left: 0;
+            top: 14px;
+            bottom: 0;
+            width: 28px;
+            background: #f8f9f9;
+            border-right: 1px solid #d6d9dc;
+        }
+
+        .theme-light .theme-mock {
+            background-color: #ffffff;
+        }
+
+        .theme-dark .theme-mock {
+            background-color: #2d3135;
+            border-color: #4a4e51;
+        }
+
+        .theme-dark .theme-mock-header {
+            background-color: #1a1b1d;
+            border-color: #4a4e51;
+        }
+
+        .theme-dark .theme-mock-sidebar {
+            background-color: #232629;
+            border-color: #4a4e51;
+        }
+
+        .theme-dark .theme-mock-dot {
+            background: #4a4e51;
+        }
+
+        .theme-system .theme-mock {
+            background: linear-gradient(135deg, #ffffff 50%, #2d3135 50%);
+        }
+
+        .theme-system .theme-mock-header {
+            background: linear-gradient(135deg, #f1f2f3 50%, #1a1b1d 50%);
+            border-bottom: none;
+        }
+
+        .theme-system .theme-mock-sidebar {
+            background: linear-gradient(135deg, #f8f9f9 50%, #232629 50%);
+            border-right: none;
+        }
+
+        .theme-system .theme-mock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0) 49%, #888 49%, #888 51%, rgba(0, 0, 0, 0) 51%);
+            z-index: 10;
+        }
+
+        .theme-label {
+            font-size: 14px;
+            color: var(--text-primary, #232629);
+            margin-top: 10px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color, #d6d9dc);
+            color: var(--text-secondary, #525960);
+            background-color: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--btn-hover-bg, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
+            border-color: var(--border-color, #d6d9dc);
+        }
+
+        /* Semantic classes replacing inline styles */
+        .page-title {
+            font-size: 27px;
+            color: var(--text-primary, #0c0d0e);
+        }
+
+        .section-title {
+            font-size: 21px;
+            font-weight: 400;
+            margin-top: 10px;
+            margin-bottom: 16px;
+            color: var(--text-primary, #0c0d0e);
+        }
+
+        .prefs-alert {
+            font-size: 14px;
+        }
+
+        .prefs-theme-row {
+            padding-bottom: 30px;
+        }
+
+        .prefs-theme-info {
+            min-width: 150px;
+        }
+
+        .shortcut-key {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: var(--bg-panel, #e3e6e8);
+            color: var(--text-primary, #0c0d0e);
+            border: 1px solid var(--border-color, #d6d9dc);
+        }
+
+        .so-link {
+            text-decoration: none;
+            color: var(--link-color, #0074cc);
+        }
+
+        .so-link:hover {
+            color: var(--link-hover, #0056b3);
+            text-decoration: underline;
+        }
+
+        .btn-save-prefs {
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+        }
+
+        body.dark-theme .btn-save-prefs {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-theme .border-bottom {
+            border-color: var(--border-color) !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{Common/header :: header}"></div>
+
+    <div class="main-container">
+        <div class="left-sidebar d-none d-md-block">
+            <div th:replace="~{Common/sidebar :: sidebar('profile')}"></div>
+        </div>
+
+        <main class="main-content">
+            <div th:replace="~{Common/profileTemplate :: profileTemplate('preferences')}"></div>
+
+            <div class="row mt-4">
+                <div class="col-md-2">
+                    <nav class="nav flex-column mt-2">
+                        <a th:href="@{/settings/preferences}" class="saves-sidebar-item active">Preferences</a>
+                    </nav>
+                </div>
+
+                <div class="col-md-10 ps-md-4">
+
+                    <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
+                        <h2 class="mb-0 fw-bold page-title">Preferences</h2>
+                    </div>
+
+                    <h4 class="section-title">Interface</h4>
+
+                    <div th:if="${successMessage}" class="alert alert-success py-2 mb-4 prefs-alert">
+                        <i class="fa-solid fa-check-circle me-2"></i><span th:text="${successMessage}"></span>
+                    </div>
+
+                    <form th:action="@{/settings/preferences/save}" method="post" th:object="${pref}">
+                        <div class="prefs-container">
+
+                            <div class="prefs-row flex-column flex-md-row border-bottom prefs-theme-row">
+                                <div class="prefs-info mb-3 mb-md-0 prefs-theme-info">
+                                    <div class="prefs-title">Theme</div>
+                                </div>
+                                <div class="theme-selector-group flex-grow-1">
+                                    <label class="theme-option theme-light">
+                                        <input type="radio" th:field="*{theme}" value="light"
+                                            onclick="changeTheme('light')">
+                                        <div class="theme-mock">
+                                            <div class="theme-mock-header">
+                                                <div class="theme-mock-dot"></div>
+                                                <div class="theme-mock-dot"></div>
+                                            </div>
+                                            <div class="theme-mock-sidebar"></div>
+                                        </div>
+                                        <div class="theme-label">Light</div>
+                                    </label>
+
+                                    <label class="theme-option theme-system">
+                                        <input type="radio" th:field="*{theme}" value="system"
+                                            onclick="changeTheme('system')">
+                                        <div class="theme-mock">
+                                            <div class="theme-mock-header"></div>
+                                            <div class="theme-mock-sidebar"></div>
+                                            <div class="theme-mock-overlay"></div>
+                                        </div>
+                                        <div class="theme-label">System setting</div>
+                                    </label>
+
+                                    <label class="theme-option theme-dark">
+                                        <input type="radio" th:field="*{theme}" value="dark"
+                                            onclick="changeTheme('dark')">
+                                        <div class="theme-mock">
+                                            <div class="theme-mock-header">
+                                                <div class="theme-mock-dot"></div>
+                                                <div class="theme-mock-dot"></div>
+                                            </div>
+                                            <div class="theme-mock-sidebar"></div>
+                                        </div>
+                                        <div class="theme-label">Dark</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Enable high contrast</div>
+                                    <p class="prefs-desc">When enabled, high contrast improves legibility by increasing
+                                        the contrast between text, background, and border colors.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{highContrast}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Enable new editor</div>
+                                    <p class="prefs-desc">When enabled, the new text editor is displayed.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{newEditor}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Enable keyboard shortcuts</div>
+                                    <p class="prefs-desc">When enabled, press <kbd class="shortcut-key">?</kbd>
+                                        for help.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{keyboardShortcuts}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Show left navigation</div>
+                                    <p class="prefs-desc">When enabled, the left navigation is pinned to the left
+                                        sidebar on Q&A sites.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{leftNavigation}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Show hot network questions</div>
+                                    <p class="prefs-desc">When enabled, Hot Network Questions are displayed on the right
+                                        sidebar on Q&A sites.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{hotNetworkQuestions}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Show Staging Ground questions</div>
+                                    <p class="prefs-desc">When enabled, Staging Ground questions are displayed within
+                                        Home or Questions on DevQuery.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{stagingGround}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Show tag usage guidance in tag hover</div>
+                                    <p class="prefs-desc">When enabled, tag hovers show the tag usage guidance instead
+                                        of the tag summary.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{tagHoverGuidance}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="prefs-row">
+                                <div class="prefs-info">
+                                    <div class="prefs-title">Enable experiments</div>
+                                    <p class="prefs-desc">When enabled, you see experiments that may provide an opt-out.
+                                        Note that some experiments do not support an opt-out. Learn more in the <a
+                                            href="#" class="so-link">Help Center</a>.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{experiments}">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 mb-5">
+                            <button type="submit" class="btn btn-primary text-white btn-save-prefs">
+                                Save preferences
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function changeTheme(themeName) {
+            localStorage.setItem('devquery-theme', themeName);
+
+            document.querySelectorAll('style[id*="anti-fouc"]').forEach(function (el) {
+                el.remove();
+            });
+
+            var isDark = false;
+            if (themeName === 'dark') {
+                isDark = true;
+            } else if (themeName === 'system') {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-theme');
+                document.body.classList.add('dark-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark-theme');
+                document.body.classList.remove('dark-theme');
+            }
+        }
+    </script>
+
+    <div th:replace="~{Common/footer :: footer}"></div>
+</body>
+
+</html>

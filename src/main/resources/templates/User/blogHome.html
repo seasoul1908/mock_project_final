@@ -1,31 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevQuery Blog - Knowledge & Technology</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script>
+        /*<![CDATA[*/
+        (function () {
+            var theme = localStorage.getItem('devquery-theme');
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+        /*]]>*/
+    </script>
     <style>
         :root {
-            --orange: #F48024; --blue-link: #0074cc; --blue-btn: #0a95ff;
-            --blue-tag-bg: #e1ecf4; --blue-tag-text: #39739d; --black-text: #0c0d0e;
-            --gray-text: #525960; --gray-sub: #6a737c; --border-color: #d6d9dc;
-            --bg-body: #ffffff; --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            --orange: #F48024;
+            --blue-link: var(--link-color, #0074cc);
+            --blue-btn: #0a95ff;
+            --blue-tag-bg: var(--tag-bg, #e1ecf4);
+            --blue-tag-text: var(--tag-text, #39739d);
+            --black-text: var(--text-primary, #0c0d0e);
+            --gray-text: var(--text-secondary, #525960);
+            --gray-sub: var(--text-muted, #6a737c);
+            --border-color-local: var(--border-color, #d6d9dc);
+            --bg-body-local: var(--bg-body, #ffffff);
+            --bg-panel-local: var(--bg-panel, #ffffff);
+            --btn-hover-local: var(--btn-hover-bg, #f1f2f3);
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: var(--font-stack); background-color: var(--bg-body); color: var(--black-text); font-size: 13px; }
 
-        .navbar-devquery { border-top: 3px solid #f48024; background-color: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.05); height: 56px; }
-        
-        .main-container { max-width: 1264px; margin: 56px auto 0; display: flex; align-items: flex-start; }
-        .left-sidebar { width: 164px; flex-shrink: 0; padding-top: 25px; border-right: 1px solid var(--border-color); }
-        .main-content { flex-grow: 1; padding: 24px; border-left: 1px solid var(--border-color); width: 100%; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        /* Tiêu đề trang */
+        body.dark-theme,
+        html[data-theme="dark"] {
+            --border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body-local);
+            color: var(--black-text);
+            font-size: 13px;
+        }
+
+        .navbar-devquery {
+            border-top: 3px solid var(--orange);
+            background-color: var(--bg-body-local);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
+            height: 56px;
+        }
+
+        .main-container {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            padding-top: 5px;
+            border-right: 1px solid var(--border-color-local);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            border-left: 1px solid var(--border-color-local);
+            width: 100%;
+        }
+
+        /* Page Header styling */
         .page-header {
             background: linear-gradient(135deg, #0a95ff 0%, #0074cc 100%);
             color: white;
@@ -35,44 +93,60 @@
             box-shadow: 0 4px 15px rgba(10, 149, 255, 0.15);
         }
 
-        /* Style cho Card Bài viết */
-        .blog-card {
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background-color: #fff;
-            overflow: hidden;
-        }
-        .blog-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        html[data-theme="dark"] .page-header,
+        body.dark-theme .page-header {
+            background: linear-gradient(135deg, #004d8a 0%, #002d5a 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            color: #f1f2f3;
         }
 
-        /* Ảnh Thumbnail */
+        /* Blog Card styling */
+        .blog-card {
+            border: 1px solid var(--border-color-local);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            overflow: hidden;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        html[data-theme="dark"] .blog-card:hover,
+        body.dark-theme .blog-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Thumbnail Image styling */
         .blog-thumbnail {
             height: 180px;
             object-fit: cover;
             width: 100%;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color-local);
         }
 
-        /* Tiêu đề bài viết */
+        /* Blog Title styling */
         .blog-title {
             font-size: 16px;
             font-weight: 600;
             line-height: 1.4;
             margin-bottom: 8px;
         }
+
         .blog-title a {
-            color: var(--black-text);
+            color: var(--color-text);
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .blog-title a:hover {
             color: var(--blue-btn);
         }
 
-        /* Cắt ngắn nội dung (Excerpt) thành 3 dòng */
+        /* Truncate excerpt content to 3 lines */
         .blog-excerpt {
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -81,19 +155,19 @@
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.5;
-            color: var(--gray-text);
+            color: var(--color-muted);
             margin-bottom: 12px;
             height: 4.5em;
         }
 
-        /* Meta info (Tác giả, Ngày tháng) */
+        /* Meta information styling (Author, Date) */
         .blog-meta {
             font-size: 11px;
-            color: var(--gray-sub);
+            color: var(--color-muted);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-top: 1px solid #f1f2f3;
+            border-top: 1px solid var(--border-color);
             padding-top: 8px;
             margin-top: auto;
         }
@@ -104,25 +178,54 @@
             justify-content: center;
             margin-top: 30px;
         }
+
         .page-link-custom {
             padding: 6px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color-local);
             color: var(--gray-text);
             text-decoration: none;
             margin: 0 4px;
             border-radius: 4px;
             font-weight: 600;
         }
+
         .page-link-custom.active {
             background-color: var(--orange);
             color: white;
             border-color: var(--orange);
         }
+
         .page-link-custom:hover:not(.active) {
-            background-color: #f1f2f3;
+            background-color: var(--btn-hover-local);
+        }
+
+        /* Bootstrap Dark Mode Overrides */
+        html[data-theme="dark"] .text-muted,
+        body.dark-theme .text-muted {
+            color: var(--text-muted, #9fa6ad) !important;
+        }
+
+        html[data-theme="dark"] .form-control,
+        html[data-theme="dark"] .form-select,
+        body.dark-theme .form-control,
+        body.dark-theme .form-select {
+            background-color: var(--bg-input, #1a1b1d);
+            color: var(--text-primary, #f1f2f3);
+            border-color: var(--border-color, #4a4e51);
+        }
+
+        html[data-theme="dark"] .form-control:focus,
+        html[data-theme="dark"] .form-select:focus,
+        body.dark-theme .form-control:focus,
+        body.dark-theme .form-select:focus {
+            background-color: var(--bg-input, #1a1b1d);
+            color: var(--text-primary, #f1f2f3);
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25);
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header -->
@@ -130,7 +233,7 @@
 
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="left-sidebar">
+        <div class="left-sidebar d-none d-md-block">
             <div th:replace="~{Common/sidebar :: sidebar('blog')}"></div>
         </div>
 
@@ -142,18 +245,20 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <h4 class="fw-bold mb-0 text-dark">Blog Posts</h4>
+                <h4 class="fw-bold mb-0">Blog Posts</h4>
 
                 <form th:action="@{/blog}" method="get" class="d-flex gap-2">
-                    <select name="sort" class="form-select form-select-sm shadow-none" style="width: 150px; border-color: #ced4da;" onchange="this.form.submit()">
+                    <select name="sort" class="form-select form-select-sm shadow-none" style="width: 150px;"
+                        onchange="this.form.submit()">
                         <option value="newest" th:selected="${currentSort == 'newest'}">Newest</option>
                         <option value="most_viewed" th:selected="${currentSort == 'most_viewed'}">Most Viewed</option>
                         <option value="oldest" th:selected="${currentSort == 'oldest'}">Oldest</option>
                     </select>
 
                     <div class="input-group input-group-sm" style="width: 250px;">
-                        <input type="text" name="search" class="form-control shadow-none border-end-0" placeholder="Searching..." th:value="${searchParam}">
-                        <button class="btn btn-primary shadow-none" type="submit" style="background-color: #0a95ff; border: none;">
+                        <input type="text" name="search" class="form-control shadow-none border-end-0"
+                            placeholder="Searching..." th:value="${searchParam}">
+                        <button class="btn btn-primary shadow-none bg-primary" type="submit" style="border: none">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
@@ -169,9 +274,9 @@
                 <div th:each="blog : ${blogList}" class="col-md-4 mb-4">
                     <div class="blog-card h-100 d-flex flex-column">
                         <a th:href="@{/blog/detail(id=${blog.blogId})}">
-                            <img th:src="${blog.thumbnailUrl != null && !blog.thumbnailUrl.isEmpty() ? blog.thumbnailUrl : 'https://placehold.co/600x400/eeeeee/999999?text=DevQuery+Blog'}" 
-                                 onerror="this.onerror=null; this.src='https://placehold.co/600x400/eeeeee/999999?text=DevQuery+Blog';" 
-                                 class="blog-thumbnail" alt="Thumbnail">
+                            <img th:src="${blog.thumbnailUrl != null && !blog.thumbnailUrl.isEmpty() ? blog.thumbnailUrl : 'https://placehold.co/600x400/eeeeee/999999?text=DevQuery+Blog'}"
+                                onerror="this.onerror=null; this.src='https://placehold.co/600x400/eeeeee/999999?text=DevQuery+Blog';"
+                                class="blog-thumbnail" alt="Thumbnail">
                         </a>
 
                         <div class="card-body d-flex flex-column flex-grow-1 p-3">
@@ -179,15 +284,18 @@
                                 <a th:href="@{/blog/detail(id=${blog.blogId})}" th:text="${blog.title}">Blog Title</a>
                             </h2>
                             <p class="blog-excerpt" th:text="${blog.excerptText}">Excerpt content...</p>
-                            
+
                             <div class="blog-meta">
                                 <span class="d-flex align-items-center">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="author-avatar rounded-circle me-1" width="18" height="18" alt="avatar">
-                                    <strong th:text="${blog.authorName != null ? blog.authorName : 'Author'}">Author</strong>
+                                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                        class="author-avatar rounded-circle me-1" width="18" height="18" alt="avatar">
+                                    <strong
+                                        th:text="${blog.authorName != null ? blog.authorName : 'Author'}">Author</strong>
                                 </span>
                                 <span>
                                     <i class="fa-solid fa-eye me-1"></i><span th:text="${blog.viewCount}">0</span>
-                                    <i class="fa-solid fa-comment ms-2 me-1"></i><span th:text="${blog.commentCount}">0</span>
+                                    <i class="fa-solid fa-comment ms-2 me-1"></i><span
+                                        th:text="${blog.commentCount}">0</span>
                                 </span>
                             </div>
                         </div>
@@ -197,16 +305,19 @@
 
             <!-- Pagination -->
             <div th:if="${totalPages > 1}" class="pagination-container">
-                <a th:if="${currentPage > 1}" th:href="@{/blog(page=${currentPage - 1}, search=${searchParam}, sort=${currentSort})}" class="page-link-custom">Prev</a>
-                
+                <a th:if="${currentPage > 1}"
+                    th:href="@{/blog(page=${currentPage - 1}, search=${searchParam}, sort=${currentSort})}"
+                    class="page-link-custom">Prev</a>
+
                 <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
-                    <a th:href="@{/blog(page=${i}, search=${searchParam}, sort=${currentSort})}" 
-                       class="page-link-custom" 
-                       th:classappend="${currentPage == i ? 'active' : ''}" 
-                       th:text="${i}">1</a>
+                    <a th:href="@{/blog(page=${i}, search=${searchParam}, sort=${currentSort})}"
+                        class="page-link-custom" th:classappend="${currentPage == i ? 'active' : ''}"
+                        th:text="${i}">1</a>
                 </th:block>
 
-                <a th:if="${currentPage < totalPages}" th:href="@{/blog(page=${currentPage + 1}, search=${searchParam}, sort=${currentSort})}" class="page-link-custom">Next</a>
+                <a th:if="${currentPage < totalPages}"
+                    th:href="@{/blog(page=${currentPage + 1}, search=${searchParam}, sort=${currentSort})}"
+                    class="page-link-custom">Next</a>
             </div>
         </div>
     </div>
@@ -214,4 +325,5 @@
     <!-- Footer -->
     <div th:replace="~{Common/footer :: footer}"></div>
 </body>
+
 </html>

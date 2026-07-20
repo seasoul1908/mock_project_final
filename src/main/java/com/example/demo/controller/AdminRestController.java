@@ -54,8 +54,13 @@ public class AdminRestController {
     public ResponseEntity<Blog> saveBlog(@RequestBody Blog blog, Authentication auth) {
         if (blog.getCreatedAt() == null) blog.setCreatedAt(new Date());
         if (blog.getStatus() == null) blog.setStatus(1);
-        if (blog.getAuthorId() == null && auth != null) {
-            Long userId = userRepository.findByEmail(auth.getName()).map(User::getUserId).orElse(null);
+        if (blog.getAuthorId() == null) {
+            Long userId = 1L; // Fallback default
+            if (auth != null && auth.getName() != null) {
+                userId = userRepository.findByEmail(auth.getName())
+                        .map(User::getUserId)
+                        .orElse(1L);
+            }
             blog.setAuthorId(userId);
         }
         return ResponseEntity.ok(blogRepository.save(blog));

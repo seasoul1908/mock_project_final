@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trending Questions - DevQuery</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
+    <style>
+        :root {
+            --orange: #F48024;
+            --blue-link: #0074cc;
+            --border-color: #d6d9dc;
+            --bg-body: #ffffff;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body);
+            font-size: 13px;
+        }
+
+        .navbar-devquery {
+            border-top: 3px solid #f48024;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.05);
+            height: 56px;
+        }
+
+        .main-container {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 27px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trending-card {
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s;
+        }
+
+        .trending-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .trending-card h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .trending-card h3 a {
+            color: var(--blue-link);
+            text-decoration: none;
+        }
+
+        .trending-card h3 a:hover {
+            color: #0074cc;
+        }
+
+        .trending-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #6a737c;
+        }
+
+        .trending-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .score-badge {
+            background: #e1ecf4;
+            color: #39739d;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{Common/header :: header}"></div>
+
+    <div class="main-container">
+        <div class="left-sidebar">
+            <div th:replace="~{Common/sidebar :: sidebar('trending')}"></div>
+        </div>
+
+        <div class="main-content">
+
+            <h1 class="page-title">
+                <i class="fa-solid fa-fire" style="color: var(--orange);"></i>
+                Trending Questions
+            </h1>
+
+            <div th:if="${trendingQuestions == null or trendingQuestions.isEmpty()}" class="text-muted">
+                No trending questions at the moment.
+            </div>
+
+            <div th:each="q : ${trendingQuestions}" class="trending-card">
+                <h3>
+                    <a th:href="@{/question(id=${q.questionId})}" th:text="${q.title}">Question title</a>
+                </h3>
+                <div class="trending-meta">
+                    <span>
+                        <i class="fa-solid fa-caret-up"></i>
+                        <span class="score-badge" th:text="${q.score}">0</span>
+                        votes
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-comment"></i>
+                        <span th:text="${q.answerCount}">0</span>
+                        answers
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-eye"></i>
+                        <span th:text="${q.viewCount}">0</span>
+                        views
+                    </span>
+                    <span th:if="${q.authorName != null}">
+                        <i class="fa-solid fa-user"></i>
+                        <span th:text="${q.authorName}">Author</span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{Common/footer :: footer}"></div>
+
+</body>
+
+</html>

@@ -1,14 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.dto.QuestionDTO;
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-
-import com.example.demo.dto.GithubUser;
-import com.example.demo.dto.GoogleUser;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +17,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.example.demo.dto.GithubUser;
+import com.example.demo.dto.GoogleUser;
+import com.example.demo.dto.QuestionDTO;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserPageDTO;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -26,7 +31,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Gọi công cụ mã hóa xịn sò từ SecurityConfig
+    // Inject BCrypt password encoder configured in SecurityConfig
+    @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -56,7 +62,6 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    // ĐĂNG KÝ: Tự động mã hóa mật khẩu chuẩn BCrypt
     public void register(String username, String email, String rawPassword) throws Exception {
         String hash = passwordEncoder.encode(rawPassword);
         User user = new User();
@@ -70,7 +75,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // ĐĂNG NHẬP: Dùng .matches() của BCrypt để so sánh mật khẩu an toàn
     public User loginModel(String email, String rawPassword) throws Exception {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null && user.getPasswordHash() != null
@@ -94,7 +98,7 @@ public class UserService {
         return loginOrRegister(String.valueOf(gitUser.id), gitUser.email, displayName, "github");
     }
 
-    private User loginOrRegister(String providerId, String email, String name, String providerType) {
+    public User loginOrRegister(String providerId, String email, String name, String providerType) {
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
             return existingUser.get();
@@ -104,29 +108,70 @@ public class UserService {
     }
 
     private User createNewUser(String providerId, String email, String name, String providerType) {
-        String safeName = (name != null ? name : "User").replaceAll("\\s+", "") + "_" + (int) (Math.random() * 10000);
+        // 1. Generate a safe username (Remove whitespaces, limit to 50 characters)
+        String baseName = (name != null && !name.trim().isEmpty()) ? name : providerType + "_user";
+        String safeName = baseName.replaceAll("\\s+", "") + "_" + (int) (Math.random() * 10000);
         if (safeName.length() > 50) {
             safeName = safeName.substring(0, 50);
         }
 
+        // 2. Handle missing email thoroughly (GitHub often hides the real email)
+        String safeEmail = (email != null && !email.trim().isEmpty()) ? email
+                : safeName + "@" + providerType + ".local";
+
+        // 3. Initialize the User with all core fields
         User newUser = new User();
         newUser.setUsername(safeName);
-        newUser.setEmail(email);
-        newUser.setPasswordHash(UUID.randomUUID().toString());
+        newUser.setEmail(safeEmail);
+
+        // Encode the dummy password instead of using a raw UUID string to avoid length
+        // constraints on the password_hash column
+        newUser.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
         newUser.setRole("member");
         newUser.setStatus("active");
         newUser.setReputation(0);
         newUser.setProvider(providerType);
         newUser.setProviderId(providerId);
+        newUser.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
-        return userRepository.save(newUser);
+        // 4. Pre-populate Profile data (Prevents Hibernate @SecondaryTable constraint
+        // violations)
+        newUser.setAvatarUrl("/assets/img/default-avatar.png");
+        newUser.setBio("New member");
+        newUser.setLocation("Earth");
+        newUser.setWebsite("");
+
+        User savedUser = null;
+        try {
+            // Force save to the database
+            savedUser = userRepository.save(newUser);
+        } catch (Exception e) {
+            System.err.println("CRITICAL ERROR: Database rejected the OAuth2 user save.");
+            System.err.println("Username: " + newUser.getUsername() + ", Email: " + newUser.getEmail());
+            e.printStackTrace();
+            // Throw exception to abort the Ghost Login flow
+            throw new RuntimeException("DB save error during social login", e);
+        }
+
+        // 5. Native Query fallback: Force create Profile & Avatar if Hibernate missed
+        // it
+        if (savedUser != null) {
+            try {
+                updateProfile(savedUser.getUserId(), savedUser.getUsername(), "New member", "Earth", "");
+                updateAvatar(savedUser.getUserId(), "/assets/img/default-avatar.png");
+            } catch (Exception e) {
+                System.err.println("Warning: Error executing Native Query for Profile creation: " + e.getMessage());
+            }
+        }
+
+        return savedUser;
     }
 
     public UserDTO getUserProfileById(long id) {
         return convertToDTO(userRepository.findById(id).orElse(null));
     }
 
-    // ==================== ADMIN USER MANAGEMENT ====================
+    // ADMIN USER MANAGEMENT
 
     public int getUserCount() {
         return (int) userRepository.count();
@@ -188,7 +233,7 @@ public class UserService {
         return userRepository.findAll(pageable).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    // ==================== DASHBOARD STATS ====================
+    // DASHBOARD STATS
 
     public int getQuestionCount() {
         return userRepository.getQuestionCount();
@@ -236,7 +281,7 @@ public class UserService {
         userRepository.changePassword(email, hash);
     }
 
-    // ==================== USER FOR USER ====================
+    // USER FOR USER
 
     public List<UserDTO> getTopUsers() {
         return userRepository.getTopUsers().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -342,4 +387,26 @@ public class UserService {
             e.printStackTrace();
         }
     }
+    public Page<UserPageDTO> getUsersForUserPage(String keyword, String filter, int page,Long currentUserId) {
+    if (keyword == null) {
+        keyword = "";
+    }
+
+    keyword = keyword.trim();
+
+    if (filter == null
+            || (!filter.equals("reputation")
+            && !filter.equals("voted")
+            && !filter.equals("new"))) {
+        filter = "reputation";
+    }
+
+    if (page < 0) {
+        page = 0;
+    }
+
+    Pageable pageable = PageRequest.of(page, 15);
+
+    return userRepository.findUsersForUserPage(keyword, filter,currentUserId, pageable);
+}
 }

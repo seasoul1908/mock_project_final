@@ -24,7 +24,7 @@ public class EditProfileController {
     @Autowired
     private UserService userService;
 
-    // Class nội bộ để Map chuỗi JSON của mạng xã hội
+    // Internal DTO to map social network JSON strings
     public static class UserSocialLink {
         public String github;
         public String linkedin;
@@ -37,7 +37,7 @@ public class EditProfileController {
         }
     }
 
-    // 1. LOAD TRANG CHỈNH SỬA
+    // 1. Render Edit Profile Page
     @GetMapping("/edit-profile")
     public String showEditProfileForm(Model model) {
         User loggedInUser = (User) model.getAttribute("loggedInUser");
@@ -45,10 +45,10 @@ public class EditProfileController {
             return "redirect:/auth/login";
         }
 
-        // Lấy profile hiện tại
+        // Retrieve current user profile
         UserDTO userProfile = userService.getUserProfileById(loggedInUser.getUserId());
 
-        // Cắt chuỗi JSON thành các link riêng lẻ
+        // Parse website JSON into individual social links
         UserSocialLink socialLinks = new UserSocialLink("", "", "");
         if (userProfile != null && userProfile.getWebsite() != null
                 && userProfile.getWebsite().trim().startsWith("{")) {
@@ -62,7 +62,7 @@ public class EditProfileController {
         return "User/editProfile";
     }
 
-    // 2. LƯU THAY ĐỔI XUỐNG DATABASE
+    // 2. Persist Profile Changes
     @PostMapping("/edit-profile")
     public String processEditProfile(
             @RequestParam("displayName") String displayName,
@@ -81,13 +81,13 @@ public class EditProfileController {
         }
 
         try {
-            // A. XỬ LÝ ẢNH AVATAR
+            // A. Process Avatar Upload or Deletion
             if ("true".equals(deleteAvatarFlag)) {
-                // Xóa ảnh
+                // Delete existing avatar
                 userService.updateAvatar(loggedInUser.getUserId(), null);
                 loggedInUser.setAvatarUrl(null);
             } else if (avatarFile != null && !avatarFile.isEmpty()) {
-                // Upload ảnh mới vào thư mục tĩnh (static/assets/img/avatar)
+                // Save uploaded avatar to the static file system
                 String originalFilename = StringUtils.cleanPath(avatarFile.getOriginalFilename());
                 String ext = originalFilename.contains(".")
                         ? originalFilename.substring(originalFilename.lastIndexOf("."))
@@ -108,20 +108,19 @@ public class EditProfileController {
                 loggedInUser.setAvatarUrl(avatarUrl);
             }
 
-            // B. XỬ LÝ INFO VÀ GÓI JSON
+            // B. Process Profile Info and Serialize Social Links
             UserSocialLink linksObj = new UserSocialLink(
                     github != null ? github : "",
                     linkedin != null ? linkedin : "",
                     website != null ? website : "");
             String websiteJson = new Gson().toJson(linksObj);
 
-            // C. LƯU THÔNG TIN
-            // (Lưu ý: Ông cần đảm bảo userService có hàm updateProfile để gọi xuống DB nhé)
+            // C. Save User Profile Data
             boolean isSuccess = userService.updateProfile(loggedInUser.getUserId(), displayName, bio, location,
                     websiteJson);
 
             if (isSuccess) {
-                // Trở về trang Profile
+
                 return "redirect:/profile?id=" + loggedInUser.getUserId() + "&status=success";
             } else {
                 model.addAttribute("ERROR", "Update failed! Tên hiển thị này có thể đã có người sử dụng.");
