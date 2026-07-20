@@ -46,8 +46,14 @@
             background-color: var(--bg-body, transparent);
         }
 
-        .feedback-container {
+        .feedback-wrapper {
             max-width: 600px;
+            width: 100%;
+            margin: 30px auto 0 auto !important;
+        }
+
+        .feedback-container {
+            width: 100%;
             margin-top: 20px;
             border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 5px;
@@ -181,7 +187,7 @@
                                           placeholder="Please tell us what we can improve..." required th:text="${message}"></textarea>
                             </div>
 
-                            <div class="mt-4">
+                            <div class="mt-4 text-center">
                                 <button type="submit" class="btn-submit-custom">
                                     <i class="fa-solid fa-paper-plane me-1"></i> Submit Feedback
                                 </button>
