@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import java.util.Optional;                              // ← THÊM
+import com.example.demo.entity.Answer;                    // ← THÊM
+import com.example.demo.repository.AnswerRepository;      // ← THÊM
 import com.example.demo.dto.AnswerViewDTO;
 import com.example.demo.dto.QuestionDetailDTO;
 import com.example.demo.dto.TrendingQuestionDTO;
@@ -31,6 +34,9 @@ public class ViewPostDetailController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;   // ← THÊM
 
     @Value("")
     private String baseUrl;
@@ -119,5 +125,39 @@ public class ViewPostDetailController {
         }
 
         return "User/question_history";
+    }
+
+    @GetMapping("/answer/{id}/history")
+    public String viewAnswerHistory(@PathVariable("id") Long id, HttpSession session, Model model) {
+        if (id == null) {
+            return "redirect:/home";
+        }
+
+        User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
+        boolean isAdmin = currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getRole());
+
+        Optional<Answer> answerOpt = answerRepository.findById(id);
+        if (answerOpt.isEmpty()) {
+            return "redirect:/home";
+        }
+        Answer answer = answerOpt.get();
+
+        // Cần question để hiển thị nút "Back to Question" và title
+        QuestionDetailDTO question = questionDetailService.getQuestionDetail(
+                answer.getQuestionId(), currentUser != null ? currentUser.getUserId() : null, isAdmin);
+        if (question == null) {
+            return "redirect:/home";
+        }
+
+        List<PostEditHistoryDTO> history = questionDetailService.getAnswerHistory(id);
+
+        model.addAttribute("question", question);
+        model.addAttribute("historyList", history);
+        model.addAttribute("isAdmin", isAdmin);
+        if (currentUser != null) {
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "User/question_history"; // dùng chung template với question
     }
 }

@@ -19,4 +19,6 @@ public interface QuestionDetailService {
     List<com.example.demo.dto.PostEditHistoryDTO> getQuestionHistory(long questionId);
 
     void incrementViewCount(long questionId);
+
+    List<com.example.demo.dto.PostEditHistoryDTO> getAnswerHistory(long answerId);
 }
