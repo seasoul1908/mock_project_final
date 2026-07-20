@@ -241,7 +241,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 @Param("actorUserId") Long actorUserId);
         
         @Query(value = """
-        SELECT u.user_id AS userId, u.username AS username, p.avatar_url AS avatarUrl, p.location AS location, ISNULL(u.Reputation, 0) AS reputation,
+        SELECT u.user_id AS userId, u.username AS username, p.avatar_url AS avatarUrl, p.location AS location, ISNULL(u.Reputation, 0) AS reputation, p.bio AS bio, u.created_at AS createdAt,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'gold') AS goldBadges,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'silver') AS silverBadges,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'bronze') AS bronzeBadges,
