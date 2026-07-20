@@ -144,6 +144,11 @@
                         <i class="fa-solid fa-book-open nav-icon"></i> Dev Blog
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a th:href="@{/feedback}" class="nav-link-sb" th:classappend="${activeTab == 'feedback' ? 'active' : ''}">
+                        <i class="fa-solid fa-comment-dots nav-icon"></i> Feedback
+                    </a>
+                </li>
             </th:block>
         </ul>
     </div>

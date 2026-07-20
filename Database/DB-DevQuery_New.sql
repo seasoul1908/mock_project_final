@@ -449,3 +449,18 @@ CREATE TABLE user_preferences (
     FOREIGN KEY (user_id) REFERENCES Users(user_id) -- (Thay 'users' bằng tên bảng user thực tế của ông)
 );
 Go
+
+-- =============================================
+-- 26. FEEDBACKS
+-- =============================================
+CREATE TABLE [dbo].[Feedbacks](
+    [feedback_id] [bigint] IDENTITY(1,1) PRIMARY KEY,
+    [user_id]     [bigint] NOT NULL,
+    [name]        [nvarchar](100) NOT NULL,
+    [email]       [varchar](120) NOT NULL,
+    [message]     [nvarchar](max) NOT NULL,
+    [created_at]  [datetime] DEFAULT GETDATE(),
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users]([user_id]) ON DELETE CASCADE
+)
+GO
+
