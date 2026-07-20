@@ -52,14 +52,17 @@
                             <a class="nav-link" th:classappend="${activeTab == 'badge' ? 'active' : ''}"
                                 th:href="@{/badge(id=${uPro.userId})}">Badge</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:classappend="${activeTab == 'saves' ? 'active' : ''}"
-                                th:href="@{/saves(id=${uPro.userId})}">Saves</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
+                        <th:block sec:authorize="isAuthenticated()"
+                            th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
+                            <li class="nav-item">
+                                <a class="nav-link" th:classappend="${activeTab == 'saves' ? 'active' : ''}"
+                                    th:href="@{/saves(id=${uPro.userId})}">Saves</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
                                 th:href="@{/settings/preferences}">Preferences</a>
-                        </li>
+                            </li>
+                        </th:block>
                     </ul>
                 </div>
             </div>
