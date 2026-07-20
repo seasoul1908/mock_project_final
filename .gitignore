@@ -41,3 +41,16 @@ GEMINI.md
 
 ### Custom Ignored Folders ###
 MD_Requirement/
+
+# SECURITY & SECRETS
+application-secret.properties
+application-dev.properties
+application-local.properties
+.env
+*.env
+
+# OS & LOG FILES
+*.log
+logs/
+.DS_Store
+Thumbs.db
