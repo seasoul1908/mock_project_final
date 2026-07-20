@@ -18,7 +18,7 @@ public class Blog {
     @Column(name = "content", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String content;
 
-    @Column(name = "thumbnail_url", length = 500)
+    @Column(name = "thumbnail_url", columnDefinition = "VARCHAR(MAX)")
     private String thumbnailUrl;
 
     @Column(name = "author_id")

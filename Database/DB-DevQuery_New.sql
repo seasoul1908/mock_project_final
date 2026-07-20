@@ -387,7 +387,7 @@ CREATE TABLE [dbo].[Blogs](
     [blog_id]       [int]           IDENTITY(1,1) PRIMARY KEY,
     [title]         [nvarchar](max) NOT NULL,
     [content]       [nvarchar](max) NOT NULL,
-    [thumbnail_url] [varchar](500)  NULL,
+    [thumbnail_url] [varchar](max)  NULL,
     [author_id]     [bigint]        NOT NULL,
     [created_at]    [datetime]      DEFAULT GETDATE(),
     [updated_at]    [datetime]      DEFAULT GETDATE(),

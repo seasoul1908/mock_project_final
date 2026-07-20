@@ -1,22 +1,23 @@
 package com.example.demo.controller;
 
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.BadgeService;
 import com.example.demo.service.UserService;
+import com.example.demo.util.AuthUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import com.example.demo.util.AuthUtils;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class ProfileController {
@@ -68,11 +69,17 @@ public class ProfileController {
 
                 String jsonLinks = userProfile.getWebsite();
                 if (jsonLinks != null && !jsonLinks.isEmpty()) {
+                    try{
                     Gson gson = new Gson();
                     Type type = new TypeToken<Map<String, String>>() {
                     }.getType();
                     Map<String, String> linksMap = gson.fromJson(jsonLinks, type);
                     model.addAttribute("userLinks", linksMap);
+                    } catch (Exception e){
+                         System.err.println("Invalid website JSON for user " + targetUserId);
+                        model.addAttribute("userLinks", Map.of());
+                    }
+                    
                 }
 
                 model.addAttribute("questionsCount", userRepository.countQuestionsByUser(targetUserId));
@@ -101,7 +108,7 @@ public class ProfileController {
                 return "redirect:/home";
             }
         } catch (Exception e) {
-            System.err.println("Error rendering user profile: " + e.getMessage());
+            e.printStackTrace();
             return "redirect:/home";
         }
     }

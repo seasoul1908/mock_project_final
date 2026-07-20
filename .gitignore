@@ -38,6 +38,8 @@ build/
 GEMINI.md
 **/GEMINI.md
 **/.agent/
+docs/
+**/docs/
 
 ### Custom Ignored Folders ###
 MD_Requirement/
