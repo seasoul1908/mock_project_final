@@ -74,7 +74,7 @@ class NotificationIntegrationTests {
         String body = "I am experimenting with virtual threads but facing some thread pinning when using synchronized blocks.";
         String tags = "java";
 
-        Question saved = questionService.saveQuestion(author.getUserId(), title, body, tags);
+        Question saved = questionService.saveQuestion(author.getUserId(), title, body, tags, false);
         assertNotNull(saved);
         assertTrue(saved.getQuestionId() > 0);
 

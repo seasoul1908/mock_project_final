@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.TagDTO;
 import com.example.demo.dto.QuestionViewDTO;
+import com.example.demo.entity.Tag;
 import com.example.demo.entity.TagFollow;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.QuestionRepository;
@@ -102,5 +103,19 @@ public class TagServiceImpl implements TagService {
         Integer followerCount = ((Number) row[5]).intValue();
 
         return new TagDTO(id, tagName, description, isActive, questionCount, followerCount);
+    }
+
+    @Override
+    public void createTag(String tagName, String description) {
+        String cleanTagName = tagName.trim().toLowerCase();
+        Optional<Tag> existing = tagRepository.findByTagNameIgnoreCase(cleanTagName);
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException("Tag already exists");
+        }
+        Tag tag = new Tag();
+        tag.setTagName(cleanTagName);
+        tag.setDescription(description != null ? description.trim() : "");
+        tag.setIsActive(true);
+        tagRepository.save(tag);
     }
 }

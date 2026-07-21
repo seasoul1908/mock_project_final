@@ -70,6 +70,9 @@ public class Question {
     @Column(name = "deleted_by")
     private Long deletedBy;
 
+    @Column(name = "is_draft")
+    private boolean isDraft;
+
     public Question() {
     }
 
@@ -177,4 +180,7 @@ public class Question {
 
     public Long getDeletedBy() { return deletedBy; }
     public void setDeletedBy(Long deletedBy) { this.deletedBy = deletedBy; }
+
+    public boolean isDraft() { return isDraft; }
+    public void setIsDraft(boolean isDraft) { this.isDraft = isDraft; }
 }

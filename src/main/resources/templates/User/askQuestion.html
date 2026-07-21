@@ -205,6 +205,7 @@
             <div class="alert-error" th:if="${error}" th:text="${error}"></div>
 
             <form th:action="@{/questions/ask}" method="POST">
+                <input type="hidden" name="draftId" th:value="${draftId}">
                 <div class="form-card">
                     <h6>Title</h6>
                     <p class="hint">Be specific and imagine you’re asking a question to another person.</p>
@@ -229,16 +230,92 @@
                         th:value="${oldTags}">
                 </div>
 
-                <div class="mb-4">
-                    <button type="submit" class="btn-submit">Post your question</button>
-                    <a th:href="@{/home}" class="btn-cancel">Cancel</a>
+                <div class="mb-4 d-flex align-items-center">
+                    <button type="submit" name="action" value="publish" class="btn-submit me-2">Post your question</button>
+                    <button type="submit" id="btnSaveDraft" name="action" value="draft" class="btn btn-outline-secondary me-2" style="padding: 10px 16px; font-weight: 500;">Save Draft</button>
+                    <button type="button" id="btnPreview" class="btn btn-outline-secondary me-2" style="padding: 10px 16px; font-weight: 500;">Preview</button>
+                    <a th:href="@{/home}" class="btn-cancel" style="margin-left: 0;">Cancel</a>
                 </div>
             </form>
+
+            <!-- Preview Container -->
+            <div id="previewContainer" class="form-card mt-4" style="display: none;">
+                <h5 class="border-bottom pb-2" style="font-weight: 600; font-size: 16px;">Post Preview</h5>
+                <h3 id="previewTitle" class="question-title mt-3" style="font-size: 22px; font-weight: 400; color: var(--text-primary);"></h3>
+                <div id="previewBody" class="post-text my-3 text-secondary" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6;"></div>
+                <div id="previewTags" class="mb-3 d-flex gap-2 flex-wrap"></div>
+            </div>
         </main>
     </div>
 
     <div th:replace="~{Common/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnPreview = document.getElementById("btnPreview");
+            const previewContainer = document.getElementById("previewContainer");
+            const previewTitle = document.getElementById("previewTitle");
+            const previewBody = document.getElementById("previewBody");
+            const previewTags = document.getElementById("previewTags");
+
+            const titleInput = document.querySelector('input[name="title"]');
+            const bodyInput = document.querySelector('textarea[name="body"]');
+            const tagsInput = document.querySelector('input[name="tags"]');
+
+            // Relax 'required' attribute dynamically when user is saving as a draft
+            const btnSaveDraft = document.getElementById("btnSaveDraft");
+            if (btnSaveDraft) {
+                btnSaveDraft.addEventListener("mousedown", function() {
+                    titleInput.removeAttribute("required");
+                    bodyInput.removeAttribute("required");
+                });
+            }
+
+            if (btnPreview) {
+                btnPreview.addEventListener("click", function () {
+                    const title = titleInput.value.trim();
+                    const body = bodyInput.value.trim();
+                    const tagsStr = tagsInput.value.trim();
+
+                    if (!title && !body) {
+                        alert("Please fill in the title or body to preview.");
+                        return;
+                    }
+
+                    previewTitle.textContent = title || "Untitled Question";
+                    previewBody.textContent = body || "No body content provided yet.";
+
+                    // Clean tags container
+                    previewTags.innerHTML = "";
+                    if (tagsStr) {
+                        const tags = tagsStr.split(",");
+                        tags.forEach(tag => {
+                            const cleanTag = tag.trim().toLowerCase();
+                            if (cleanTag) {
+                                const tagBadge = document.createElement("span");
+                                tagBadge.className = "post-tag";
+                                tagBadge.style.display = "inline-flex";
+                                tagBadge.style.alignItems = "center";
+                                tagBadge.style.padding = "4px 8px";
+                                tagBadge.style.borderRadius = "4px";
+                                tagBadge.style.backgroundColor = "#e1ecf4";
+                                tagBadge.style.color = "#39739d";
+                                tagBadge.style.fontSize = "11px";
+                                tagBadge.style.marginRight = "6px";
+                                tagBadge.style.textDecoration = "none";
+                                tagBadge.textContent = cleanTag;
+                                previewTags.appendChild(tagBadge);
+                            }
+                        });
+                    }
+
+                    // Display preview container
+                    previewContainer.style.display = "block";
+                    previewContainer.scrollIntoView({ behavior: "smooth" });
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
