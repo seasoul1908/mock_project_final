@@ -186,6 +186,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            text-decoration: none;
         }
 
         .location {
@@ -397,122 +398,163 @@ body.dark-theme .popup-bio{
 
     left:72px;
 
-    transform:translateY(-50%);
+    width:340px;
 
-    width:320px;
+    padding:20px;
 
-    background:#fff;
+    background:#ffffff;
 
-    border:1px solid #d6d9dc;
+    border:1px solid rgba(214,217,220,.8);
 
-    border-radius:10px;
+    border-radius:12px;
 
     box-shadow:
-        0 10px 35px rgba(0,0,0,.25);
-
-
-    padding:16px;
+        0 8px 24px rgba(0,0,0,.15),
+        0 2px 8px rgba(0,0,0,.08);
 
     opacity:0;
 
     visibility:hidden;
 
-    transform:translateY(-50%) scale(.96);
+    transform:translateY(-50%) translateX(8px) scale(.96);
 
-    transition:.22s ease;
+    transition:
+        opacity .2s ease,
+        transform .2s ease,
+        visibility .2s;
 
-    pointer-events:none;
-
+    pointer-events:auto;
 
     z-index:1000;
+
+    overflow:visible;
+}
+.user-popup::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-12px;
+
+    top:30px;
+
+    width:12px;
+
+    height:40px;
+
 }
 .user-popup.show{
-
     opacity:1;
 
     visibility:visible;
 
-    transform:translateY(-50%) scale(1);
-
+    transform:translateY(-50%) translateX(0) scale(1);
 }
 
 .popup-header{
-
-    display:flex;
-
-    gap:14px;
-
-    align-items:flex-start;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 18px;
 }
 
 .popup-avatar{
-
-    width:52px;
-
-    height:52px;
+    width:64px;
+    height:64px;
 
     border-radius:50%;
 
     object-fit:cover;
 
+    border:3px solid var(--bg-panel,#fff);
+
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+
+    margin-top:-20px;
+
     flex-shrink:0;
 }
 
 .popup-user-info{
-
     flex:1;
 }
 
 .popup-username{
+    font-size:17px;
 
-    font-size:15px;
+    font-weight:700;
 
-    font-weight:600;
+    line-height:1.2;
 
-    color:#0074cc;
-
-    margin-bottom:6px;
+    color:var(--text-primary);
 }
 
 .popup-location{
+    font-size:13px;
 
-    font-size:12px;
+    color:var(--text-secondary);
 
-    color:#6a737c;
-
-    margin-bottom:4px;
+    margin-top:2px;
 }
 
 .popup-reputation{
+    display:flex;
 
-    font-size:12px;
+    align-items:center;
 
-    margin-bottom:4px;
+    gap:6px;
+
+    margin-top:8px;
+
+    font-size:13px;
 }
 
 .popup-member{
-
     font-size:12px;
 
-    color:#6a737c;
+    color:var(--text-secondary);
+
+    margin-top:6px;
 }
 
 .popup-title{
+    font-size:11px;
 
-    font-size:13px;
+    font-weight:700;
 
-    font-weight:600;
+    letter-spacing:.05em;
+
+    text-transform:uppercase;
+
+    color:var(--text-secondary);
 
     margin-bottom:8px;
 }
 
 .popup-bio{
+    font-size:13px;
 
-    font-size:12px;
+    line-height:1.55;
 
-    line-height:1.6;
+    color:var(--text-primary);
 
-    color:#3b4045;
+    display:-webkit-box;
+
+    -webkit-line-clamp:3;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+}
+.popup-divider{
+
+    height:1px;
+
+    background:var(--border-color);
+
+    margin:14px 0;
 }
     </style>
 </head>
@@ -594,118 +636,146 @@ body.dark-theme .popup-bio{
 
                     <div th:each="user : ${users}"
                          class="user-card">
-
+                        <!-- Avatar -->
+                    <a th:href="@{/profile(id=${user.userId})}">
                         <img class="user-avatar"
                             th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
                             ? user.avatarUrl
                             : '/assets/img/avatar/default-avatar.jpg'}"
                                 onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
                             alt="Avatar">
+                    </a>
+                        <!-- User information -->           
+                    <div class="user-info">
+                        
+                            <a th:href="@{/profile(id=${user.userId})}"
+                                class="username"
+                                th:text="${user.username}">Username</a>
 
-                        <div class="user-info">
-                            <!-- User Hover Popup -->
-<div class="user-popup">
+                            <div class="location"
+                            th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                            th:text="${user.location}">Location</div>
 
-    <div class="popup-header">
+                        <div class="location"
+                        th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
+                        &nbsp;
+                        </div>
 
-        <img class="popup-avatar"
-             th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
-                    ? user.avatarUrl
-                    : '/assets/img/avatar/default-avatar.jpg'}"
-             onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
-             alt="Avatar">
+                        <div class="user-stats">
 
-        <div class="popup-user-info">
+                            <span class="reputation"
+                                th:text="${user.reputation}">0</span>
 
-            <div class="popup-username"
-                 th:text="${user.username}">
-                Username
-            </div>
+                            <span class="rep-label">reputation</span>
 
-            <div class="popup-location"
-                 th:if="${user.location != null && !#strings.isEmpty(user.location)}"
-                 th:text="${user.location}">
-                Location
-            </div>
+                            <span class="badge-group">
 
-            <div class="popup-reputation">
-                <i class="fa-solid fa-star text-warning"></i>
+                                <th:block th:if="${user.goldBadges > 0}">
+                                    <span class="badge-dot gold"></span>
+                                    <span th:text="${user.goldBadges}">0</span>
+                                </th:block>
 
-                <span th:text="${user.reputation}">
-                    0
-                </span>
+                                <th:block th:if="${user.silverBadges > 0}">
+                                    <span class="badge-dot silver"></span>
+                                    <span th:text="${user.silverBadges}">0</span>
+                                </th:block>
 
-                reputation
-            </div>
+                                <th:block th:if="${user.bronzeBadges > 0}">
+                                    <span class="badge-dot bronze"></span>
+                                    <span th:text="${user.bronzeBadges}">0</span>
+                                </th:block>
 
-            <div class="popup-member">
-                <i class="fa-solid fa-calendar-days"></i>
-
-                <span th:text="${#dates.format(user.createdAt,'MMM yyyy')}">
-                    Jul 2026
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
-    <hr>
-
-    <div class="popup-body">
-
-        <div class="popup-title">
-            About Me
-        </div>
-
-        <div class="popup-bio"
-             th:text="${#strings.length(user.bio) > 80 ?
-                        #strings.substring(user.bio,0,80)+'...'
-                        : user.bio}">
-            About Me
-        </div>
-
-    </div>
-
-</div>
-
-                            <div class="username"
-                                 th:text="${user.username}">
-                                Username
-                            </div>
-
-                            <div th:if="${user.location != null && !#strings.isEmpty(user.location)}"
-                                 class="location"
-                                 th:text="${user.location}">
-                                Location
-                            </div>
-
-                    <div class="user-stats">
-
-                        <span class="reputation"th:text="${user.reputation != null ? user.reputation : 0}">0</span>
-
-                            <th:block th:if="${user.goldBadges > 0}">
-                                <span class="badge-dot gold"></span>
-                                <span th:text="${user.goldBadges}">0</span>
-                            </th:block>
-
-                            <th:block th:if="${user.silverBadges > 0}">
-                                <span class="badge-dot silver"></span>
-                                <span th:text="${user.silverBadges}">0</span>
-                            </th:block>
-
-                            <th:block th:if="${user.bronzeBadges > 0}">
-                                <span class="badge-dot bronze"></span>
-                                <span th:text="${user.bronzeBadges}">0</span>
-                            </th:block>
-
-                    </div>
+                            </span>
 
                         </div>
 
                     </div>
+                        <!-- User Hover Popup -->
+                    <div class="user-popup"
+                    th:if="${user.bio != null and !#strings.isEmpty(user.bio)}">
 
-                </div>
+                        <div class="popup-header">
+
+                            <img class="popup-avatar"
+                                th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                                ? user.avatarUrl
+                                : '/assets/img/avatar/default-avatar.jpg'}"
+                                onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                alt="Avatar">
+
+                                <div class="popup-user-info">
+
+                                    <div class="popup-username"
+                                        th:text="${user.username}">
+                                        Username
+                                    </div>
+
+                                    <div class="popup-location">
+                                    <span th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                                        th:text="${user.location}">
+                                            No Location
+                                    </span>
+
+                                    <span th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
+                                    &nbsp;
+                                    </span>
+                                    </div>
+
+                                    <div class="popup-reputation">
+                                    <i class="fa-solid fa-star text-warning"></i>
+
+                                    <span th:text="${user.reputation}">0</span>
+                                    reputation
+                                    <th:block th:if="${user.goldBadges > 0}">
+                                    &nbsp;
+                                    <span class="badge-dot gold"></span>
+                                    <span th:text="${user.goldBadges}"></span>
+                                    </th:block>
+
+                                    <th:block th:if="${user.silverBadges > 0}">
+                                    &nbsp;
+                                    <span class="badge-dot silver"></span>
+                                    <span th:text="${user.silverBadges}"></span>
+                                    </th:block>
+
+                                    <th:block th:if="${user.bronzeBadges > 0}">
+                                    &nbsp;
+                                    <span class="badge-dot bronze"></span>
+                                    <span th:text="${user.bronzeBadges}"></span>
+                                    </th:block>
+                                    </div>
+
+                                    <div class="popup-member">
+                                        <i class="fa-solid fa-calendar-days"></i>
+
+                                        <span th:text="${#dates.format(user.createdAt,'MMM yyyy')}">Member since Jul 2026</span>
+                                    </div>
+
+                                </div>
+
+                        </div>
+
+                            <div class="popup-divider">
+                                
+                            </div>
+
+                            <div class="popup-body">
+
+                                <div class="popup-title">About Me</div>
+
+                                <div class="popup-bio"
+                                    th:text="${#strings.length(user.bio) > 80 ?
+                                    #strings.substring(user.bio,0,80)+'...'
+                                    : user.bio}">About Me
+                                </div>
+
+                            </div>
+
+                    </div>
+
+                 </div>
+
+            </div>
 
                 <div th:if="${userPage.totalPages > 1}"
                      class="pagination-area">
@@ -754,11 +824,11 @@ body.dark-theme .popup-bio{
         searchTimer = setTimeout(() => loadUsers(keyword), 400);
     });
 
-    function loadUsers(keyword) {
-        const params = new URLSearchParams();
+function loadUsers(keyword) {
+    const params = new URLSearchParams();
 
-        params.append("search", keyword);
-        params.append("filter", filterInput.value);
+    params.append("search", keyword);
+    params.append("filter", filterInput.value);
 
         fetch("/users/search?" + params.toString())
             .then(response => {
@@ -766,51 +836,78 @@ body.dark-theme .popup-bio{
                     throw new Error("Unable to load users");
                 }
 
-                return response.text();
+            return response.text();
             })
             .then(html => {
                 userListContainer.innerHTML = html;
+                requestAnimationFrame(() => {
+                    initUserPopup();
+                });
             })
             .catch(error => {
                 console.error("User search error:", error);
             });
-    }
-    function initUserPopup(){
-        const avatars = document.querySelectorAll(".user-avatar");
+}
+function initUserPopup() {
 
-avatars.forEach(avatar=>{
+    document.querySelectorAll(".user-card").forEach(card => {
 
-    const card = avatar.closest(".user-card");
-    const popup = card.querySelector(".user-popup");
+        const avatar = card.querySelector(".user-avatar");
+        const popup = card.querySelector(".user-popup");
+        if (!avatar || !popup) {
+            return;
+        }
 
-    let timer;
+        let openTimer;
+        let closeTimer;
 
-    avatar.addEventListener("mouseenter",()=>{
+        function showPopup() {
 
-        timer = setTimeout(()=>{
+            clearTimeout(closeTimer);
 
-            popup.classList.add("show");
-            avatar.classList.add("active");
+            openTimer = setTimeout(() => {
 
-        },700);
+                popup.classList.add("show");
+                avatar.classList.add("active");
+
+            },500);
+
+        }
+
+        function hidePopup() {
+
+            clearTimeout(openTimer);
+
+            closeTimer = setTimeout(() => {
+
+                popup.classList.remove("show");
+                avatar.classList.remove("active");
+
+            },200);
+
+        }
+
+        avatar.addEventListener("mouseenter", showPopup);
+        avatar.addEventListener("mouseleave", hidePopup);
+
+        popup.addEventListener("mouseenter", () => {
+
+            clearTimeout(closeTimer);
+
+        });
+
+        popup.addEventListener("mouseleave", hidePopup);
 
     });
 
-    avatar.addEventListener("mouseleave",()=>{
+}    
 
-        clearTimeout(timer);
+document.addEventListener("DOMContentLoaded", function ()  {
 
-        popup.classList.remove("show");
-        avatar.classList.remove("active");
-
-    });
+    initUserPopup();
 
 });
     
-
-}
-
-    initUserPopup();
 </script>
 <script>
     if (localStorage.getItem('devquery-theme') === 'dark') {

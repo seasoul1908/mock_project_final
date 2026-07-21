@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +20,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.repository.QuestionRepository;
-
+import com.example.demo.repository.UserRepository;
 @Controller
 public class HomeController {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping({"/", "/home", "/search", "/SearchController"})
     public String homePage(
@@ -32,6 +38,35 @@ public class HomeController {
             @RequestParam(value = "tag", defaultValue = "") String tag,
             @RequestParam(value = "page", defaultValue = "1") int page,
             Model model) {
+        
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication != null
+                && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getName())) {
+
+                String email;
+                if (authentication.getPrincipal() instanceof OAuth2User oauth2User) {
+                    email = oauth2User.getAttribute("email");
+                } else {
+                    email = authentication.getName();
+                }
+                System.out.println("Login email = " + email);
+
+                userRepository.findByEmail(email).ifPresent(user -> {
+        
+                System.out.println("acceptedTerms = " + user.getAcceptedTerms());
+
+                boolean showTermsPopup = !Boolean.TRUE.equals(user.getAcceptedTerms());
+
+                System.out.println("showTermsPopup = " + showTermsPopup);
+
+                model.addAttribute("showTermsPopup", showTermsPopup);
+                });
+
+            } else {
+                model.addAttribute("showTermsPopup", false);
+            }
 
         String safeKeyword = keyword == null ? "" : keyword.trim();
         String safeTag = tag == null ? "" : tag.trim();
