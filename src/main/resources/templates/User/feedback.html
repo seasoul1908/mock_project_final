@@ -46,8 +46,14 @@
             background-color: var(--bg-body, transparent);
         }
 
-        .feedback-container {
+        .feedback-wrapper {
             max-width: 600px;
+            width: 100%;
+            margin: 30px auto 0 auto !important;
+        }
+
+        .feedback-container {
+            width: 100%;
             margin-top: 20px;
             border: 1px solid var(--border-color, #d6d9dc);
             border-radius: 5px;
@@ -139,53 +145,62 @@
         </div>
 
         <main class="main-content">
-            <h2>User Feedback</h2>
-            <p class="text-muted">Help us improve DevQuery by sharing your thoughts and experiences.</p>
+            <div class="feedback-wrapper">
+                <h2>User Feedback</h2>
+                <p class="text-muted">Help us improve DevQuery by sharing your thoughts and experiences.</p>
 
-            <div class="feedback-container">
-                <div class="feedback-header">
-                    <h3 class="feedback-title">Submit Feedback</h3>
-                    <p class="feedback-desc">We read all feedback carefully to make the platform better for everyone.</p>
-                </div>
-
-                <div class="feedback-body">
-                    <!-- Alerts for Success/Error -->
-                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                        <span th:text="${successMessage}">Success message</span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <span th:text="${error}">Error message</span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="feedback-container">
+                    <div class="feedback-header">
+                        <h3 class="feedback-title">Submit Feedback</h3>
+                        <p class="feedback-desc">We read all feedback carefully to make the platform better for everyone.</p>
                     </div>
 
-                    <form th:action="@{/feedback}" method="POST">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" id="name" name="name" 
-                                   th:value="${name != null ? name : loggedInUser.username}"
-                                   class="form-control-custom" placeholder="Your name" required>
+                    <div class="feedback-body">
+                        <!-- Alerts for Success/Error -->
+                        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span th:text="${successMessage}">Success message</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span th:text="${error}">Error message</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" 
-                                   th:value="${email != null ? email : loggedInUser.email}"
-                                   class="form-control-custom" placeholder="yourname@example.com" required>
-                        </div>
+                        <form th:action="@{/feedback}" method="POST">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" id="name" name="name" 
+                                       th:value="${name != null ? name : loggedInUser.username}"
+                                       class="form-control-custom" placeholder="Your name" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Your Feedback / Suggestion</label>
-                            <textarea id="message" name="message" class="form-control-custom" rows="5" 
-                                      placeholder="Please tell us what we can improve..." required th:text="${message}"></textarea>
-                        </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" 
+                                       th:value="${email != null ? email : loggedInUser.email}"
+                                       class="form-control-custom" placeholder="yourname@example.com" required>
+                            </div>
 
-                        <div class="mt-4">
-                            <button type="submit" class="btn-submit-custom">
-                                <i class="fa-solid fa-paper-plane me-1"></i> Submit Feedback
-                            </button>
-                        </div>
-                    </form>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" id="title" name="title" 
+                                       th:value="${title}"
+                                       class="form-control-custom" placeholder="Brief summary of your feedback" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Your Feedback / Suggestion</label>
+                                <textarea id="message" name="message" class="form-control-custom" rows="5" 
+                                          placeholder="Please tell us what we can improve..." required th:text="${message}"></textarea>
+                            </div>
+
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn-submit-custom">
+                                    <i class="fa-solid fa-paper-plane me-1"></i> Submit Feedback
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </main>
