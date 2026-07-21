@@ -34,6 +34,7 @@ public class FeedbackController {
     public String handleFeedback(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
+            @RequestParam("title") String title,
             @RequestParam("message") String message,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -45,12 +46,14 @@ public class FeedbackController {
 
         if (name == null || name.trim().isEmpty() ||
             email == null || email.trim().isEmpty() ||
+            title == null || title.trim().isEmpty() ||
             message == null || message.trim().isEmpty()) {
             
             model.addAttribute("error", "All fields are required.");
             model.addAttribute("activeTab", "feedback");
             model.addAttribute("name", name);
             model.addAttribute("email", email);
+            model.addAttribute("title", title);
             model.addAttribute("message", message);
             return "User/feedback";
         }
@@ -59,6 +62,7 @@ public class FeedbackController {
         feedback.setUser(loggedInUser);
         feedback.setName(name.trim());
         feedback.setEmail(email.trim());
+        feedback.setTitle(title.trim());
         feedback.setMessage(message.trim());
 
         feedbackRepository.save(feedback);

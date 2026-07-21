@@ -182,6 +182,13 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" id="title" name="title" 
+                                       th:value="${title}"
+                                       class="form-control-custom" placeholder="Brief summary of your feedback" required>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="message" class="form-label">Your Feedback / Suggestion</label>
                                 <textarea id="message" name="message" class="form-control-custom" rows="5" 
                                           placeholder="Please tell us what we can improve..." required th:text="${message}"></textarea>

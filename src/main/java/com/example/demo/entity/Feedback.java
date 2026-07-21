@@ -22,6 +22,9 @@ public class Feedback {
     @Column(nullable = false, length = 120)
     private String email;
 
+    @Column(nullable = false, length = 255)
+    private String title;
+
     @Column(nullable = false, columnDefinition = "nvarchar(max)")
     private String message;
 
@@ -60,6 +63,14 @@ public class Feedback {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getMessage() {

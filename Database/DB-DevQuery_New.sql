@@ -464,3 +464,6 @@ CREATE TABLE [dbo].[Feedbacks](
 )
 GO
 
+ALTER TABLE [dbo].[Feedbacks] ADD [title] [nvarchar](255) NOT NULL DEFAULT 'Feedback';
+GO
+
