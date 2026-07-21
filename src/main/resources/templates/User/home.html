@@ -345,10 +345,288 @@
             justify-content: space-between;
             align-items: center;
         }
+/* ============================
+        Terms Popup
+============================ */
+
+#termsModal{
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.65);
+
+    backdrop-filter:blur(8px);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:999999;
+}
+
+.terms-card{
+
+    width:620px;
+    max-width:92%;
+
+    background:#2f3337;
+
+    border-radius:10px;
+
+    padding:28px 30px;
+
+    color:white;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
+}
+
+.terms-card h2{
+
+    text-align:center;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+}
+
+.terms-description{
+
+    font-size:14px;
+
+    color:#d6d9dc;
+
+    line-height:1.6;
+
+    margin-bottom:14px;
+}
+
+.terms-card hr{
+
+    border:none;
+
+    border-top:1px solid #4b4f53;
+
+    margin:18px 0;
+}
+
+.terms-check{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:12px;
+
+    margin-top:18px;
+
+    font-size:15px;
+
+    line-height:1.7;
+
+    color:white;
+}
+.terms-check span{
+
+    flex:1;
+}
+
+.terms-check input{
+
+    margin-top:4px;
+
+    width:18px;
+
+    height:18px;
+}
+
+.terms-check a{
+
+    color:#4da3ff;
+
+    text-decoration:none;
+}
+
+.terms-check a:hover{
+
+    text-decoration:underline;
+}
+
+.terms-actions{
+
+    margin-top:28px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:12px;
+}
+
+.btn-decline{
+
+    background:none;
+
+    border:none;
+
+    color:#b9bec4;
+
+    cursor:pointer;
+
+    padding:10px 14px;
+}
+
+.btn-decline:hover{
+
+    color:white;
+}
+
+.btn-accept{
+
+    background:#379fef;
+
+    color:white;
+
+    border:none;
+
+    padding:11px 18px;
+
+    border-radius:5px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.btn-accept:hover:not(:disabled){
+
+    background:#2388d9;
+}
+
+.btn-accept:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+}
+
+
+.terms-title-light{
+
+    font-weight:600;
+}
+.terms-title{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:26px;
+}
+
+.terms-logo{
+
+    width:58px;
+    height:58px;
+
+    object-fit:contain;
+}
+
+.brand-name{
+
+    font-size:34px;
+    font-weight:700;
+}
+
+.terms-text{
+
+    font-size:34px;
+    font-weight:600;
+}
+
+.title-group{
+
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+}
+
+
     </style>
 </head>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const checkbox = document.getElementById("agreeTerms");
+    const acceptBtn = document.getElementById("acceptBtn");
+    const declineBtn = document.getElementById("declineBtn");
+    if (checkbox && acceptBtn) {
+
+        checkbox.addEventListener("change", function () {
+
+            acceptBtn.disabled = !checkbox.checked;
+
+        });
+
+    }
+    if (declineBtn) {
+        declineBtn.addEventListener("click", function () {
+            window.location.href = "/auth/logout";
+        });
+    }
+});
+    
+
+</script>
 <body>
+     <!-- Terms Popup -->
+<div th:if="${showTermsPopup}" id="termsModal">
+    <div class="terms-card">
+        <h2 class="terms-title">
+            <img th:src="@{/assets/img/logo-icon.png}"
+                alt="DevQuery Logo"
+                class="terms-logo">
+                <div class="title-group">
+                    <span class="brand-name">DevQuery</span>
+                    <span class="terms-text">Terms & Rules</span>
+                </div>
+        </h2>
+        <p class="terms-description">
+            Welcome to DevQuery. To help maintain a respectful and safe community,
+            please read and agree to the Community Rules and Terms of Use before continuing.
+        </p>
+        <hr>
+        <label class="terms-check">
+            <input type="checkbox" id="agreeTerms">
+                <span>
+                    I have read and agree to the
+                    <a th:href="@{/system-rules}" target="_self">
+                        Community Rules and Terms of Use
+                    </a>.
+                </span>
+        </label>
+        <div class="terms-actions">
+            <button id="declineBtn" class="btn-decline" type="button">
+                Decline & Logout
+            </button>
+            <form th:action="@{/accept-terms}" method="post" style="display:inline;">
+                <button
+                    id="acceptBtn"
+                    class="btn-accept"
+                    type="submit"
+                    disabled>Accept & Continue</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 
     <div th:replace="~{Common/header :: header}"></div>
 
@@ -365,7 +643,7 @@
                         th:text="|Search results for '${currentKeyword}'|">
                         Search results
                     </span>
-
+                         
                     <span th:unless="${currentKeyword != null and !#strings.isEmpty(currentKeyword)}">
                         Top Questions
                     </span>

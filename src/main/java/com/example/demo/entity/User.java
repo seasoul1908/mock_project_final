@@ -1,7 +1,15 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import java.sql.Timestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Users")
@@ -27,6 +35,9 @@ public class User {
     
     @Column(name = "status")
     private String status;
+
+    @Column(name = "accepted_terms", nullable = false)
+    private Boolean acceptedTerms = false;
 
     @Column(name = "Reputation")
     private Integer reputation;
@@ -72,6 +83,9 @@ public class User {
     
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public Boolean getAcceptedTerms() { return acceptedTerms; }
+    public void setAcceptedTerms(Boolean acceptedTerms) { this.acceptedTerms = acceptedTerms; }
 
     public Integer getReputation() { return reputation; }
     public void setReputation(Integer reputation) { this.reputation = reputation; }

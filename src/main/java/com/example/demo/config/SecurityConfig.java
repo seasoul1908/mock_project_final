@@ -33,7 +33,7 @@ public class SecurityConfig {
                 return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
                         boolean isAdmin = authentication.getAuthorities().stream()
                                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/system-rules");
+                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
                 };
         }
 
@@ -48,7 +48,7 @@ public class SecurityConfig {
                                                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
                                                                 "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
                                                                 "/login/oauth2/**", "/question", "/question/**", "/question-detail",
-                                                                "/trending")
+                                                                "/trending" , "/accept-terms")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
                                                 .hasRole("ADMIN")
