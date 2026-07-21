@@ -44,28 +44,12 @@ public class TermInterceptor implements HandlerInterceptor {
         if (Boolean.TRUE.equals(user.getAcceptedTerms())) {
             return true;
         }
-
-        String uri = request.getRequestURI();
-
-        if (uri.equals("/")
-        || uri.equals("/home")
-        || uri.equals("/system-rules")
-        || uri.equals("/auth/logout")
-        || uri.equals("/accept-terms")
-
-        // Static resources
-        || uri.startsWith("/assets/")
-        || uri.startsWith("/css/")
-        || uri.startsWith("/js/")
-        || uri.startsWith("/images/")
-        || uri.startsWith("/webjars/")) {
-
+        // User has not accepted the System Rules yet.
+        // Allow access to all pages.
+        // The popup will be displayed by the frontend/HomeController instead.
+       
         return true;
-        }
-        response.sendRedirect("/home");
-
-        return false;
-
+               
     }
     
 }

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
 @Controller
 public class HomeController {
 
@@ -37,6 +39,7 @@ public class HomeController {
             @RequestParam(value = "filter", defaultValue = "all") String filter,
             @RequestParam(value = "tag", defaultValue = "") String tag,
             @RequestParam(value = "page", defaultValue = "1") int page,
+            HttpSession session,
             Model model) {
         
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,12 +59,24 @@ public class HomeController {
                 userRepository.findByEmail(email).ifPresent(user -> {
         
                 System.out.println("acceptedTerms = " + user.getAcceptedTerms());
+                
+                if ("admin".equalsIgnoreCase(user.getRole())) {
+                model.addAttribute("showTermsPopup", false);
+                return;
+                }
 
-                boolean showTermsPopup = !Boolean.TRUE.equals(user.getAcceptedTerms());
+                Boolean popupShown = (Boolean) session.getAttribute("TERMS_POPUP_SHOWN");
 
-                System.out.println("showTermsPopup = " + showTermsPopup);
+                boolean showTermsPopup = !Boolean.TRUE.equals(user.getAcceptedTerms()) && popupShown == null ;
+
+                if (showTermsPopup) {
+                    session.setAttribute("TERMS_POPUP_SHOWN", true);
+                }
 
                 model.addAttribute("showTermsPopup", showTermsPopup);
+
+                System.out.println("showTermsPopup = " + showTermsPopup);
+               
                 });
 
             } else {
