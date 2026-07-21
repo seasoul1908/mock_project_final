@@ -464,3 +464,6 @@ CREATE TABLE [dbo].[Feedbacks](
 )
 GO
 
+ALTER TABLE Users
+ADD accepted_terms BIT NOT NULL DEFAULT 0;
+
