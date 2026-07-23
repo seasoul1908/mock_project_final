@@ -2,91 +2,98 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ChatbotRequest;
 import com.example.demo.dto.ChatbotResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+/**
+ * Service layer for AI chat interactions.
+ *
+ * <p>
+ * Delegates to the Spring AI {@link ChatClient} configured in {@code AiConfig}.
+ * The underlying model is Gemini (Google GenAI) and is driven entirely by
+ * {@code application.properties} — no API key or model name is hardcoded here.
+ */
 @Service
 public class AiChatService {
 
-    @Value("${devquery.ai.api-key:}")
-    private String apiKey;
+    private static final Logger log = LoggerFactory.getLogger(AiChatService.class);
 
-    private final RestTemplate restTemplate;
+    private final ChatClient chatClient;
+    private final com.example.demo.config.DevQueryAdminStaticTools staticTools;
+    private final com.example.demo.config.DevQueryAdminDynamicTools dynamicTools;
 
-    private static final String SYSTEM_PROMPT = "You are 'DevQuery Assistant,' an elite, senior-level software engineering AI integrated natively into the DevQuery platform.\n"
+    /**
+     * System prompt that establishes the DevQuery Assistant persona.
+     * Kept here as a constant so it is applied consistently to every call.
+     */
+    private static final String SYSTEM_PROMPT = "You are 'DevQuery Assistant,' an elite, senior-level software engineering AI "
             +
-            "Primary Mission: Assist developers in debugging code, explaining technical concepts, database design, and navigating the forum.\n"
-            +
+            "integrated natively into the DevQuery platform.\n" +
+            "Primary Mission: Assist developers in debugging code, explaining technical " +
+            "concepts, database design, and navigating the forum.\n" +
             "Strict Boundaries:\n" +
-            "- You MUST decline ANY non-technical questions (e.g., politics, cooking, health). Fallback response: \"I am the DevQuery Assistant, specialized in software engineering. Please ask a programming-related question.\"\n"
-            +
+            "- You MUST decline ANY non-technical questions (e.g., politics, cooking, health). " +
+            "Fallback response: \"I am the DevQuery Assistant, specialized in software " +
+            "engineering. Please ask a programming-related question.\"\n" +
             "- Do NOT generate harmful, malicious, or hacking-related code.\n" +
             "Formatting Rules:\n" +
             "- Keep responses concise. Developers value time.\n" +
             "- Wrap all code snippets in standard Markdown formatting (e.g., ```java).\n" +
-            "- Use bold text for file names and key variables.\n\n";
+            "- Use bold text for file names and key variables.\n";
 
-    public AiChatService(RestTemplateBuilder restTemplateBuilder) {
-        this.restTemplate = restTemplateBuilder.build();
+    /**
+     * Injects the pre-configured {@link ChatClient} bean from {@code AiConfig}.
+     *
+     * @param chatClient the Spring-managed ChatClient (NOT the raw Builder)
+     */
+    public AiChatService(ChatClient chatClient, 
+                         com.example.demo.config.DevQueryAdminStaticTools staticTools, 
+                         com.example.demo.config.DevQueryAdminDynamicTools dynamicTools) {
+        this.chatClient = chatClient;
+        this.staticTools = staticTools;
+        this.dynamicTools = dynamicTools;
     }
 
+    /**
+     * Sends a user message to the Gemini model and returns the AI-generated reply.
+     *
+     * @param request the DTO containing the user's message text
+     * @return a {@link ChatbotResponse} with the AI reply, or an error message on
+     *         failure
+     */
     public ChatbotResponse getChatResponse(ChatbotRequest request) {
-        if (apiKey == null || apiKey.isEmpty()) {
-            return new ChatbotResponse("AI Provider is not configured.");
-        }
-
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key="
-                + apiKey;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Construct Gemini Payload
-        Map<String, Object> requestBody = new HashMap<>();
-        List<Map<String, Object>> contents = new ArrayList<>();
-        Map<String, Object> contentMap = new HashMap<>();
-        List<Map<String, String>> parts = new ArrayList<>();
-        Map<String, String> partMap = new HashMap<>();
-
-        partMap.put("text", SYSTEM_PROMPT + "User Request:\n" + request.getMessage());
-        parts.add(partMap);
-        contentMap.put("parts", parts);
-        contents.add(contentMap);
-        requestBody.put("contents", contents);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
         try {
-            ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, entity, Map.class);
-            Map<String, Object> responseBody = response.getBody();
-            if (responseBody != null && responseBody.containsKey("candidates")) {
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) responseBody.get("candidates");
-                if (candidates != null && !candidates.isEmpty()) {
-                    Map<String, Object> candidate = candidates.get(0);
-                    Map<String, Object> content = (Map<String, Object>) candidate.get("content");
-                    if (content != null && content.containsKey("parts")) {
-                        List<Map<String, String>> resParts = (List<Map<String, String>>) content.get("parts");
-                        if (resParts != null && !resParts.isEmpty()) {
-                            return new ChatbotResponse(resParts.get(0).get("text"));
-                        }
-                    }
-                }
+            log.info("Sending request to Gemini. User message length: {} chars",
+                    request.getMessage().length());
+
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+            ChatClient.ChatClientRequestSpec spec = chatClient.prompt()
+                    .system(SYSTEM_PROMPT)
+                    .user(request.getMessage());
+
+            if (isAdmin) {
+                spec = spec.tools(staticTools, dynamicTools);
+                log.info("Admin user detected. AI Database tools attached.");
+            } else {
+                log.info("Normal user detected. No AI tools attached.");
             }
-            return new ChatbotResponse("Sorry, I could not generate a response.");
+
+            String responseText = spec.call().content();
+
+            log.info("Received response from Gemini. Response length: {} chars",
+                    responseText != null ? responseText.length() : 0);
+
+            return new ChatbotResponse(responseText);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            // Log the FULL exception (not just the message) to get the real API error
+            // detail
+            log.error("Gemini API call failed. Cause: {}", e.getMessage(), e);
             return new ChatbotResponse("Lỗi API: " + e.getMessage());
         }
     }
