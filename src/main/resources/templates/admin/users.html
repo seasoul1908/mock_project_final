@@ -83,6 +83,7 @@
                         <th>Email</th>
                         <th>Role</th>
                         <th>Status</th>
+                        <th>Online</th>
                         <th>Reputation</th>
                         <th>Joined</th>
                         <th>Actions</th>
@@ -109,6 +110,12 @@
                                 th:classappend="${u.status == 'active'} ? 'bg-success' : 'bg-danger'"
                                 th:text="${u.status}" th:id="'status-' + ${u.userId}"></span>
                         </td>
+                        <td>
+                            <span th:if="${u.online}" class="badge rounded-pill"
+                                style="background:#2fa84f; font-size:11px;">&#9679; Online</span>
+                            <span th:if="${!u.online}" class="badge rounded-pill"
+                                style="background:#6c757d; font-size:11px;">Offline</span>
+                        </td>
                         <td th:text="${u.reputation}"></td>
                         <td class="text-muted" th:text="${u.createdAt != null ? #dates.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
                         <td>
@@ -121,7 +128,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(users)}">
-                        <td colspan="8" class="text-center text-muted py-4">No users found</td>
+                        <td colspan="9" class="text-center text-muted py-4">No users found</td>
                     </tr>
                 </tbody>
             </table>
