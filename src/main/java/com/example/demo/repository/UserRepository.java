@@ -50,7 +50,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Users SET status = CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END, updated_at = GETDATE() WHERE user_id = :userId", nativeQuery = true)
+        @Query(value = "UPDATE Users SET status = CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END, updated_at = CURRENT_TIMESTAMP WHERE user_id = :userId", nativeQuery = true)
         int toggleUserStatus(@Param("userId") long userId);
 
         @Modifying
@@ -76,10 +76,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         "ORDER BY questionCount DESC, t.tag_name ASC", nativeQuery = true)
         List<Map<String, Object>> getTopTagsByQuestionCount(Pageable pageable);
 
-        @Query(value = "SELECT CAST(created_at AS DATE) as date, COUNT(*) as count FROM Users WHERE created_at >= DATEADD(DAY, -:days, GETDATE()) GROUP BY CAST(created_at AS DATE) ORDER BY date", nativeQuery = true)
+        @Query(value = "SELECT CAST(created_at AS DATE) as date, COUNT(*) as count FROM Users WHERE created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :days DAY) GROUP BY CAST(created_at AS DATE) ORDER BY date", nativeQuery = true)
         List<Map<String, Object>> getUserRegistrationTrend(@Param("days") int days);
 
-        @Query(value = "SELECT CAST(created_at AS DATE) as date, COUNT(*) as count FROM Questions WHERE created_at >= DATEADD(DAY, -:days, GETDATE()) GROUP BY CAST(created_at AS DATE) ORDER BY date", nativeQuery = true)
+        @Query(value = "SELECT CAST(created_at AS DATE) as date, COUNT(*) as count FROM Questions WHERE created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :days DAY) GROUP BY CAST(created_at AS DATE) ORDER BY date", nativeQuery = true)
         List<Map<String, Object>> getQuestionTrend(@Param("days") int days);
 
         @Query(value = "SELECT delta, reason FROM Reputation_History " +
@@ -88,7 +88,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         List<Map<String, Object>> getReputationChanges(@Param("userId") long userId, Pageable pageable);
 
         // --- User for User (Top users) ---
-        @Query(value = "SELECT TOP 10 u.*, p.avatar_url, p.bio, p.location, p.website FROM Users u LEFT JOIN User_Profile p ON u.user_id = p.user_id WHERE u.role != 'admin' AND u.role != 'bot' ORDER BY u.Reputation DESC", nativeQuery = true)
+        @Query(value = "SELECT u.*, p.avatar_url, p.bio, p.location, p.website FROM Users u LEFT JOIN User_Profile p ON u.user_id = p.user_id WHERE u.role != 'admin' AND u.role != 'bot' ORDER BY u.Reputation DESC LIMIT 10", nativeQuery = true)
         List<User> getTopUsers();
 
         @Query(value = "SELECT u.*, p.avatar_url, p.bio, p.location, p.website FROM Users u LEFT JOIN User_Profile p ON u.user_id = p.user_id WHERE u.role != 'admin' AND u.role != 'bot' AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%')) ORDER BY CASE WHEN :sort = 'date' THEN u.created_at END DESC, CASE WHEN :sort = 'reputation' THEN u.Reputation END DESC, CASE WHEN :sort NOT IN ('date', 'reputation') THEN u.username END ASC", nativeQuery = true)
@@ -100,7 +100,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         @Modifying
         @Transactional
-        @Query(value = "INSERT INTO UserFollow (follower_id, following_id, followed_at) VALUES (:followerId, :followingId, GETDATE())", nativeQuery = true)
+        @Query(value = "INSERT INTO UserFollow (follower_id, following_id, followed_at) VALUES (:followerId, :followingId, CURRENT_TIMESTAMP)", nativeQuery = true)
         void followUser(@Param("followerId") long followerId, @Param("followingId") long followingId);
 
         @Modifying
@@ -118,7 +118,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT COUNT(*) FROM Answers WHERE user_id = :userId", nativeQuery = true)
         int countAnswersByUser(@Param("userId") long userId);
 
-        @Query(value = "SELECT ISNULL(SUM(view_count), 0) FROM Questions WHERE user_id = :userId", nativeQuery = true)
+        @Query(value = "SELECT COALESCE(SUM(view_count), 0) FROM Questions WHERE user_id = :userId", nativeQuery = true)
         int countTotalViewByUser(@Param("userId") long userId);
 
         @Query(value = "SELECT b.name as name, b.description as description, COUNT(ub.badge_id) as badgeCount " +
@@ -129,11 +129,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         // --- Activity Tab Queries ---
 
-        @Query(value = "SELECT FORMAT(q.created_at, 'MMM yyyy') as month, COUNT(*) as count " +
+        @Query(value = "SELECT DATE_FORMAT(q.created_at, '%b %Y') as month, COUNT(*) as count " +
                         "FROM Questions q " +
                         "WHERE q.user_id = :userId " +
-                        "AND q.created_at >= DATEADD(MONTH, -6, GETDATE()) " +
-                        "GROUP BY FORMAT(q.created_at, 'MMM yyyy'), YEAR(q.created_at), MONTH(q.created_at) " +
+                        "AND q.created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 6 MONTH) " +
+                        "GROUP BY DATE_FORMAT(q.created_at, '%b %Y'), YEAR(q.created_at), MONTH(q.created_at) " +
                         "ORDER BY YEAR(q.created_at) ASC, MONTH(q.created_at) ASC", nativeQuery = true)
         List<Map<String, Object>> getQuestionsActivityChart(@Param("userId") long userId);
 
@@ -227,7 +227,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         @Modifying
         @Transactional
-        @Query(value = "UPDATE Users SET Reputation = ISNULL(Reputation, 0) + :delta WHERE user_id = :userId", nativeQuery = true)
+        @Query(value = "UPDATE Users SET Reputation = COALESCE(Reputation, 0) + :delta WHERE user_id = :userId", nativeQuery = true)
         void addReputation(@Param("userId") long userId, @Param("delta") int delta);
 
         @Modifying
@@ -240,15 +240,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 @Param("actorUserId") Long actorUserId);
         
         @Query(value = """
-        SELECT u.user_id AS userId, u.username AS username, p.avatar_url AS avatarUrl, p.location AS location, ISNULL(u.Reputation, 0) AS reputation, p.bio AS bio, u.created_at AS createdAt,
+        SELECT u.user_id AS userId, u.username AS username, p.avatar_url AS avatarUrl, p.location AS location, COALESCE(u.Reputation, 0) AS reputation, p.bio AS bio, u.created_at AS createdAt,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'gold') AS goldBadges,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'silver') AS silverBadges,
         (SELECT COUNT(*) FROM User_Badges ub JOIN Badges b ON ub.badge_id = b.badge_id WHERE ub.user_id = u.user_id AND b.type = 'bronze') AS bronzeBadges,
-        ISNULL((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) AS voteScore
+        COALESCE((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) AS voteScore
         FROM Users u LEFT JOIN User_Profile p ON u.user_id = p.user_id
         WHERE u.role != 'admin' AND u.role != 'bot' AND u.user_id <> :currentUserId AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%'))
-        ORDER BY CASE WHEN :filter = 'reputation' THEN ISNULL(u.Reputation, 0) END DESC,
-        CASE WHEN :filter = 'voted' THEN ISNULL((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) END DESC,
+        ORDER BY CASE WHEN :filter = 'reputation' THEN COALESCE(u.Reputation, 0) END DESC,
+        CASE WHEN :filter = 'voted' THEN COALESCE((SELECT SUM(CASE WHEN v.vote_type = 'up' THEN 1 WHEN v.vote_type = 'down' THEN -1 ELSE 0 END) FROM Votes v LEFT JOIN Questions q ON v.question_id = q.question_id LEFT JOIN Answers a ON v.answer_id = a.answer_id WHERE q.user_id = u.user_id OR a.user_id = u.user_id), 0) END DESC,
         CASE WHEN :filter = 'new' THEN u.created_at END DESC, u.username ASC
         """, countQuery = """
         SELECT COUNT(*) FROM Users u WHERE u.role != 'admin' AND u.role != 'bot' AND u.user_id <> :currentUserId AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%'))

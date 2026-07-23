@@ -24,7 +24,7 @@ public class Comment {
     @Column(name = "parent_comment_id")
     private Long parentCommentId;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "LONGTEXT")
     private String body;
 
     @Column(name = "created_at")

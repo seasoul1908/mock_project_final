@@ -17,7 +17,7 @@ public class Badge {
     @Column(name = "type", nullable = false, length = 10)
     private String type; // gold, silver, bronze
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "required_reputation")

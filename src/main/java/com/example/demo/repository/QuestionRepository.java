@@ -24,7 +24,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "JOIN Users u ON q.user_id = u.user_id " +
             "LEFT JOIN User_Profile up ON u.user_id = up.user_id " +
             "WHERE qt.tag_id = :tagId " +
-            "AND ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
+            "AND COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0 " +
             "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a2 WHERE a2.question_id = q.question_id)) " +
             "ORDER BY " +
             "CASE WHEN :filter = 'voted' THEN q.Score END DESC, " +
@@ -43,7 +43,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         FROM Questions q
         JOIN Users u ON q.user_id = u.user_id
         LEFT JOIN User_Profile up ON u.user_id = up.user_id
-        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
+        WHERE COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0
           AND (:keyword = '' OR q.title LIKE :keywordSearch OR q.body LIKE :keywordSearch)
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
@@ -56,7 +56,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     """, countQuery = """
         SELECT COUNT(q.question_id)
         FROM Questions q
-        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
+        WHERE COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0
           AND (:keyword = '' OR q.title LIKE :keywordSearch OR q.body LIKE :keywordSearch)
           AND (:filter != 'unanswered' OR (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) = 0)
           AND (:tag = '' OR q.question_id IN (SELECT qt.question_id FROM Question_Tags qt JOIN Tags t ON qt.tag_id = t.tag_id WHERE t.tag_name = :tag))
@@ -74,7 +74,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "FROM Questions q " +
             "JOIN Question_Tags qt ON q.question_id = qt.question_id " +
             "WHERE qt.tag_id = :tagId " +
-            "AND ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
+            "AND COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0 " +
             "AND (:filter <> 'unanswered' OR NOT EXISTS (SELECT 1 FROM Answers a WHERE a.question_id = q.question_id))", nativeQuery = true)
     int countQuestionsByTagNative(
             @Param("tagId") Long tagId,
@@ -104,10 +104,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         FROM Questions q
         JOIN Users u ON q.user_id = u.user_id
         LEFT JOIN User_Profile up ON u.user_id = up.user_id
-        WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0
-          AND ISNULL(q.bounty_amount, 0) > 0
+        WHERE COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0
+          AND COALESCE(q.bounty_amount, 0) > 0
           AND q.bounty_expires_at IS NOT NULL
-          AND q.bounty_expires_at > GETDATE()
+          AND q.bounty_expires_at > CURRENT_TIMESTAMP
         ORDER BY
           -- sort expiring
           CASE WHEN :sortBy = 'expiring' THEN q.bounty_expires_at END ASC,
@@ -143,7 +143,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Questions SET updated_at = GETDATE() WHERE question_id = :questionId", nativeQuery = true)
+    @Query(value = "UPDATE Questions SET updated_at = CURRENT_TIMESTAMP WHERE question_id = :questionId", nativeQuery = true)
     void touchUpdatedAt(@Param("questionId") long questionId);
 
     @Query(value = "SELECT DISTINCT tf.user_id " +
@@ -162,10 +162,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     // Trending questions: activity score over the last 7 days (score*3 + views + answers*2)
     @Query(value = "SELECT q.question_id AS questionId, q.title AS title, q.Score AS score, q.view_count AS viewCount, " +
             "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) AS answerCount, " +
-            "(ISNULL(q.Score, 0) * 3 + ISNULL(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2) AS trendingScore " +
+            "(COALESCE(q.Score, 0) * 3 + COALESCE(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2) AS trendingScore " +
             "FROM Questions q " +
-            "WHERE ISNULL(q.is_deleted, 0) = 0 AND ISNULL(q.is_draft, 0) = 0 " +
-            "AND q.created_at > DATEADD(day, -7, GETDATE()) " +
+            "WHERE COALESCE(q.is_deleted, 0) = 0 AND COALESCE(q.is_draft, 0) = 0 " +
+            "AND q.created_at > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 7 DAY) " +
             "ORDER BY trendingScore DESC, q.created_at DESC",
             nativeQuery = true)
     List<Object[]> findTrendingNative(Pageable pageable);
@@ -173,9 +173,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     // Popular questions: all-time activity score (score*3 + views + answers*2 + comments)
     @Query(value = "SELECT q.question_id AS questionId, q.title AS title, q.Score AS score, q.view_count AS viewCount, " +
             "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) AS answerCount, " +
-            "(ISNULL(q.Score, 0) * 3 + ISNULL(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2 + (SELECT COUNT(*) FROM Comments c WHERE c.question_id = q.question_id) * 1) AS popularScore " +
+            "(COALESCE(q.Score, 0) * 3 + COALESCE(q.view_count, 0) + (SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) * 2 + (SELECT COUNT(*) FROM Comments c WHERE c.question_id = q.question_id) * 1) AS popularScore " +
             "FROM Questions q " +
-            "WHERE ISNULL(q.is_deleted, 0) = 0 " +
+            "WHERE COALESCE(q.is_deleted, 0) = 0 " +
             "ORDER BY popularScore DESC, q.created_at DESC",
             nativeQuery = true)
     List<Object[]> findPopularNative(Pageable pageable);
@@ -183,7 +183,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     // Soft-delete a question (the is_deleted column already exists in the schema)
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Questions SET is_deleted = 1, deleted_at = GETDATE(), deleted_by = :deletedBy WHERE question_id = :questionId", nativeQuery = true)
+    @Query(value = "UPDATE Questions SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP, deleted_by = :deletedBy WHERE question_id = :questionId", nativeQuery = true)
     void softDeleteQuestion(@Param("questionId") long questionId, @Param("deletedBy") long deletedBy);
 
     @Modifying

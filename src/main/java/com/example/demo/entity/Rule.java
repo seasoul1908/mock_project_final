@@ -12,10 +12,10 @@ public class Rule {
     @Column(name = "rule_id")
     private Long ruleId;
 
-    @Column(name = "title", nullable = false, columnDefinition = "NVARCHAR(255)")
+    @Column(name = "title", nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
 
-    @Column(name = "content", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "created_at")

@@ -14,7 +14,7 @@ public class Tag {
     @Column(name = "tag_name", unique = true, nullable = false)
     private String tagName;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "IsActive")

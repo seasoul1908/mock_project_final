@@ -25,7 +25,7 @@ public class Feedback {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "nvarchar(max)")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String message;
 
     @Column(name = "created_at", insertable = false, updatable = false)

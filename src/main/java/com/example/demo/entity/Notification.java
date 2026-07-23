@@ -18,7 +18,7 @@ public class Notification {
     @Column(nullable = false, length = 20)
     private String type;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "is_read")

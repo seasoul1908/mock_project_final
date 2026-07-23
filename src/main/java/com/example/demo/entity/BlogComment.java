@@ -21,7 +21,7 @@ public class BlogComment {
     @Column(name = "parent_id")
     private Integer parentId;
 
-    @Column(name = "content", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "created_at")

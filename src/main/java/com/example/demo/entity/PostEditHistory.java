@@ -20,10 +20,10 @@ public class PostEditHistory {
 
     private String title;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String body;
 
-    @Column(name = "code_snippet", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "code_snippet", columnDefinition = "LONGTEXT")
     private String codeSnippet;
 
     @Column(length = 1000)

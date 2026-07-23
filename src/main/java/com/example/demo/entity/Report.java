@@ -21,7 +21,7 @@ public class Report {
     @Column(name = "reporter_id", nullable = false)
     private Long reporterId;
 
-    @Column(name = "reason", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "reason", nullable = false, columnDefinition = "LONGTEXT")
     private String reason;
 
     @Column(name = "note", length = 500)

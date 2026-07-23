@@ -18,10 +18,10 @@ public class Answer {
     @Column(name = "user_id")
     private long userId;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
+    @Column(columnDefinition = "LONGTEXT")
     private String body;
 
-    @Column(name = "code_snippet", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "code_snippet", columnDefinition = "LONGTEXT")
     private String codeSnippet;
 
     @Column(name = "is_edited")

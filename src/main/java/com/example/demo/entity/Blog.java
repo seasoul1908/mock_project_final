@@ -12,13 +12,13 @@ public class Blog {
     @Column(name = "blog_id")
     private Integer blogId;
 
-    @Column(name = "title", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "title", nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
 
-    @Column(name = "content", nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "content", nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
-    @Column(name = "thumbnail_url", columnDefinition = "VARCHAR(MAX)")
+    @Column(name = "thumbnail_url", columnDefinition = "LONGTEXT")
     private String thumbnailUrl;
 
     @Column(name = "author_id")

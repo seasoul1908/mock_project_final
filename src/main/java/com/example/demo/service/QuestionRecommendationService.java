@@ -111,7 +111,7 @@ public class QuestionRecommendationService {
         }
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT TOP (?) q.*, u.username, u.Reputation AS author_reputation, up.avatar_url, ")
+        sql.append("SELECT q.*, u.username, u.Reputation AS author_reputation, up.avatar_url, ")
                 .append("(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) as ans_count, ");
 
         List<String> scoreParts = new ArrayList<>();
@@ -142,7 +142,7 @@ public class QuestionRecommendationService {
                 .append("FROM Questions q ")
                 .append("JOIN Users u ON q.user_id = u.user_id ")
                 .append("LEFT JOIN User_Profile up ON u.user_id = up.user_id ")
-                .append("WHERE ISNULL(q.is_deleted, 0) = 0 ");
+                .append("WHERE COALESCE(q.is_deleted, 0) = 0 ");
 
         if (excludeIds != null && !excludeIds.isEmpty()) {
             sql.append("AND q.question_id NOT IN (");
@@ -169,10 +169,9 @@ public class QuestionRecommendationService {
         }
         sql.append(String.join(" OR ", matchParts))
                 .append(") ")
-                .append("ORDER BY recommendation_score DESC, q.view_count DESC, q.created_at DESC");
+                .append("ORDER BY recommendation_score DESC, q.view_count DESC, q.created_at DESC LIMIT ?");
 
         List<Object> params = new ArrayList<>();
-        params.add(limit);
 
         if (hasTags) {
             params.addAll(tags);
@@ -197,6 +196,7 @@ public class QuestionRecommendationService {
                 params.add(pattern);
             }
         }
+        params.add(limit);
 
         return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> {
             QuestionDTO question = mapRow(rs);
@@ -208,13 +208,13 @@ public class QuestionRecommendationService {
     public List<QuestionDTO> getPopularQuestions(long excludeQuestionId, int limit) {
         String sql = "SELECT q.*, u.username, u.Reputation AS author_reputation, up.avatar_url, "
                 + "(SELECT COUNT(*) FROM Answers a WHERE a.question_id = q.question_id) as ans_count, "
-                + "CAST((q.Score * 2.0) + (q.view_count / 10.0) - DATEDIFF(DAY, q.created_at, GETDATE()) AS FLOAT) AS popular_score "
+                + "CAST((q.Score * 2.0) + (q.view_count / 10.0) - DATEDIFF(CURRENT_TIMESTAMP, q.created_at) AS FLOAT) AS popular_score "
                 + "FROM Questions q "
                 + "JOIN Users u ON q.user_id = u.user_id "
                 + "LEFT JOIN User_Profile up ON u.user_id = up.user_id "
-                + "WHERE q.question_id <> ? AND ISNULL(q.is_deleted, 0) = 0 "
+                + "WHERE q.question_id <> ? AND COALESCE(q.is_deleted, 0) = 0 "
                 + "ORDER BY popular_score DESC, q.view_count DESC, q.created_at DESC "
-                + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
+                + "LIMIT ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             QuestionDTO question = mapRow(rs);
