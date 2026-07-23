@@ -48,6 +48,7 @@ MD_Requirement/
 application-secret.properties
 application-dev.properties
 application-local.properties
+application.properties
 .env
 *.env
 

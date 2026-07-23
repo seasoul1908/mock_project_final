@@ -61,11 +61,16 @@
                             <li class="nav-item">
                                 <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
                                 th:href="@{/settings/preferences}">Preferences</a>
-                            <li class="nav-item" th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
-                                <a class="nav-link" th:classappend="${activeTab == 'drafts' ? 'active' : ''}"
-                                    th:href="@{/questions/drafts}">Drafts</a>
+<<<<<<< HEAD
                             </li>
                         </th:block>
+=======
+                        </li>
+                        <li class="nav-item" th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
+                            <a class="nav-link" th:classappend="${activeTab == 'drafts' ? 'active' : ''}"
+                                th:href="@{/questions/drafts}">Drafts</a>
+                        </li>
+>>>>>>> dphu
                     </ul>
                 </div>
             </div>
