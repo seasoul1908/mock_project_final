@@ -1,5 +1,5 @@
 package com.example.demo.dto;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public interface  UserPageDTO {
     Long getUserId();
@@ -22,5 +22,5 @@ public interface  UserPageDTO {
 
     String getBio();
 
-    Timestamp getCreatedAt();
+    LocalDateTime getCreatedAt();
 }
