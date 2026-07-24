@@ -14,7 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.GithubUser;
@@ -30,6 +33,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Lazy
+    @Autowired(required = false)
+    private SessionRegistry sessionRegistry;
 
     // Inject BCrypt password encoder configured in SecurityConfig
     @Lazy
@@ -51,6 +58,17 @@ public class UserService {
         dto.setLocation(user.getLocation());
         dto.setWebsite(user.getWebsite());
         dto.setAvatarUrl(user.getAvatarUrl());
+        if (sessionRegistry != null && user.getEmail() != null) {
+            String email = user.getEmail();
+            boolean online = sessionRegistry.getAllPrincipals().stream()
+                .filter(p -> !sessionRegistry.getAllSessions(p, false).isEmpty())
+                .anyMatch(p -> {
+                    if (p instanceof UserDetails) return ((UserDetails) p).getUsername().equals(email);
+                    if (p instanceof OAuth2User) return email.equals(((OAuth2User) p).getAttribute("email"));
+                    return false;
+                });
+            dto.setOnline(online);
+        }
         return dto;
     }
 
@@ -244,23 +262,15 @@ public class UserService {
     }
 
     public List<Map<String, Object>> getCurrentMonthQuestionCountByTag(int limit) {
-        return userRepository.getCurrentMonthQuestionCountByTag(PageRequest.of(0, limit));
+        return userRepository.getTopTagsByQuestionCount(PageRequest.of(0, limit));
     }
 
     public List<Map<String, Object>> getUserRegistrationTrend(int days) {
-        List<Map<String, Object>> trend = userRepository.getUserRegistrationTrend(days);
-        for (Map<String, Object> map : trend) {
-            map.put("date", new java.sql.Date(((java.util.Date) map.get("date")).getTime()));
-        }
-        return trend;
+        return userRepository.getUserRegistrationTrend(days);
     }
 
     public List<Map<String, Object>> getQuestionTrend(int days) {
-        List<Map<String, Object>> trend = userRepository.getQuestionTrend(days);
-        for (Map<String, Object> map : trend) {
-            map.put("date", new java.sql.Date(((java.util.Date) map.get("date")).getTime()));
-        }
-        return trend;
+        return userRepository.getQuestionTrend(days);
     }
 
     public List<String> getReputationChanges(long userId, int limit) {

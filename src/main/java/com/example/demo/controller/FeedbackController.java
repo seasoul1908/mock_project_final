@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Feedback;
-import com.example.demo.entity.User;
-import com.example.demo.repository.FeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,13 +8,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.sql.Timestamp;
+import com.example.demo.entity.Feedback;
+import com.example.demo.entity.User;
+import com.example.demo.repository.FeedbackRepository;
+import com.example.demo.service.FeedbackEmailScheduler;
 
 @Controller
 public class FeedbackController {
 
     @Autowired
     private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private FeedbackEmailScheduler feedbackEmailScheduler;
 
     @GetMapping("/feedback")
     public String showFeedbackForm(Model model) {
@@ -66,6 +69,12 @@ public class FeedbackController {
         feedback.setMessage(message.trim());
 
         feedbackRepository.save(feedback);
+
+        feedbackEmailScheduler.scheduleThankYouEmail(
+        feedback.getEmail(),
+        feedback.getName(),
+        feedback.getMessage()
+        );
 
         redirectAttributes.addFlashAttribute("successMessage", "We value your feedback and will get back to you soon!");
         return "redirect:/feedback";
