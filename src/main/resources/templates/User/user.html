@@ -748,7 +748,7 @@ body.dark-theme .popup-bio{
                                     <div class="popup-member">
                                         <i class="fa-solid fa-calendar-days"></i>
 
-                                        <span th:text="${#dates.format(user.createdAt,'MMM yyyy')}">Member since Jul 2026</span>
+                                        <span th:text="${#temporals.format(user.createdAt,'MMM yyyy')}">Member since Jul 2026</span>
                                     </div>
 
                                 </div>
