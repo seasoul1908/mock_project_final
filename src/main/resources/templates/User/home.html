@@ -577,8 +577,52 @@
 .terms-close:hover{
     color:white;
 }
+.terms-content{
+    max-height:260px;
+    overflow-y:auto;
+    margin:18px 0;
+    padding-right:10px;
+    line-height:1.7;
+}
 
+.terms-content h4{
+    margin:18px 0 8px;
+    font-size:15px;
+    font-weight:600;
+    color:#ffffff;
+}
 
+.terms-list{
+    margin:0 0 12px 18px;
+    padding:0;
+}
+
+.terms-list li{
+    margin-bottom:8px;
+    color:#d5d8dc;
+}
+
+.terms-description{
+    color:#d5d8dc;
+    margin-bottom:15px;
+}
+.terms-content::-webkit-scrollbar{
+    width:8px;
+}
+
+.terms-content::-webkit-scrollbar-track{
+    background:#3b4045;
+    border-radius:10px;
+}
+
+.terms-content::-webkit-scrollbar-thumb{
+    background:#6a737c;
+    border-radius:10px;
+}
+
+.terms-content::-webkit-scrollbar-thumb:hover{
+    background:#8c959f;
+}
     </style>
 </head>
 <script>
@@ -645,18 +689,49 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span class="terms-text">Terms & Rules</span>
                 </div>
         </h2>
-        <p class="terms-description">
-            Welcome to DevQuery. To help maintain a respectful and safe community,
-            please read and agree to the Community Rules and Terms of Use before continuing.
-        </p>
+        <div class="terms-content">
+
+    <p class="terms-description">
+        Welcome to <strong>DevQuery</strong>, a collaborative platform where developers
+        can ask questions, share knowledge, and learn from the community.
+        To ensure a professional, respectful, and secure environment for everyone,
+        please carefully read the following Terms of Use, Community Rules, and Privacy
+        Policy before continuing.
+    </p>
+
+    <h4>Community Rules</h4>
+
+    <ul class="terms-list">
+        <li>Be respectful and communicate professionally with all members.</li>
+        <li>Do not post offensive, abusive, or misleading content.</li>
+        <li>Avoid spam, advertisements, or duplicate questions.</li>
+        <li>Provide accurate information whenever possible.</li>
+        <li>Respect intellectual property and properly credit original sources.</li>
+    </ul>
+
+    <h4>Terms of Use</h4>
+
+    <ul class="terms-list">
+        <li>You are responsible for all activities performed using your account.</li>
+        <li>DevQuery may remove content that violates community guidelines.</li>
+        <li>Your account may be suspended or terminated for repeated violations.</li>
+        <li>By using DevQuery, you agree to comply with all applicable laws and regulations.</li>
+    </ul>
+
+    <h4>Privacy Policy</h4>
+
+    <ul class="terms-list">
+        <li>Your personal information is handled according to our Privacy Policy.</li>
+        <li>We do not sell your personal data to third parties.</li>
+        <li>Cookies may be used to improve your browsing experience.</li>
+    </ul>
+
+</div>
         <hr>
         <label class="terms-check">
             <input type="checkbox" id="agreeTerms">
                 <span>
-                    I have read and agree to the
-                    <a th:href="@{/system-rules}" target="_self">
-                        Community Rules and Terms of Use
-                    </a>.
+                    I have read and agree to the community Rules and Terms of Use
                 </span>
         </label>
         <div class="terms-actions">

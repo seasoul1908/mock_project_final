@@ -72,7 +72,8 @@ public class FeedbackController {
 
         feedbackEmailScheduler.scheduleThankYouEmail(
         feedback.getEmail(),
-        feedback.getName()
+        feedback.getName(),
+        feedback.getMessage()
         );
 
         redirectAttributes.addFlashAttribute("successMessage", "We value your feedback and will get back to you soon!");
