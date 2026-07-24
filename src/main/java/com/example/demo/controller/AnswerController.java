@@ -22,14 +22,15 @@ public class AnswerController {
 
     @PostMapping("/post")
     public String postAnswer(@RequestParam("questionId") long questionId,
-            @RequestParam("body") String body) {
+            @RequestParam("body") String body,
+            @RequestParam(value = "codeSnippet", required = false) String codeSnippet) {
         User user = AuthUtils.getAuthenticatedUser(userRepository);
         if (user == null) {
             return "redirect:/auth/login";
         }
 
         try {
-            answerService.postAnswer(questionId, user.getUserId(), body);
+            answerService.postAnswer(questionId, user.getUserId(), body, codeSnippet);
         } catch (Exception e) {
             e.printStackTrace();
         }
