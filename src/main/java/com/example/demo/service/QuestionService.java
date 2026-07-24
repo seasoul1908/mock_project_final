@@ -3,7 +3,11 @@ package com.example.demo.service;
 import com.example.demo.entity.Question;
 
 public interface QuestionService {
-    Question saveQuestion(Long userId, String title, String body, String tagsStr);
+    Question saveQuestion(Long userId, String title, String body, String codeSnippet, String tagsStr);
+
+    default Question saveQuestion(Long userId, String title, String body, String tagsStr) {
+        return saveQuestion(userId, title, body, null, tagsStr);
+    }
 
     void editQuestion(long questionId, long userId, String title, String body, String codeSnippet, boolean isAdmin);
 
