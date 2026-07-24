@@ -215,6 +215,24 @@
                 transform: scale(1.05);
                 background-color: var(--bg-body, #f8f9fa);
             }
+
+            /* Quick Reply Buttons */
+            .btn-quick-reply {
+                background-color: transparent;
+                color: #0d6efd;
+                border: 1px solid #0d6efd;
+                padding: 6px 12px;
+                border-radius: 15px;
+                font-size: 0.85em;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: inline-block;
+            }
+
+            .btn-quick-reply:hover {
+                background-color: #0d6efd;
+                color: #ffffff;
+            }
         </style>
 
         <!-- Floating Action Button -->
@@ -231,18 +249,21 @@
             <div id="chatbot-body" class="d-flex flex-column h-100" style="overflow: hidden;">
                 <div id="chatbot-messages">
                     <div class="chat-message bot">
-                        Hello! I am the DevQuery Assistant. How can I help you with your code today?<br>
-                        If you are new to using the Chatbot, please refer to the guide. If you encounter any issues,
-                        feel free to send us your feedback!<br>
-                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                            <a href="/system-rules"
-                                style="background-color: #0d6efd; color: #ffffff; padding: 6px 12px; border-radius: 15px; text-decoration: none; font-size: 0.85em; display: inline-block; transition: opacity 0.2s;">
-                                <i class="fa-solid fa-book me-1"></i> DevQuery Guide
-                            </a>
-                            <a href="/feedback"
-                                style="background-color: #6c757d; color: #ffffff; padding: 6px 12px; border-radius: 15px; text-decoration: none; font-size: 0.85em; display: inline-block; transition: opacity 0.2s;">
-                                <i class="fa-solid fa-comment-dots me-1"></i> Feedbacks
-                            </a>
+                        Hello! I am the DevQuery Assistant. I can help you with your code, or you can select an option
+                        below for platform guidance:<br>
+                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"
+                            id="quick-replies-container">
+                            <button class="btn-quick-reply"
+                                onclick="sendQuickReply(this, 'How to post a new question?')">
+                                📝 Post a Question
+                            </button>
+                            <button class="btn-quick-reply"
+                                onclick="sendQuickReply(this, 'How to earn reputation points?')">
+                                ⭐ Earn Reputation
+                            </button>
+                            <button class="btn-quick-reply" onclick="sendQuickReply(this, 'How to send feedback?')">
+                                💬 Send Feedback
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -349,24 +370,77 @@
                     scrollToBottom();
                 }
             }
+            const CHAT_HTML_KEY = 'devquery_chat_html';
+            const QUICK_REPLIES_KEY = 'devquery_quick_replies';
+
+            let activeQuickReplies = JSON.parse(localStorage.getItem(QUICK_REPLIES_KEY)) || [
+                { label: '📝 Post a Question', prompt: 'How to post a new question?' },
+                { label: '⭐ Earn Reputation', prompt: 'How to earn reputation points?' },
+                { label: '💬 Send Feedback', prompt: 'How to send feedback?' }
+            ];
+            let waitingForBotQuickReply = false;
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const savedChatHtml = localStorage.getItem(CHAT_HTML_KEY);
+                if (savedChatHtml) {
+                    document.getElementById('chatbot-messages').innerHTML = savedChatHtml;
+                    setTimeout(scrollToBottom, 100);
+                }
+            });
+
+            function saveChatState() {
+                const html = document.getElementById('chatbot-messages').innerHTML;
+                localStorage.setItem(CHAT_HTML_KEY, html);
+                localStorage.setItem(QUICK_REPLIES_KEY, JSON.stringify(activeQuickReplies));
+            }
 
             function appendMessage(sender, text) {
                 const msgDiv = document.createElement('div');
                 msgDiv.className = `chat-message ${sender}`;
 
                 if (sender === 'bot') {
-                    // Parse markdown for bot responses
                     msgDiv.innerHTML = marked.parse(text);
+
+                    if (waitingForBotQuickReply && activeQuickReplies.length > 0) {
+                        let extraHtml = `<div style="margin-top: 15px; margin-bottom: 8px; font-size: 0.95em;">Would you like to explore any other quick options or need further assistance?</div>`;
+
+                        extraHtml += `<div style="display: flex; gap: 8px; flex-wrap: wrap;" id="quick-replies-container">`;
+                        activeQuickReplies.forEach(opt => {
+                            extraHtml += `<button class="btn-quick-reply" onclick="sendQuickReply(this, '${opt.prompt}')">${opt.label}</button>`;
+                        });
+                        extraHtml += `</div>`;
+
+                        msgDiv.innerHTML += extraHtml;
+                        waitingForBotQuickReply = false;
+                    }
                 } else {
                     msgDiv.textContent = text;
                 }
 
                 chatbotMessages.appendChild(msgDiv);
                 scrollToBottom();
+
+                saveChatState();
             }
 
             function scrollToBottom() {
                 chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+
+            function sendQuickReply(element, promptText) {
+                const oldContainer = element.closest('#quick-replies-container');
+                if (oldContainer) {
+                    oldContainer.style.display = 'none';
+                }
+
+                activeQuickReplies = activeQuickReplies.filter(opt => opt.prompt !== promptText);
+                waitingForBotQuickReply = true;
+
+                saveChatState();
+
+                const chatbotInput = document.getElementById('chatbot-input');
+                chatbotInput.value = promptText;
+                sendChatMessage();
             }
         </script>
     </div>
