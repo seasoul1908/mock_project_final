@@ -140,7 +140,8 @@
                         </li>
                         <li class="nav-item me-4">
                             <form th:action="@{/auth/logout}" method="post" class="m-0">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth"
+                                    onclick="localStorage.removeItem('devquery_chat_html'); localStorage.removeItem('devquery_quick_replies');">
                                     <i class="fa-solid fa-right-from-bracket"></i>
                                 </button>
                             </form>
