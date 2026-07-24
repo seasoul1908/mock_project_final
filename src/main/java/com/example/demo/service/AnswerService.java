@@ -4,7 +4,11 @@ import com.example.demo.entity.Answer;
 
 public interface AnswerService {
 
-    Answer postAnswer(long questionId, long userId, String body);
+    Answer postAnswer(long questionId, long userId, String body, String codeSnippet);
+
+    default Answer postAnswer(long questionId, long userId, String body) {
+        return postAnswer(questionId, userId, body, null);
+    }
 
     void toggleAcceptAnswer(long questionId, long answerId, long userId);
 

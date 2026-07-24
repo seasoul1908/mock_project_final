@@ -460,9 +460,53 @@
             box-shadow: 0 0 0 0.25rem rgba(55, 159, 239, 0.25);
         }
 
-        body.dark-theme .btn-close,
-        html[data-theme="dark"] .btn-close {
-            filter: invert(1) grayscale(100%) brightness(200%);
+        /* Interactive Java Code Snippet Runner Styles */
+        .code-runner-box {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .code-runner-header {
+            background-color: #252526;
+            color: #cccccc;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        .code-runner-textarea {
+            background-color: #1e1e1e !important;
+            color: #d4d4d4 !important;
+            font-family: Consolas, "Courier New", monospace !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .code-runner-textarea:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .code-runner-output-box {
+            background-color: #0e0e0e;
+            color: #d4d4d4;
+            border-top: 1px solid #333;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .runner-output-text {
+            color: #4ec9b0;
+        }
+
+        .runner-output-error {
+            color: #f48771;
         }
     </style>
 </head>
@@ -535,7 +579,7 @@
                     <div class="post-text" th:text="${question.body}">Question body</div>
 
                     <div th:if="${question.codeSnippet != null and !#strings.isEmpty(question.codeSnippet)}"
-                        class="code-block" th:text="${question.codeSnippet}">code</div>
+                        class="code-block executable-java-snippet" data-lang="java" th:text="${question.codeSnippet}">code</div>
 
                     <div class="mb-3 d-flex gap-2 flex-wrap" th:if="${question.tags != null}">
                         <a th:each="t : ${question.tags}" th:href="@{/home(tag=${t})}" class="post-tag"
@@ -789,8 +833,8 @@
                             <div th:if="${!a.deleted}">
                                 <div class="post-text" th:text="${a.body}">Answer body</div>
 
-                                <div th:if="${a.codeSnippet != null and !#strings.isEmpty(a.codeSnippet)}" class="code-block"
-                                     th:text="${a.codeSnippet}">code</div>
+                                <div th:if="${a.codeSnippet != null and !#strings.isEmpty(a.codeSnippet)}" class="code-block executable-java-snippet"
+                                     data-lang="java" th:text="${a.codeSnippet}">code</div>
                             </div>
 
                             <div class="meta-bar">
@@ -968,11 +1012,31 @@
 
                     <!-- Post Answer form -->
                     <div class="answer-form-box so-panel" sec:authorize="isAuthenticated()">
-                        <h3 class="mb-3" style="font-size: 18px; font-weight: 400;">Your Answer</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="m-0" style="font-size: 18px; font-weight: 400;">Your Answer</h3>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('**', '**')" title="Bold"><i class="fa-solid fa-bold"></i> Bold</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('*', '*')" title="Italic"><i class="fa-solid fa-italic"></i> Italic</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('[', '](url)')" title="Link"><i class="fa-solid fa-link"></i> Link</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerCodeTemplate()" title="Code Snippet"><i class="fa-solid fa-code"></i> Code Snippet</button>
+                            </div>
+                        </div>
                         <form th:action="@{/answers/post}" method="post">
                             <input type="hidden" name="questionId" th:value="${question.questionId}" />
-                            <textarea name="body" placeholder="Write your answer here..." required
+                            <textarea id="answerBody" name="body" class="form-control mb-3" placeholder="Write your answer here..." required
                                       th:disabled="${question.isClosed != null and question.isClosed}"></textarea>
+
+                            <div class="card bg-dark text-light p-3 mb-3 border-secondary">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0 small text-muted"><i class="fa-solid fa-code me-1"></i>Executable Code Snippet (Optional)</label>
+                                    <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 100px;" name="language">
+                                        <option value="java" selected>Java</option>
+                                    </select>
+                                </div>
+                                <textarea id="answerCodeSnippet" name="codeSnippet" class="form-control font-monospace bg-black text-light small" rows="4"
+                                          placeholder="public class Main {&#10;    public static void main(String[] args) {&#10;        System.out.println(&quot;Code solution...&quot;);&#10;    }&#10;}"></textarea>
+                            </div>
+
                             <div class="mt-3">
                                 <button type="submit" class="btn-primary-custom"
                                         th:disabled="${question.isClosed != null and question.isClosed}">
@@ -1161,5 +1225,181 @@
         </div>
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function createRunnerWidget(codeText, lang) {
+            lang = lang || 'java';
+            const container = document.createElement('div');
+            container.className = 'code-runner-box my-3';
+
+            const rawCode = codeText || '';
+
+            container.innerHTML = `
+                <div class="code-runner-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-light"><i class="fa-brands fa-java text-warning me-2"></i>Executable Java Snippet</span>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary text-light reset-code-btn" title="Reset to original code">
+                            <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                        </button>
+                        <button type="button" class="btn btn-sm btn-success run-code-btn">
+                            <i class="fa-solid fa-play me-1"></i>Run Code
+                        </button>
+                    </div>
+                </div>
+                <div class="code-runner-editor-wrapper">
+                    <textarea class="form-control code-runner-textarea p-3" rows="6" spellcheck="false"></textarea>
+                </div>
+                <div class="code-runner-stdin-box px-3 py-2 bg-dark border-top border-secondary">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <small class="text-muted"><i class="fa-solid fa-keyboard me-1"></i>Standard Input (stdin)</small>
+                    </div>
+                    <textarea class="form-control code-runner-stdin p-2 mt-1 font-monospace bg-black text-light small" rows="2" placeholder="Optional input parameters for Scanner/System.in..."></textarea>
+                </div>
+                <div class="code-runner-output-box p-3 d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-secondary">
+                        <span class="small text-muted fw-bold"><i class="fa-solid fa-terminal me-1"></i>Execution Console</span>
+                        <span class="runner-status-badge badge"></span>
+                    </div>
+                    <pre class="runner-output-text m-0 small" style="white-space: pre-wrap; word-break: break-word;"></pre>
+                </div>
+            `;
+
+            const textarea = container.querySelector('.code-runner-textarea');
+            textarea.value = rawCode;
+
+            const stdinArea = container.querySelector('.code-runner-stdin');
+            const runBtn = container.querySelector('.run-code-btn');
+            const resetBtn = container.querySelector('.reset-code-btn');
+            const outputBox = container.querySelector('.code-runner-output-box');
+            const statusBadge = container.querySelector('.runner-status-badge');
+            const outputText = container.querySelector('.runner-output-text');
+
+            resetBtn.addEventListener('click', function() {
+                textarea.value = rawCode;
+                stdinArea.value = '';
+                outputBox.classList.add('d-none');
+            });
+
+            runBtn.addEventListener('click', function() {
+                const currentCode = textarea.value;
+                const currentStdin = stdinArea.value || '';
+
+                if (!currentCode || !currentCode.trim()) {
+                    alert('Please enter some code to execute.');
+                    return;
+                }
+
+                runBtn.disabled = true;
+                runBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Running...';
+                outputBox.classList.remove('d-none');
+                statusBadge.className = 'runner-status-badge badge bg-secondary';
+                statusBadge.textContent = 'Executing...';
+                outputText.className = 'runner-output-text m-0 small text-muted';
+                outputText.textContent = 'Compiling and executing code...';
+
+                fetch('/api/code/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        language: lang,
+                        code: currentCode,
+                        stdin: currentStdin
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    runBtn.disabled = false;
+                    runBtn.innerHTML = '<i class="fa-solid fa-play me-1"></i>Run Code';
+
+                    const timeStr = (data.executionTimeMs !== null && data.executionTimeMs !== undefined) ? ` (${data.executionTimeMs}ms)` : '';
+
+                    if (data.status === 'SUCCESS') {
+                        statusBadge.className = 'runner-status-badge badge bg-success';
+                        statusBadge.textContent = 'Success' + timeStr;
+                        outputText.className = 'runner-output-text m-0 small';
+                        outputText.textContent = data.output && data.output.trim() ? data.output : '[Program finished with no output]';
+                    } else if (data.status === 'COMPILATION_ERROR') {
+                        statusBadge.className = 'runner-status-badge badge bg-danger';
+                        statusBadge.textContent = 'Compilation Error' + timeStr;
+                        outputText.className = 'runner-output-text m-0 small runner-output-error';
+                        outputText.textContent = data.error || data.output || 'Compilation failed.';
+                    } else if (data.status === 'RUNTIME_ERROR') {
+                        statusBadge.className = 'runner-status-badge badge bg-warning text-dark';
+                        statusBadge.textContent = 'Runtime Error' + timeStr;
+                        outputText.className = 'runner-output-text m-0 small runner-output-error';
+                        let combined = '';
+                        if (data.output && data.output.trim()) combined += data.output + '\n';
+                        if (data.error && data.error.trim()) combined += data.error;
+                        outputText.textContent = combined.trim() || 'Runtime error occurred.';
+                    } else if (data.status === 'TIMEOUT') {
+                        statusBadge.className = 'runner-status-badge badge bg-danger';
+                        statusBadge.textContent = 'Timeout' + timeStr;
+                        outputText.className = 'runner-output-text m-0 small runner-output-error';
+                        outputText.textContent = data.error || 'Execution timed out.';
+                    } else {
+                        statusBadge.className = 'runner-status-badge badge bg-secondary';
+                        statusBadge.textContent = (data.status || 'Error') + timeStr;
+                        outputText.className = 'runner-output-text m-0 small runner-output-error';
+                        outputText.textContent = data.error || data.output || 'Execution error occurred.';
+                    }
+                })
+                .catch(err => {
+                    runBtn.disabled = false;
+                    runBtn.innerHTML = '<i class="fa-solid fa-play me-1"></i>Run Code';
+                    statusBadge.className = 'runner-status-badge badge bg-danger';
+                    statusBadge.textContent = 'Network Error';
+                    outputText.className = 'runner-output-text m-0 small runner-output-error';
+                    outputText.textContent = 'Failed to communicate with code execution server.';
+                });
+            });
+
+            return container;
+        }
+
+        // Process explicit codeSnippet elements
+        const snippets = document.querySelectorAll('.executable-java-snippet');
+        snippets.forEach(el => {
+            const codeText = el.textContent || '';
+            const widget = createRunnerWidget(codeText, el.getAttribute('data-lang') || 'java');
+            el.parentNode.replaceChild(widget, el);
+        });
+
+        // Process code blocks in question/answer bodies (pre code, code-block, etc.)
+        const codeBlocks = document.querySelectorAll('.post-text pre code, .code-block:not(.executable-java-snippet)');
+        codeBlocks.forEach(el => {
+            const codeText = el.textContent || '';
+            if (codeText.includes('class ') || codeText.includes('System.out') || codeText.includes('public static void main')) {
+                const widget = createRunnerWidget(codeText, 'java');
+                const targetEl = el.closest('pre') || el;
+                targetEl.parentNode.replaceChild(widget, targetEl);
+            }
+        });
+    });
+
+    function insertAnswerMarkdown(prefix, suffix) {
+        const textarea = document.getElementById('answerBody');
+        if (!textarea) return;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selected = text.substring(start, end) || 'text';
+        const replacement = prefix + selected + suffix;
+        textarea.value = text.substring(0, start) + replacement + text.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+    }
+
+    function insertAnswerCodeTemplate() {
+        const snippetArea = document.getElementById('answerCodeSnippet');
+        if (snippetArea) {
+            snippetArea.focus();
+            if (!snippetArea.value.trim()) {
+                snippetArea.value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello DevQuery!");\n    }\n}';
+            }
+        }
+    }
+    </script>
 </body>
 </html>

@@ -23,7 +23,7 @@ public class AiChatService {
     private final ChatClient chatClient;
     private final com.example.demo.config.DevQueryAdminStaticTools staticTools;
     private final com.example.demo.config.DevQueryAdminDynamicTools dynamicTools;
-
+    private final com.example.demo.config.DevQueryGuideTools guideTools;
     /**
      * System prompt that establishes the DevQuery Assistant persona.
      * Kept here as a constant so it is applied consistently to every call.
@@ -48,12 +48,14 @@ public class AiChatService {
      *
      * @param chatClient the Spring-managed ChatClient (NOT the raw Builder)
      */
-    public AiChatService(ChatClient chatClient, 
-                         com.example.demo.config.DevQueryAdminStaticTools staticTools, 
-                         com.example.demo.config.DevQueryAdminDynamicTools dynamicTools) {
+    public AiChatService(ChatClient chatClient,
+            com.example.demo.config.DevQueryAdminStaticTools staticTools,
+            com.example.demo.config.DevQueryAdminDynamicTools dynamicTools,
+            com.example.demo.config.DevQueryGuideTools guideTools) {
         this.chatClient = chatClient;
         this.staticTools = staticTools;
         this.dynamicTools = dynamicTools;
+        this.guideTools = guideTools;
     }
 
     /**
@@ -68,7 +70,8 @@ public class AiChatService {
             log.info("Sending request to Gemini. User message length: {} chars",
                     request.getMessage().length());
 
-            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication();
             boolean isAdmin = auth != null && auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
@@ -77,10 +80,11 @@ public class AiChatService {
                     .user(request.getMessage());
 
             if (isAdmin) {
-                spec = spec.tools(staticTools, dynamicTools);
-                log.info("Admin user detected. AI Database tools attached.");
+                spec = spec.tools(staticTools, dynamicTools, guideTools);
+                log.info("Admin user detected. AI Database and Guide tools attached.");
             } else {
-                log.info("Normal user detected. No AI tools attached.");
+                spec = spec.tools(guideTools);
+                log.info("Normal user detected. Only Guide tools attached.");
             }
 
             String responseText = spec.call().content();

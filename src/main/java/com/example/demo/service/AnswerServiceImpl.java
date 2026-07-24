@@ -34,7 +34,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @Transactional
-    public Answer postAnswer(long questionId, long userId, String body) {
+    public Answer postAnswer(long questionId, long userId, String body, String codeSnippet) {
         if (body == null || body.trim().isEmpty()) {
             throw new IllegalArgumentException("Answer body cannot be empty");
         }
@@ -50,6 +50,9 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setQuestionId(questionId);
         answer.setUserId(userId);
         answer.setBody(body.trim());
+        if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
+            answer.setCodeSnippet(codeSnippet.trim());
+        }
         answer.setScore(0);
         answer.setIsEdited(false);
         answer.setIsAccepted(false);
