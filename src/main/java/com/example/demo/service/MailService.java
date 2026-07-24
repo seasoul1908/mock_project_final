@@ -69,4 +69,41 @@ public class MailService {
             throw new RuntimeException("Failed to send reset password email", e);
         }
     }
+    public void sendThankYouEmail(String toEmail, String username) {
+        if (fromEmail == null || fromEmail.isBlank()) {
+            throw new RuntimeException("Mail username is not configured. Please set MAIL_USERNAME.");
+        }
+
+        String subject = "Thank you for your feedback!";
+
+        String htmlContent = """
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <h2>Thank you for your feedback!</h2>
+
+                    <p>Dear %s,</p>
+
+                    <p>We appreciate your valuable feedback and are grateful for your time and effort in helping us improve our services.</p>
+
+                    <p>Your input is invaluable to us, and we will carefully consider your suggestions as we continue to enhance our platform.</p>
+
+                    <p>Thank you once again for your support!</p>
+
+                    <p>Best regards,<br/>The DevQuery Team</p>
+                </div>
+                """.formatted(username);
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send thank you email", e);
+        }
+    }
 }

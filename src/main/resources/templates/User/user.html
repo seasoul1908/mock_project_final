@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
@@ -8,11 +7,9 @@
 
     <title>Users - DevQuery</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
@@ -36,7 +33,7 @@
             font-size: 13px;
         }
 
-         .main-container {
+        .main-container {
             max-width: 1264px;
             margin: 56px auto 0;
             display: flex;
@@ -146,8 +143,8 @@
 
         .user-card:hover {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }   
-       
+        }
+
 
 
         .user-avatar {
@@ -157,19 +154,20 @@
             object-fit: cover;
             flex-shrink: 0;
             margin-right: 10px;
-            transition:.25s;
+            transition: .25s;
 
-            cursor:pointer;
+            cursor: pointer;
         }
-        .user-avatar.active{
 
-    transform:scale(1.25);
+        .user-avatar.active {
 
-    z-index:1200;
+            transform: scale(1.25);
 
-    position:relative;
+            z-index: 1200;
 
-}
+            position: relative;
+
+        }
 
         .user-info {
             flex: 1;
@@ -241,24 +239,25 @@
             border-color: var(--orange);
         }
 
-    @media (max-width: 1100px) {
-        .user-grid {
-            grid-template-columns: repeat(3, 1fr);
+        @media (max-width: 1100px) {
+            .user-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
-    }
 
-    @media (max-width: 800px) {
-        .user-grid {
-            grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 800px) {
+            .user-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-    }
 
-    @media (max-width: 500px) {
-        .user-grid {
-            grid-template-columns: 1fr;
+        @media (max-width: 500px) {
+            .user-grid {
+                grid-template-columns: 1fr;
+            }
         }
-    }
-       .user-stats {
+
+        .user-stats {
             display: flex;
             align-items: center;
             gap: 4px;
@@ -270,7 +269,7 @@
             color: #6a737c;
         }
 
-        
+
 
         .badge-dot {
             width: 6px;
@@ -291,629 +290,616 @@
         .bronze {
             background-color: #d1a684;
         }
-/* =================================================== */
-/* USER PAGE - DARK MODE                               */
-/* =================================================== */
-
-body.dark-theme .page-title {
-    color: var(--text-primary) !important;
-}
 
-/* SEARCH BOX */
-body.dark-theme .search-box input {
-    background-color: var(--bg-input) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border-color) !important;
-}
+        /* =================================================== */
+        /* USER PAGE - DARK MODE                               */
+        /* =================================================== */
 
-body.dark-theme .search-box input::placeholder {
-    color: var(--text-muted) !important;
-}
+        body.dark-theme .page-title {
+            color: var(--text-primary) !important;
+        }
 
-body.dark-theme .search-box i {
-    color: var(--icon-color) !important;
-}
+        /* SEARCH BOX */
+        body.dark-theme .search-box input {
+            background-color: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
 
-body.dark-theme .search-box input:focus {
-    border-color: #6bbbf7 !important;
-    box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
-}
+        body.dark-theme .search-box input::placeholder {
+            color: var(--text-muted) !important;
+        }
 
-/* FILTER */
-body.dark-theme .filter-group {
-    border-color: var(--border-color) !important;
-}
+        body.dark-theme .search-box i {
+            color: var(--icon-color) !important;
+        }
 
-body.dark-theme .filter-btn {
-    background-color: transparent !important;
-    color: var(--text-secondary) !important;
-    border-right-color: var(--border-color) !important;
-}
+        body.dark-theme .search-box input:focus {
+            border-color: #6bbbf7 !important;
+            box-shadow: 0 0 0 4px rgba(0, 149, 255, 0.15);
+        }
 
-body.dark-theme .filter-btn:hover {
-    background-color: var(--btn-hover-bg) !important;
-    color: var(--text-primary) !important;
-}
+        /* FILTER */
+        body.dark-theme .filter-group {
+            border-color: var(--border-color) !important;
+        }
 
-body.dark-theme .filter-btn.active {
-    background-color: var(--btn-hover-bg) !important;
-    color: var(--text-primary) !important;
-    font-weight: 600;
-}
+        body.dark-theme .filter-btn {
+            background-color: transparent !important;
+            color: var(--text-secondary) !important;
+            border-right-color: var(--border-color) !important;
+        }
 
-/* USER CARD */
-body.dark-theme .user-card {
-    background-color: var(--bg-panel) !important;
-    border-color: var(--border-color) !important;
-}
+        body.dark-theme .filter-btn:hover {
+            background-color: var(--btn-hover-bg) !important;
+            color: var(--text-primary) !important;
+        }
 
-body.dark-theme .username {
-    color: var(--link-color, #6bbbf7) !important;
-}
+        body.dark-theme .filter-btn.active {
+            background-color: var(--btn-hover-bg) !important;
+            color: var(--text-primary) !important;
+            font-weight: 600;
+        }
 
-body.dark-theme .location {
-    color: var(--text-secondary) !important;
-}
+        /* USER CARD */
+        body.dark-theme .user-card {
+            background-color: var(--bg-panel) !important;
+            border-color: var(--border-color) !important;
+        }
 
-body.dark-theme .user-stats {
-    color: var(--text-secondary) !important;
-}
+        body.dark-theme .username {
+            color: var(--link-color, #6bbbf7) !important;
+        }
 
-body.dark-theme .reputation {
-    color: var(--text-primary) !important;
-}
-body.dark-theme .user-popup{
+        body.dark-theme .location {
+            color: var(--text-secondary) !important;
+        }
 
-    background:var(--bg-panel);
+        body.dark-theme .user-stats {
+            color: var(--text-secondary) !important;
+        }
 
-    border-color:var(--border-color);
+        body.dark-theme .reputation {
+            color: var(--text-primary) !important;
+        }
 
-    color:var(--text-primary);
-}
+        body.dark-theme .user-popup {
 
-body.dark-theme .popup-username{
+            background: var(--bg-panel);
 
-    color:#6bbbf7;
-}
+            border-color: var(--border-color);
 
-body.dark-theme .popup-location,
-body.dark-theme .popup-member,
-body.dark-theme .popup-bio{
+            color: var(--text-primary);
+        }
 
-    color:var(--text-secondary);
-}
-/* ========================= */
-/* USER POPUP */
-/* ========================= */
+        body.dark-theme .popup-username {
 
-.user-card{
-    position:relative;
-}
+            color: #6bbbf7;
+        }
 
-.user-popup{
+        body.dark-theme .popup-location,
+        body.dark-theme .popup-member,
+        body.dark-theme .popup-bio {
 
-    position:absolute;
+            color: var(--text-secondary);
+        }
 
-    top:50%;
+        /* ========================= */
+        /* USER POPUP */
+        /* ========================= */
 
-    left:72px;
+        .user-card {
+            position: relative;
+        }
 
-    width:340px;
+        .user-popup {
 
-    padding:20px;
+            position: absolute;
 
-    background:#ffffff;
+            top: 50%;
 
-    border:1px solid rgba(214,217,220,.8);
+            left: 72px;
 
-    border-radius:12px;
+            width: 340px;
 
-    box-shadow:
-        0 8px 24px rgba(0,0,0,.15),
-        0 2px 8px rgba(0,0,0,.08);
+            padding: 20px;
 
-    opacity:0;
+            background: #ffffff;
 
-    visibility:hidden;
+            border: 1px solid rgba(214, 217, 220, .8);
 
-    transform:translateY(-50%) translateX(8px) scale(.96);
+            border-radius: 12px;
 
-    transition:
-        opacity .2s ease,
-        transform .2s ease,
-        visibility .2s;
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, .15),
+                0 2px 8px rgba(0, 0, 0, .08);
 
-    pointer-events:auto;
+            opacity: 0;
 
-    z-index:1000;
+            visibility: hidden;
 
-    overflow:visible;
-}
-.user-popup::before{
+            transform: translateY(-50%) translateX(8px) scale(.96);
 
-    content:"";
+            transition:
+                opacity .2s ease,
+                transform .2s ease,
+                visibility .2s;
 
-    position:absolute;
+            pointer-events: auto;
 
-    left:-12px;
+            z-index: 1000;
 
-    top:30px;
+            overflow: visible;
+        }
 
-    width:12px;
+        .user-popup::before {
 
-    height:40px;
+            content: "";
 
-}
-.user-popup.show{
-    opacity:1;
+            position: absolute;
 
-    visibility:visible;
+            left: -12px;
 
-    transform:translateY(-50%) translateX(0) scale(1);
-}
+            top: 30px;
 
-.popup-header{
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding-top: 18px;
-}
+            width: 12px;
 
-.popup-avatar{
-    width:64px;
-    height:64px;
+            height: 40px;
 
-    border-radius:50%;
+        }
 
-    object-fit:cover;
+        .user-popup.show {
+            opacity: 1;
 
-    border:3px solid var(--bg-panel,#fff);
+            visibility: visible;
 
-    box-shadow:0 6px 18px rgba(0,0,0,.18);
+            transform: translateY(-50%) translateX(0) scale(1);
+        }
 
-    margin-top:-20px;
+        .popup-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-top: 18px;
+        }
 
-    flex-shrink:0;
-}
+        .popup-avatar {
+            width: 64px;
+            height: 64px;
 
-.popup-user-info{
-    flex:1;
-}
+            border-radius: 50%;
 
-.popup-username{
-    font-size:17px;
+            object-fit: cover;
 
-    font-weight:700;
+            border: 3px solid var(--bg-panel, #fff);
 
-    line-height:1.2;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
 
-    color:var(--text-primary);
-}
+            margin-top: -20px;
 
-.popup-location{
-    font-size:13px;
+            flex-shrink: 0;
+        }
 
-    color:var(--text-secondary);
+        .popup-user-info {
+            flex: 1;
+        }
 
-    margin-top:2px;
-}
+        .popup-username {
+            font-size: 17px;
 
-.popup-reputation{
-    display:flex;
+            font-weight: 700;
 
-    align-items:center;
+            line-height: 1.2;
 
-    gap:6px;
+            color: var(--text-primary);
+        }
 
-    margin-top:8px;
+        .popup-location {
+            font-size: 13px;
 
-    font-size:13px;
-}
+            color: var(--text-secondary);
 
-.popup-member{
-    font-size:12px;
+            margin-top: 2px;
+        }
 
-    color:var(--text-secondary);
+        .popup-reputation {
+            display: flex;
 
-    margin-top:6px;
-}
+            align-items: center;
 
-.popup-title{
-    font-size:11px;
+            gap: 6px;
 
-    font-weight:700;
+            margin-top: 8px;
 
-    letter-spacing:.05em;
+            font-size: 13px;
+        }
 
-    text-transform:uppercase;
+        .popup-member {
+            font-size: 12px;
 
-    color:var(--text-secondary);
+            color: var(--text-secondary);
 
-    margin-bottom:8px;
-}
+            margin-top: 6px;
+        }
 
-.popup-bio{
-    font-size:13px;
+        .popup-title {
+            font-size: 11px;
 
-    line-height:1.55;
+            font-weight: 700;
 
-    color:var(--text-primary);
+            letter-spacing: .05em;
 
-    display:-webkit-box;
+            text-transform: uppercase;
 
-    -webkit-line-clamp:3;
+            color: var(--text-secondary);
 
-    -webkit-box-orient:vertical;
+            margin-bottom: 8px;
+        }
 
-    overflow:hidden;
-}
-.popup-divider{
+        .popup-bio {
+            font-size: 13px;
 
-    height:1px;
+            line-height: 1.55;
 
-    background:var(--border-color);
+            color: var(--text-primary);
 
-    margin:14px 0;
-}
+            display: -webkit-box;
+
+            -webkit-line-clamp: 3;
+
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+        .popup-divider {
+
+            height: 1px;
+
+            background: var(--border-color);
+
+            margin: 14px 0;
+        }
     </style>
 </head>
 
 <body>
 
-<div th:replace="~{Common/header :: header}"></div>
+    <div th:replace="~{Common/header :: header}"></div>
 
-<div class="main-container">
+    <div class="main-container">
 
-    <div class="left-sidebar">
-        <div th:replace="~{Common/sidebar :: sidebar('users')}"></div>
-    </div>
+        <div class="left-sidebar">
+            <div th:replace="~{Common/sidebar :: sidebar('users')}"></div>
+        </div>
 
-    <main class="main-content">
+        <main class="main-content">
 
-        <h1 class="page-title">Users</h1>
+            <h1 class="page-title">Users</h1>
 
-        <div class="user-toolbar">
+            <div class="user-toolbar">
 
-            <form id="searchForm" th:action="@{/users}" method="get">
+                <form id="searchForm" th:action="@{/users}" method="get">
 
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
 
-                    <input id="userSearch"
-                           type="text"
-                           name="search"
-                           placeholder="Filter by user"
-                           autocomplete="off"
-                           th:value="${search}">
+                        <input id="userSearch" type="text" name="search" placeholder="Filter by user" autocomplete="off"
+                            th:value="${search}">
+                    </div>
+
+                    <input id="currentFilter" type="hidden" name="filter" th:value="${currentFilter}">
+
+                </form>
+
+                <div class="filter-group">
+
+                    <a th:href="@{/users(search=${search}, filter='reputation')}" class="filter-btn"
+                        th:classappend="${currentFilter == 'reputation'} ? 'active'">
+                        Reputation
+                    </a>
+
+                    <a th:href="@{/users(search=${search}, filter='voted')}" class="filter-btn"
+                        th:classappend="${currentFilter == 'voted'} ? 'active'">
+                        Votes
+                    </a>
+
+                    <a th:href="@{/users(search=${search}, filter='new')}" class="filter-btn"
+                        th:classappend="${currentFilter == 'new'} ? 'active'">
+                        New users
+                    </a>
+
                 </div>
-
-                <input id="currentFilter"
-                       type="hidden"
-                       name="filter"
-                       th:value="${currentFilter}">
-
-            </form>
-
-            <div class="filter-group">
-
-                <a th:href="@{/users(search=${search}, filter='reputation')}"
-                   class="filter-btn"
-                   th:classappend="${currentFilter == 'reputation'} ? 'active'">
-                    Reputation
-                </a>
-
-                <a th:href="@{/users(search=${search}, filter='voted')}"
-                   class="filter-btn"
-                   th:classappend="${currentFilter == 'voted'} ? 'active'">
-                    Votes
-                </a>
-
-                <a th:href="@{/users(search=${search}, filter='new')}"
-                   class="filter-btn"
-                   th:classappend="${currentFilter == 'new'} ? 'active'">
-                    New users
-                </a>
 
             </div>
 
-        </div>
+            <div id="userListContainer">
 
-        <div id="userListContainer">
+                <div th:fragment="userList">
 
-            <div th:fragment="userList">
+                    <div th:if="${#lists.isEmpty(users)}" class="empty-users">
 
-                <div th:if="${#lists.isEmpty(users)}"
-                     class="empty-users">
+                        <i class="fa-solid fa-users fa-3x mb-3"></i>
+                        <h5>No users found.</h5>
 
-                    <i class="fa-solid fa-users fa-3x mb-3"></i>
-                    <h5>No users found.</h5>
+                    </div>
 
-                </div>
+                    <div th:unless="${#lists.isEmpty(users)}" class="user-grid">
 
-                <div th:unless="${#lists.isEmpty(users)}"
-                     class="user-grid">
-
-                    <div th:each="user : ${users}"
-                         class="user-card">
-                        <!-- Avatar -->
-                    <a th:href="@{/profile(id=${user.userId})}">
-                        <img class="user-avatar"
-                            th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                        <div th:each="user : ${users}" class="user-card">
+                            <!-- Avatar -->
+                            <a th:href="@{/profile(id=${user.userId})}">
+                                <img class="user-avatar" th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
                             ? user.avatarUrl
                             : '/assets/img/avatar/default-avatar.jpg'}"
-                                onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
-                            alt="Avatar">
-                    </a>
-                        <!-- User information -->           
-                    <div class="user-info">
-                        
-                            <a th:href="@{/profile(id=${user.userId})}"
-                                class="username"
-                                th:text="${user.username}">Username</a>
+                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                    alt="Avatar">
+                            </a>
+                            <!-- User information -->
+                            <div class="user-info">
 
-                            <div class="location"
-                            th:if="${user.location != null && !#strings.isEmpty(user.location)}"
-                            th:text="${user.location}">Location</div>
+                                <a th:href="@{/profile(id=${user.userId})}" class="username"
+                                    th:text="${user.username}">Username</a>
 
-                        <div class="location"
-                        th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
-                        &nbsp;
-                        </div>
+                                <div class="location"
+                                    th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                                    th:text="${user.location}">Location</div>
 
-                        <div class="user-stats">
+                                <div class="location"
+                                    th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
+                                    &nbsp;
+                                </div>
 
-                            <span class="reputation"
-                                th:text="${user.reputation}">0</span>
+                                <div class="user-stats">
 
-                            <span class="rep-label">reputation</span>
+                                    <span class="reputation" th:text="${user.reputation}">0</span>
 
-                            <span class="badge-group">
+                                    <span class="rep-label">reputation</span>
 
-                                <th:block th:if="${user.goldBadges > 0}">
-                                    <span class="badge-dot gold"></span>
-                                    <span th:text="${user.goldBadges}">0</span>
-                                </th:block>
+                                    <span class="badge-group">
 
-                                <th:block th:if="${user.silverBadges > 0}">
-                                    <span class="badge-dot silver"></span>
-                                    <span th:text="${user.silverBadges}">0</span>
-                                </th:block>
+                                        <th:block th:if="${user.goldBadges > 0}">
+                                            <span class="badge-dot gold"></span>
+                                            <span th:text="${user.goldBadges}">0</span>
+                                        </th:block>
 
-                                <th:block th:if="${user.bronzeBadges > 0}">
-                                    <span class="badge-dot bronze"></span>
-                                    <span th:text="${user.bronzeBadges}">0</span>
-                                </th:block>
+                                        <th:block th:if="${user.silverBadges > 0}">
+                                            <span class="badge-dot silver"></span>
+                                            <span th:text="${user.silverBadges}">0</span>
+                                        </th:block>
 
-                            </span>
+                                        <th:block th:if="${user.bronzeBadges > 0}">
+                                            <span class="badge-dot bronze"></span>
+                                            <span th:text="${user.bronzeBadges}">0</span>
+                                        </th:block>
 
-                        </div>
+                                    </span>
 
-                    </div>
-                        <!-- User Hover Popup -->
-                    <div class="user-popup"
-                    th:if="${user.bio != null and !#strings.isEmpty(user.bio)}">
+                                </div>
 
-                        <div class="popup-header">
+                            </div>
+                            <!-- User Hover Popup -->
+                            <div class="user-popup" th:if="${user.bio != null and !#strings.isEmpty(user.bio)}">
 
-                            <img class="popup-avatar"
-                                th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
+                                <div class="popup-header">
+
+                                    <img class="popup-avatar" th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
                                 ? user.avatarUrl
                                 : '/assets/img/avatar/default-avatar.jpg'}"
-                                onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
-                                alt="Avatar">
+                                        onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                        alt="Avatar">
 
-                                <div class="popup-user-info">
+                                    <div class="popup-user-info">
 
-                                    <div class="popup-username"
-                                        th:text="${user.username}">
-                                        Username
-                                    </div>
+                                        <div class="popup-username" th:text="${user.username}">
+                                            Username
+                                        </div>
 
-                                    <div class="popup-location">
-                                    <span th:if="${user.location != null && !#strings.isEmpty(user.location)}"
-                                        th:text="${user.location}">
-                                            No Location
-                                    </span>
+                                        <div class="popup-location">
+                                            <span th:if="${user.location != null && !#strings.isEmpty(user.location)}"
+                                                th:text="${user.location}">
+                                                No Location
+                                            </span>
 
-                                    <span th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
-                                    &nbsp;
-                                    </span>
-                                    </div>
+                                            <span
+                                                th:unless="${user.location != null && !#strings.isEmpty(user.location)}">
+                                                &nbsp;
+                                            </span>
+                                        </div>
 
-                                    <div class="popup-reputation">
-                                    <i class="fa-solid fa-star text-warning"></i>
+                                        <div class="popup-reputation">
+                                            <i class="fa-solid fa-star text-warning"></i>
 
-                                    <span th:text="${user.reputation}">0</span>
-                                    reputation
-                                    <th:block th:if="${user.goldBadges > 0}">
-                                    &nbsp;
-                                    <span class="badge-dot gold"></span>
-                                    <span th:text="${user.goldBadges}"></span>
-                                    </th:block>
+                                            <span th:text="${user.reputation}">0</span>
+                                            reputation
+                                            <th:block th:if="${user.goldBadges > 0}">
+                                                &nbsp;
+                                                <span class="badge-dot gold"></span>
+                                                <span th:text="${user.goldBadges}"></span>
+                                            </th:block>
 
-                                    <th:block th:if="${user.silverBadges > 0}">
-                                    &nbsp;
-                                    <span class="badge-dot silver"></span>
-                                    <span th:text="${user.silverBadges}"></span>
-                                    </th:block>
+                                            <th:block th:if="${user.silverBadges > 0}">
+                                                &nbsp;
+                                                <span class="badge-dot silver"></span>
+                                                <span th:text="${user.silverBadges}"></span>
+                                            </th:block>
 
-                                    <th:block th:if="${user.bronzeBadges > 0}">
-                                    &nbsp;
-                                    <span class="badge-dot bronze"></span>
-                                    <span th:text="${user.bronzeBadges}"></span>
-                                    </th:block>
-                                    </div>
+                                            <th:block th:if="${user.bronzeBadges > 0}">
+                                                &nbsp;
+                                                <span class="badge-dot bronze"></span>
+                                                <span th:text="${user.bronzeBadges}"></span>
+                                            </th:block>
+                                        </div>
 
-                                    <div class="popup-member">
-                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <div class="popup-member">
+                                            <i class="fa-solid fa-calendar-days"></i>
 
-                                        <span th:text="${#dates.format(user.createdAt,'MMM yyyy')}">Member since Jul 2026</span>
+                                            <span th:text="${#temporals.format(user.createdAt,'MMM yyyy')}">Member since
+                                                Jul 2026</span>
+                                        </div>
+
                                     </div>
 
                                 </div>
+
+                                <div class="popup-divider">
+
+                                </div>
+
+                                <div class="popup-body">
+
+                                    <div class="popup-title">About Me</div>
+
+                                    <div class="popup-bio" th:text="${#strings.length(user.bio) > 80 ?
+                                    #strings.substring(user.bio,0,80)+'...'
+                                    : user.bio}">About Me
+                                    </div>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
-                            <div class="popup-divider">
-                                
-                            </div>
-
-                            <div class="popup-body">
-
-                                <div class="popup-title">About Me</div>
-
-                                <div class="popup-bio"
-                                    th:text="${#strings.length(user.bio) > 80 ?
-                                    #strings.substring(user.bio,0,80)+'...'
-                                    : user.bio}">About Me
-                                </div>
-
-                            </div>
-
                     </div>
 
-                 </div>
+                    <div th:if="${userPage.totalPages > 1}" class="pagination-area">
 
-            </div>
+                        <a th:each="pageNumber : ${#numbers.sequence(0, userPage.totalPages - 1)}"
+                            th:href="@{/users(page=${pageNumber}, search=${search}, filter=${currentFilter})}"
+                            class="page-btn" th:classappend="${pageNumber == userPage.number} ? 'active'"
+                            th:text="${pageNumber + 1}">
+                            1
+                        </a>
 
-                <div th:if="${userPage.totalPages > 1}"
-                     class="pagination-area">
-
-                    <a th:each="pageNumber : ${#numbers.sequence(0, userPage.totalPages - 1)}"
-                       th:href="@{/users(page=${pageNumber}, search=${search}, filter=${currentFilter})}"
-                       class="page-btn"
-                       th:classappend="${pageNumber == userPage.number} ? 'active'"
-                       th:text="${pageNumber + 1}">
-                        1
-                    </a>
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </main>
 
-    </main>
+    </div>
 
-</div>
+    <div th:replace="~{Common/footer :: footer}"></div>
 
-<div th:replace="~{Common/footer :: footer}"></div>
+    <script>
+        const searchInput = document.getElementById("userSearch");
+        const filterInput = document.getElementById("currentFilter");
+        const userListContainer = document.getElementById("userListContainer");
 
-<script>
-    const searchInput = document.getElementById("userSearch");
-    const filterInput = document.getElementById("currentFilter");
-    const userListContainer = document.getElementById("userListContainer");
+        let searchTimer;
 
-    let searchTimer;
+        searchInput.addEventListener("input", function () {
+            clearTimeout(searchTimer);
 
-    searchInput.addEventListener("input", function () {
-        clearTimeout(searchTimer);
+            const keyword = this.value.trim();
 
-        const keyword = this.value.trim();
+            if (keyword.length === 0) {
+                searchTimer = setTimeout(() => loadUsers(""), 300);
+                return;
+            }
 
-        if (keyword.length === 0) {
-            searchTimer = setTimeout(() => loadUsers(""), 300);
-            return;
+            if (keyword.length < 3) {
+                return;
+            }
+
+            searchTimer = setTimeout(() => loadUsers(keyword), 400);
+        });
+
+        function loadUsers(keyword) {
+            const params = new URLSearchParams();
+
+            params.append("search", keyword);
+            params.append("filter", filterInput.value);
+
+            fetch("/users/search?" + params.toString())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Unable to load users");
+                    }
+
+                    return response.text();
+                })
+                .then(html => {
+                    userListContainer.innerHTML = html;
+                    requestAnimationFrame(() => {
+                        initUserPopup();
+                    });
+                })
+                .catch(error => {
+                    console.error("User search error:", error);
+                });
         }
+        function initUserPopup() {
 
-        if (keyword.length < 3) {
-            return;
-        }
+            document.querySelectorAll(".user-card").forEach(card => {
 
-        searchTimer = setTimeout(() => loadUsers(keyword), 400);
-    });
-
-function loadUsers(keyword) {
-    const params = new URLSearchParams();
-
-    params.append("search", keyword);
-    params.append("filter", filterInput.value);
-
-        fetch("/users/search?" + params.toString())
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Unable to load users");
+                const avatar = card.querySelector(".user-avatar");
+                const popup = card.querySelector(".user-popup");
+                if (!avatar || !popup) {
+                    return;
                 }
 
-            return response.text();
-            })
-            .then(html => {
-                userListContainer.innerHTML = html;
-                requestAnimationFrame(() => {
-                    initUserPopup();
+                let openTimer;
+                let closeTimer;
+
+                function showPopup() {
+
+                    clearTimeout(closeTimer);
+
+                    openTimer = setTimeout(() => {
+
+                        popup.classList.add("show");
+                        avatar.classList.add("active");
+
+                    }, 500);
+
+                }
+
+                function hidePopup() {
+
+                    clearTimeout(openTimer);
+
+                    closeTimer = setTimeout(() => {
+
+                        popup.classList.remove("show");
+                        avatar.classList.remove("active");
+
+                    }, 200);
+
+                }
+
+                avatar.addEventListener("mouseenter", showPopup);
+                avatar.addEventListener("mouseleave", hidePopup);
+
+                popup.addEventListener("mouseenter", () => {
+
+                    clearTimeout(closeTimer);
+
                 });
-            })
-            .catch(error => {
-                console.error("User search error:", error);
+
+                popup.addEventListener("mouseleave", hidePopup);
+
             });
-}
-function initUserPopup() {
-
-    document.querySelectorAll(".user-card").forEach(card => {
-
-        const avatar = card.querySelector(".user-avatar");
-        const popup = card.querySelector(".user-popup");
-        if (!avatar || !popup) {
-            return;
-        }
-
-        let openTimer;
-        let closeTimer;
-
-        function showPopup() {
-
-            clearTimeout(closeTimer);
-
-            openTimer = setTimeout(() => {
-
-                popup.classList.add("show");
-                avatar.classList.add("active");
-
-            },500);
 
         }
 
-        function hidePopup() {
+        document.addEventListener("DOMContentLoaded", function () {
 
-            clearTimeout(openTimer);
-
-            closeTimer = setTimeout(() => {
-
-                popup.classList.remove("show");
-                avatar.classList.remove("active");
-
-            },200);
-
-        }
-
-        avatar.addEventListener("mouseenter", showPopup);
-        avatar.addEventListener("mouseleave", hidePopup);
-
-        popup.addEventListener("mouseenter", () => {
-
-            clearTimeout(closeTimer);
+            initUserPopup();
 
         });
 
-        popup.addEventListener("mouseleave", hidePopup);
-
-    });
-
-}    
-
-document.addEventListener("DOMContentLoaded", function ()  {
-
-    initUserPopup();
-
-});
-    
-</script>
-<script>
-    if (localStorage.getItem('devquery-theme') === 'dark') {
-        document.write('<style>body { background-color: #2d3135 !important; }</style>');
-    }
-</script>
+    </script>
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
 
 </body>
+
 </html>
