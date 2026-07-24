@@ -15,10 +15,10 @@ public class FeedbackEmailScheduler {
         this.mailService = mailService;
         this.taskScheduler = taskScheduler;
     }
-    public void scheduleThankYouEmail(String email, String username) {
+    public void scheduleThankYouEmail(String email, String username , String feedbackMessage) {
 
         taskScheduler.schedule(
-                () -> mailService.sendThankYouEmail(email, username),
+                () -> mailService.sendThankYouEmail(email, username , email , feedbackMessage),
                 Instant.now().plus(1, ChronoUnit.MINUTES)
         );
 
