@@ -102,6 +102,25 @@
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
                     <th:block sec:authorize="isAuthenticated()">
+                        <li class="nav-item me-2" sec:authorize="hasRole('ADMIN')">
+                            <a id="btn-nav-home" class="btn btn-outline-primary btn-sm btn-auth d-none"
+                                th:href="@{/home}" title="Trở về trang chủ">
+                                <i class="fa-solid fa-house me-1"></i> Home
+                            </a>
+
+                            <a id="btn-nav-admin" class="btn btn-outline-danger btn-sm btn-auth d-none"
+                                th:href="@{/admin}" title="Vào trang quản trị">
+                                <i class="fa-solid fa-user-shield me-1"></i> Admin
+                            </a>
+
+                            <script>
+                                if (window.location.pathname.startsWith('/admin')) {
+                                    document.getElementById('btn-nav-home').classList.remove('d-none');
+                                } else {
+                                    document.getElementById('btn-nav-admin').classList.remove('d-none');
+                                }
+                            </script>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center py-0" th:href="@{/profile}">
                                 <img th:src="${loggedInUser != null and loggedInUser.avatarUrl != null and !#strings.isEmpty(loggedInUser.avatarUrl) ? loggedInUser.avatarUrl : '/assets/img/avatar/default-avatar.jpg'}"
