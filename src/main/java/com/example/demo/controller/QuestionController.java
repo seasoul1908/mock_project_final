@@ -36,6 +36,7 @@ public class QuestionController {
     public String submitQuestion(
             @RequestParam("title") String title,
             @RequestParam("body") String body,
+            @RequestParam(value = "codeSnippet", required = false) String codeSnippet,
             @RequestParam("tags") String tags,
             Model model) {
 
@@ -62,7 +63,7 @@ public class QuestionController {
         }
 
         try {
-            questionService.saveQuestion(user.getUserId(), title, body, tags);
+            questionService.saveQuestion(user.getUserId(), title, body, codeSnippet, tags);
             return "redirect:/home";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

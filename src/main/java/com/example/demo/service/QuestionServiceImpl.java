@@ -44,7 +44,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public Question saveQuestion(Long userId, String title, String body, String tagsStr) {
+    public Question saveQuestion(Long userId, String title, String body, String codeSnippet, String tagsStr) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -53,6 +53,9 @@ public class QuestionServiceImpl implements QuestionService {
         question.setUserId(userId);
         question.setTitle(title.trim());
         question.setBody(body.trim());
+        if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
+            question.setCodeSnippet(codeSnippet.trim());
+        }
         question.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         question.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         question.setViewCount(0);
