@@ -19,7 +19,7 @@ public class FeedbackEmailScheduler {
 
         taskScheduler.schedule(
                 () -> mailService.sendThankYouEmail(email, username , email , feedbackMessage),
-                Instant.now().plus(1, ChronoUnit.MINUTES)
+                Instant.now().plus(15, ChronoUnit.SECONDS)
         );
 
     }

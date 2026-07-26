@@ -302,7 +302,7 @@ Thank you once again for being part of our community!
 
 <tr>
 
-<td align="right">
+<td align="left">
 
 <p style="
 margin:0;
