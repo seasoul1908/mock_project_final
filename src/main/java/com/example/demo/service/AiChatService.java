@@ -41,7 +41,14 @@ public class AiChatService {
             "Formatting Rules:\n" +
             "- Keep responses concise. Developers value time.\n" +
             "- Wrap all code snippets in standard Markdown formatting (e.g., ```java).\n" +
-            "- Use bold text for file names and key variables.\n";
+            "- Use bold text for file names and key variables.\n" +
+            "CRITICAL REQUIREMENT:\n" +
+            "- At the very end of every response, you MUST provide exactly 3 short, relevant follow-up questions the user can ask next based on your answer.\n" +
+            "- You MUST format them exactly as follows, starting with the exact string \"---SUGGESTIONS---\" on a new line, followed by bullet points:\n" +
+            "---SUGGESTIONS---\n" +
+            "- Question 1\n" +
+            "- Question 2\n" +
+            "- Question 3\n";
 
     /**
      * Injects the pre-configured {@link ChatClient} bean from {@code AiConfig}.
@@ -92,7 +99,30 @@ public class AiChatService {
             log.info("Received response from Gemini. Response length: {} chars",
                     responseText != null ? responseText.length() : 0);
 
-            return new ChatbotResponse(responseText);
+            String reply = responseText;
+            java.util.List<String> suggestions = new java.util.ArrayList<>();
+            if (responseText != null && responseText.contains("---SUGGESTIONS---")) {
+                String[] parts = responseText.split("---SUGGESTIONS---");
+                reply = parts[0].trim();
+                if (parts.length > 1) {
+                    String[] lines = parts[1].trim().split("\n");
+                    for (String line : lines) {
+                        line = line.trim();
+                        if (line.startsWith("- ")) line = line.substring(2).trim();
+                        else if (line.startsWith("* ")) line = line.substring(2).trim();
+                        
+                        if (line.startsWith("**") && line.endsWith("**") && line.length() > 4) {
+                            line = line.substring(2, line.length() - 2).trim();
+                        }
+                        
+                        if (!line.isEmpty()) {
+                            suggestions.add(line);
+                        }
+                    }
+                }
+            }
+
+            return new ChatbotResponse(reply, suggestions);
 
         } catch (Exception e) {
             // Log the FULL exception (not just the message) to get the real API error

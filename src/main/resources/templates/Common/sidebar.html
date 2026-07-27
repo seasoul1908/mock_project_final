@@ -107,20 +107,25 @@
                     <i class="fa-solid fa-tags nav-icon"></i> Tags
                 </a>
             </li>
+            <li class="nav-item">
+                <a th:href="@{/practice-lab}" class="nav-link-sb"
+                    th:classappend="${activeTab == 'practice-lab' ? 'active' : ''}">
+                    <i class="fa-solid fa-laptop-code nav-icon"></i> Practice Lab
+                </a>
+            </li>
             <th:block sec:authorize="isAuthenticated()">
-            <li class="nav-item">
-                <a th:href="@{/bounties}" class="nav-link-sb"
-                    th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
-                    <i class="fa-solid fa-award nav-icon"></i> Bounties
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/users}" class="nav-link-sb"
-                    th:classappend="${activeTab == 'users' ? 'active' : ''}">
-                    <i class="fa-solid fa-users nav-icon"></i> Users
-                </a>
-            </li>
-            
+                <li class="nav-item">
+                    <a th:href="@{/bounties}" class="nav-link-sb"
+                        th:classappend="${activeTab == 'bounties' ? 'active' : ''}">
+                        <i class="fa-solid fa-award nav-icon"></i> Bounties
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/users}" class="nav-link-sb" th:classappend="${activeTab == 'users' ? 'active' : ''}">
+                        <i class="fa-solid fa-users nav-icon"></i> Users
+                    </a>
+                </li>
+
                 <li class="sidebar-heading">Personal</li>
                 <li class="nav-item">
                     <a th:href="@{/profile}" class="nav-link-sb"
@@ -145,7 +150,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a th:href="@{/feedback}" class="nav-link-sb" th:classappend="${activeTab == 'feedback' ? 'active' : ''}">
+                    <a th:href="@{/feedback}" class="nav-link-sb"
+                        th:classappend="${activeTab == 'feedback' ? 'active' : ''}">
                         <i class="fa-solid fa-comment-dots nav-icon"></i> Feedback
                     </a>
                 </li>
