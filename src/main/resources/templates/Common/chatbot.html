@@ -351,7 +351,7 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        appendMessage('bot', data.reply);
+                        appendMessage('bot', data.reply, data.suggestedQuestions);
                     } else if (response.status === 429) {
                         appendMessage('bot', 'Rate limit exceeded. Please wait a moment before sending another message.');
                     } else if (response.status === 403) {
@@ -394,24 +394,39 @@
                 localStorage.setItem(QUICK_REPLIES_KEY, JSON.stringify(activeQuickReplies));
             }
 
-            function appendMessage(sender, text) {
+            function appendMessage(sender, text, suggestedQuestions = []) {
                 const msgDiv = document.createElement('div');
                 msgDiv.className = `chat-message ${sender}`;
 
                 if (sender === 'bot') {
                     msgDiv.innerHTML = marked.parse(text);
 
-                    if (waitingForBotQuickReply && activeQuickReplies.length > 0) {
-                        let extraHtml = `<div style="margin-top: 15px; margin-bottom: 8px; font-size: 0.95em;">Would you like to explore any other quick options or need further assistance?</div>`;
+                    let extraHtml = '';
 
+                    // Display dynamic suggestions from AI if available
+                    if (suggestedQuestions && suggestedQuestions.length > 0) {
+                        extraHtml += `<div style="margin-top: 15px; margin-bottom: 8px; font-size: 0.95em;">💡 <strong>Suggested questions:</strong></div>`;
                         extraHtml += `<div style="display: flex; gap: 8px; flex-wrap: wrap;" id="quick-replies-container">`;
-                        activeQuickReplies.forEach(opt => {
-                            extraHtml += `<button class="btn-quick-reply" onclick="sendQuickReply(this, '${opt.prompt}')">${opt.label}</button>`;
+                        suggestedQuestions.forEach(q => {
+                            const safeQ = q.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                            extraHtml += `<button class="btn-quick-reply" onclick="sendQuickReply(this, '${safeQ}')">${q}</button>`;
                         });
                         extraHtml += `</div>`;
-
-                        msgDiv.innerHTML += extraHtml;
+                    } 
+                    // Otherwise show static fallback if appropriate
+                    else if (waitingForBotQuickReply && activeQuickReplies.length > 0) {
+                        extraHtml += `<div style="margin-top: 15px; margin-bottom: 8px; font-size: 0.95em;">Would you like to explore any other quick options or need further assistance?</div>`;
+                        extraHtml += `<div style="display: flex; gap: 8px; flex-wrap: wrap;" id="quick-replies-container">`;
+                        activeQuickReplies.forEach(opt => {
+                            const safeQ = opt.prompt.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                            extraHtml += `<button class="btn-quick-reply" onclick="sendQuickReply(this, '${safeQ}')">${opt.label}</button>`;
+                        });
+                        extraHtml += `</div>`;
                         waitingForBotQuickReply = false;
+                    }
+
+                    if (extraHtml) {
+                        msgDiv.innerHTML += extraHtml;
                     }
                 } else {
                     msgDiv.textContent = text;
