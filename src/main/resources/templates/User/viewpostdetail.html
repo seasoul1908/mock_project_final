@@ -508,6 +508,18 @@
             background-color: #0969da !important;
             border-color: #0969da !important;
         }
+        .reset-code-btn {
+            color: #0969da !important;
+            border: 1px solid #0969da !important;
+            background-color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .reset-code-btn:hover {
+            color: #ffffff !important;
+            background-color: #0969da !important;
+            border-color: #0969da !important;
+        }
 
         /* Code editor */
         .code-runner-textarea {
@@ -619,6 +631,20 @@
 
         body.dark-theme .code-runner-header .copy-code-btn:hover,
         html[data-theme="dark"] .code-runner-header .copy-code-btn:hover {
+            color: #ffffff !important;
+            background-color: #264f78 !important;
+            border-color: #569cd6 !important;
+        }
+
+        body.dark-theme .reset-code-btn,
+        html[data-theme="dark"] .reset-code-btn {
+            color: #9cdcfe !important;
+            border-color: #569cd6 !important;
+            background-color: transparent !important;
+        }
+
+        body.dark-theme .reset-code-btn:hover,
+        html[data-theme="dark"] .reset-code-btn:hover {
             color: #ffffff !important;
             background-color: #264f78 !important;
             border-color: #569cd6 !important;
@@ -1427,9 +1453,10 @@
     Executable Java Snippet
 </span>                    <div class="d-flex gap-2 align-items-center">
                         ${canEdit ? `
-                        <button type="button" class="btn btn-sm btn-outline-secondary text-light reset-code-btn" title="Reset to original code">
-                            <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                        </button>` : `
+                        <button type="button"
+        class="btn btn-sm reset-code-btn">
+    <i class="fa-solid fa-rotate-left me-1"></i>Reset
+</button>` : `
                         <span class="badge bg-secondary text-light" title="Only the author can edit this code">
                             <i class="fa-solid fa-lock me-1"></i>Read-only
                         </span>`}
