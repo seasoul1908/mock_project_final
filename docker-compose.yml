@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  piston:
+    image: ghcr.io/engineer-man/piston
+    container_name: devquery-piston
+    ports:
+      - "2000:2000"
+    restart: unless-stopped
+    # Optional: if you run into sandboxing issues on Windows/WSL, you might need privileged mode, 
+    # but try without it first.
+    privileged: true
+    volumes:
+      - piston_data:/piston
+
+volumes:
+  piston_data:
