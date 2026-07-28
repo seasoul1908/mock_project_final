@@ -419,4 +419,38 @@ public class UserService {
 
     return userRepository.findUsersForUserPage(keyword, filter,currentUserId, pageable);
 }
+public void changePasswordWithOldPassword(
+        String email,
+        String oldPassword,
+        String newPassword,
+        String confirmPassword)
+        throws Exception {
+
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException("User not found."));
+
+    if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
+        throw new RuntimeException("Current password is incorrect.");
+    }
+
+    if (newPassword.length() < 8) {
+        throw new RuntimeException(
+                "New password must contain at least 8 characters.");
+    }
+
+    if (!newPassword.equals(confirmPassword)) {
+        throw new RuntimeException(
+                "New password and confirmation password do not match.");
+    }
+
+    if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+        throw new RuntimeException(
+                "New password must be different from the current password.");
+    }
+
+    String hash = passwordEncoder.encode(newPassword);
+
+    userRepository.changePassword(email, hash);
+}
 }
