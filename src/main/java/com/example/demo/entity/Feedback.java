@@ -28,7 +28,7 @@ public class Feedback {
     @Column(nullable = false, columnDefinition = "nvarchar(max)")
     private String message;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(name = "created_at")
     private Timestamp createdAt;
 
     public Feedback() {}
