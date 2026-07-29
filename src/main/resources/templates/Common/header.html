@@ -102,7 +102,7 @@
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
                     <th:block sec:authorize="isAuthenticated()">
-                        <li class="nav-item me-2" sec:authorize="hasRole('ADMIN')">
+                        <li class="nav-item me-2" sec:authorize="hasAnyRole('ADMIN', 'MODERATOR')">
                             <a id="btn-nav-home" class="btn btn-outline-primary btn-sm btn-auth d-none"
                                 th:href="@{/home}" title="Trở về trang chủ">
                                 <i class="fa-solid fa-house me-1"></i> Home

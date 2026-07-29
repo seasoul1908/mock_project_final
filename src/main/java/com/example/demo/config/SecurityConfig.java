@@ -44,9 +44,11 @@ public class SecurityConfig {
         @Bean
         public AuthenticationSuccessHandler roleBasedSuccessHandler() {
                 return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
-                        boolean isAdmin = authentication.getAuthorities().stream()
-                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
+                        // MODERATOR shares the admin area (minus Rules) with ADMIN, so both land on the admin dashboard
+                        boolean isAdminOrModerator = authentication.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
+                                                        || a.getAuthority().equals("ROLE_MODERATOR"));
+                        response.sendRedirect(isAdminOrModerator ? "/admin/dashboard" : "/home");
                 };
         }
 
@@ -63,8 +65,15 @@ public class SecurityConfig {
                                                                 "/login/oauth2/**", "/question", "/question/**", "/question-detail",
                                                                 "/trending" , "/accept-terms", "/api/code/**")
                                                 .permitAll()
-                                                .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
+                                                // Rules management is restricted to ADMIN only (MODERATOR cannot access)
+                                                .requestMatchers("/admin/rules", "/admin/rules/**",
+                                                                "/api/admin/rules", "/api/admin/rules/**")
                                                 .hasRole("ADMIN")
+                                                // All other admin pages/APIs are shared between ADMIN and MODERATOR;
+                                                // fine-grained checks (e.g. moderator cannot ban another moderator)
+                                                // are enforced in the controllers themselves.
+                                                .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
+                                                .hasAnyRole("ADMIN", "MODERATOR")
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/auth/login")

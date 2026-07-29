@@ -35,7 +35,7 @@
         <a th:href="@{/admin/users}" class="admin-nav-link"><i class="fa-solid fa-users fa-fw me-2"></i> Users</a>
         <a th:href="@{/admin/tags}" class="admin-nav-link"><i class="fa-solid fa-tags fa-fw me-2"></i> Tags</a>
         <a th:href="@{/admin/reports}" class="admin-nav-link"><i class="fa-solid fa-flag fa-fw me-2"></i> Reports</a>
-        <a th:href="@{/admin/rules}" class="admin-nav-link"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
+        <a th:href="@{/admin/rules}" class="admin-nav-link" sec:authorize="hasRole('ADMIN')"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
         <a th:href="@{/admin/badges}" class="admin-nav-link"><i class="fa-solid fa-medal fa-fw me-2"></i> Badges</a>
         <a th:href="@{/admin/blogs}" class="admin-nav-link"><i class="fa-solid fa-newspaper fa-fw me-2"></i> Blogs</a>
         <a th:href="@{/admin/feedbacks}" class="admin-nav-link active">

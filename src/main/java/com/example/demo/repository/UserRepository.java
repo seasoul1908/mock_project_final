@@ -32,14 +32,29 @@ public interface UserRepository extends JpaRepository<User, Long> {
         Optional<User> findByEmailAndPasswordHash(@Param("email") String email, @Param("hash") String hash);
 
         // --- Admin Search & Filter ---
-        @Query("SELECT u FROM User u WHERE u.username LIKE %:keyword% OR u.email LIKE %:keyword%")
-        Page<User> searchUsersAdmin(@Param("keyword") String keyword, Pageable pageable);
+        // excludeUserId lets a MODERATOR viewer be hidden from their own user list (pass null to include everyone)
+        // excludeRole lets a MODERATOR viewer have all rows of a given role (e.g. 'admin') hidden entirely
+        @Query("SELECT u FROM User u WHERE (u.username LIKE %:keyword% OR u.email LIKE %:keyword%) " +
+                        "AND (:excludeUserId IS NULL OR u.userId <> :excludeUserId) " +
+                        "AND (:excludeRole IS NULL OR u.role <> :excludeRole)")
+        Page<User> searchUsersAdmin(@Param("keyword") String keyword, @Param("excludeUserId") Long excludeUserId,
+                        @Param("excludeRole") String excludeRole, Pageable pageable);
 
-        @Query("SELECT u FROM User u WHERE (:role IS NULL OR :role = '' OR u.role = :role) AND (:status IS NULL OR :status = '' OR u.status = :status)")
-        Page<User> findByRoleAndStatus(@Param("role") String role, @Param("status") String status, Pageable pageable);
+        @Query("SELECT u FROM User u WHERE (:role IS NULL OR :role = '' OR u.role = :role) " +
+                        "AND (:status IS NULL OR :status = '' OR u.status = :status) " +
+                        "AND (:excludeUserId IS NULL OR u.userId <> :excludeUserId) " +
+                        "AND (:excludeRole IS NULL OR u.role <> :excludeRole)")
+        Page<User> findByRoleAndStatus(@Param("role") String role, @Param("status") String status,
+                        @Param("excludeUserId") Long excludeUserId, @Param("excludeRole") String excludeRole,
+                        Pageable pageable);
 
-        @Query("SELECT COUNT(u) FROM User u WHERE (:role IS NULL OR :role = '' OR u.role = :role) AND (:status IS NULL OR :status = '' OR u.status = :status)")
-        int countByRoleAndStatus(@Param("role") String role, @Param("status") String status);
+        @Query("SELECT COUNT(u) FROM User u WHERE (:role IS NULL OR :role = '' OR u.role = :role) " +
+                        "AND (:status IS NULL OR :status = '' OR u.status = :status) " +
+                        "AND (:excludeUserId IS NULL OR u.userId <> :excludeUserId) " +
+                        "AND (:excludeRole IS NULL OR u.role <> :excludeRole)")
+        int countByRoleAndStatus(@Param("role") String role, @Param("status") String status,
+                        @Param("excludeRole") String excludeRole,
+                        @Param("excludeUserId") Long excludeUserId);
 
         // --- Admin Actions ---
         @Modifying

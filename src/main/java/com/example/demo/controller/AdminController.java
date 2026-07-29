@@ -90,18 +90,27 @@ public class AdminController {
             @RequestParam(defaultValue = "") String role,
             @RequestParam(defaultValue = "") String status,
             @RequestParam(defaultValue = "1") int page,
-            Model model) {
+            Model model,
+            org.springframework.security.core.Authentication authentication) {
+
+        // Neither ADMIN nor MODERATOR should see their own row in the user list.
+        // MODERATOR additionally must not see any admin's row, and cannot edit any role at all.
+        boolean isModerator = authentication.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        Long currentUserId = userService.getUserIdByEmail(authentication.getName());
+        Long excludeUserId = currentUserId;
+        String excludeRole = isModerator ? "admin" : null;
 
         int pageSize = 15;
         List<?> users;
         int total;
 
         if (!keyword.isBlank()) {
-            users = userService.searchUsers(keyword, 200);
+            users = userService.searchUsers(keyword, 200, excludeUserId, excludeRole);
             total = users.size();
         } else {
-            users = userService.getUsersByFilter(role, status, page, pageSize);
-            total = userService.getUserCountByFilter(role, status);
+            users = userService.getUsersByFilter(role, status, page, pageSize, excludeUserId, excludeRole);
+            total = userService.getUserCountByFilter(role, status, excludeUserId, excludeRole);
         }
 
         int totalPages = Math.max(1, (int) Math.ceil((double) total / pageSize));
@@ -112,6 +121,8 @@ public class AdminController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalUsers", total);
+        model.addAttribute("isModerator", isModerator);
+        model.addAttribute("currentUserId", currentUserId);
         return "Admin/users";
     }
 

@@ -130,9 +130,26 @@ public class AdminRestController {
     }
 
     @PutMapping("/users/{id}/toggle-status")
-    public ResponseEntity<Map<String, Object>> toggleUserStatus(@PathVariable Long id) {
-        int updated = userRepository.toggleUserStatus(id);
+    public ResponseEntity<Map<String, Object>> toggleUserStatus(@PathVariable Long id, Authentication auth) {
         Map<String, Object> resp = new HashMap<>();
+        User target = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!isAdmin(auth)) {
+            // MODERATOR can never ban/unban themselves (row is hidden in the UI, but enforce it server-side too)
+            if (isSelf(auth, target)) {
+                resp.put("success", false);
+                resp.put("message", "You cannot ban/unban yourself");
+                return ResponseEntity.status(403).body(resp);
+            }
+            // MODERATOR can only ban/unban plain members - never admins or other moderators
+            if (!"member".equalsIgnoreCase(target.getRole())) {
+                resp.put("success", false);
+                resp.put("message", "Moderators can only ban/unban members");
+                return ResponseEntity.status(403).body(resp);
+            }
+        }
+
+        int updated = userRepository.toggleUserStatus(id);
         if (updated > 0) {
             User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
             resp.put("success", true);
@@ -144,19 +161,60 @@ public class AdminRestController {
     }
 
     @PutMapping("/users/{id}/role")
-    public ResponseEntity<Map<String, Object>> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        String newRole = body.get("role");
+    public ResponseEntity<Map<String, Object>> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> body, Authentication auth) {
         Map<String, Object> resp = new HashMap<>();
+
+        // MODERATOR cannot edit any user's role at all - only ADMIN is allowed to change roles
+        if (!isAdmin(auth)) {
+            resp.put("success", false);
+            resp.put("message", "Moderators are not allowed to change user roles");
+            return ResponseEntity.status(403).body(resp);
+        }
+
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ADMIN cannot change their own role
+        if (isSelf(auth, user)) {
+            resp.put("success", false);
+            resp.put("message", "You cannot change your own role");
+            return ResponseEntity.status(403).body(resp);
+        }
+
+        // ADMIN cannot change another admin's role
+        if ("admin".equalsIgnoreCase(user.getRole())) {
+            resp.put("success", false);
+            resp.put("message", "You cannot change another admin's role");
+            return ResponseEntity.status(403).body(resp);
+        }
+
+        String newRole = body.get("role");
         if (newRole == null || newRole.isBlank()) {
             resp.put("success", false);
             return ResponseEntity.badRequest().body(resp);
         }
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // ADMIN can only toggle a user between "member" and "moderator" - never grant "admin"
+        if (!"member".equalsIgnoreCase(newRole) && !"moderator".equalsIgnoreCase(newRole)) {
+            resp.put("success", false);
+            resp.put("message", "You can only set role to member or moderator");
+            return ResponseEntity.status(403).body(resp);
+        }
+
         int updated = userRepository.updateUserRoleAndStatus(id, newRole, user.getStatus());
         resp.put("success", updated > 0);
         resp.put("newRole", newRole);
         return ResponseEntity.ok(resp);
     }
+
+    private boolean isAdmin(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private boolean isSelf(Authentication auth, User target) {
+        return auth != null && auth.getName() != null && auth.getName().equalsIgnoreCase(target.getEmail());
+    }
+
 
     // ==================== RULES ====================
 
