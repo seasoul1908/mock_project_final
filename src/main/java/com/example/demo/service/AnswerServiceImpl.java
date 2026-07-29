@@ -6,6 +6,8 @@ import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.VoteRepository;
+import com.example.demo.entity.PostEditHistory;      // ← THÊM
+import com.example.demo.repository.PostEditHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,12 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     private VoteRepository voteRepository;
 
+    @Autowired
+    private PostEditHistoryRepository postEditHistoryRepository;
+
     @Override
     @Transactional
-    public Answer postAnswer(long questionId, long userId, String body) {
+    public Answer postAnswer(long questionId, long userId, String body, String codeSnippet) {
         if (body == null || body.trim().isEmpty()) {
             throw new IllegalArgumentException("Answer body cannot be empty");
         }
@@ -45,6 +50,9 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setQuestionId(questionId);
         answer.setUserId(userId);
         answer.setBody(body.trim());
+        if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
+            answer.setCodeSnippet(codeSnippet.trim());
+        }
         answer.setScore(0);
         answer.setIsEdited(false);
         answer.setIsAccepted(false);
@@ -108,6 +116,17 @@ public class AnswerServiceImpl implements AnswerService {
         answer.setIsEdited(true);
         answer.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         answerRepository.save(answer);
+        // Thêm vào cuối method editAnswer(), sau khi answerRepository.save(answer)
+        postEditHistoryRepository.save(new PostEditHistory(
+                "answer",
+                answerId,
+                null,                    // answer không có title
+                answer.getBody(),
+                answer.getCodeSnippet(),
+                null,                    // answer không có tags
+                userId,
+                new Timestamp(System.currentTimeMillis())
+        ));
     }
 
     @Override

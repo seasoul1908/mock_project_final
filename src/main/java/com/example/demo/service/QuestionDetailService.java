@@ -14,5 +14,11 @@ public interface QuestionDetailService {
 
     List<TrendingQuestionDTO> getTrendingQuestions(int limit);
 
+    List<TrendingQuestionDTO> getPopularQuestions(int limit);
+
+    List<com.example.demo.dto.PostEditHistoryDTO> getQuestionHistory(long questionId);
+
     void incrementViewCount(long questionId);
+
+    List<com.example.demo.dto.PostEditHistoryDTO> getAnswerHistory(long answerId);
 }

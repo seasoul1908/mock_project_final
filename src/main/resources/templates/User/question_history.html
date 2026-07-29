@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit History - DevQuery</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    <script>
+        if (localStorage.getItem('devquery-theme') === 'dark') {
+            document.write('<style>body { background-color: #2d3135 !important; }</style>');
+        }
+    </script>
+    <style>
+        :root {
+            --orange: #F48024;
+            --blue-link: #0074cc;
+            --blue-btn: #0a95ff;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            --border-color: #d6d9dc;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body, #f8f9fa);
+            color: var(--text-primary, #212529);
+            font-size: 13px;
+        }
+
+        .main-container {
+            max-width: 1264px;
+            margin: 56px auto 0;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .left-sidebar {
+            width: 164px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 24px;
+            border-left: 2px solid var(--border-color);
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            border: 2px solid #fff;
+            transition: background 0.2s;
+        }
+
+        .timeline-item.active {
+            border-left-color: var(--orange);
+        }
+
+        .timeline-item.active::before {
+            background: var(--orange);
+        }
+
+        .timeline-item:hover::before {
+            background: var(--blue-btn);
+        }
+
+        .avatar-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .diff-container {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .diff-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6a737d;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 3px;
+        }
+
+        .diff-text {
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .diff-title-text {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .diff-code-text {
+            font-family: Consolas, monospace;
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+
+        /* Dark mode compatibility */
+        body.dark-theme {
+            --border-color: #495057;
+            background-color: #2d3135 !important;
+            color: #f8f9fa !important;
+        }
+        body.dark-theme .diff-container {
+            background: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+        body.dark-theme .diff-code-text {
+            background: #212529;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{Common/header :: header}"></div>
+
+    <div class="main-container">
+        <div class="left-sidebar">
+            <div th:replace="~{Common/sidebar :: sidebar('home')}"></div>
+        </div>
+
+        <div class="main-content container-fluid">
+            <!-- Back to question link -->
+            <a th:href="@{/question(id=${question.questionId})}" class="text-decoration-none text-muted mb-3 d-inline-block">
+                <i class="fa-solid fa-arrow-left"></i> Back to Question Detail
+            </a>
+
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <h2 class="fw-normal">Revision History for: <span class="fw-semibold text-primary" th:text="${question.title}">Question Title</span></h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Timeline list of revisions (Left Column) -->
+                <div class="col-lg-5 col-md-12 mb-4">
+                    <div class="card p-3 shadow-sm border-0">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-semibold">Revisions List</h5>
+                            <button id="compare-btn" class="btn btn-primary btn-sm rounded-pill" onclick="compareSelected()" disabled>
+                                <i class="fa-solid fa-code-compare"></i> Compare Selected
+                            </button>
+                        </div>
+                        <div class="timeline mt-2" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
+                            <div th:each="history, iter : ${historyList}" 
+                                 th:id="'rev-item-' + ${history.historyId}" 
+                                 class="timeline-item p-2 rounded" 
+                                 th:classappend="${iter.first} ? ' active' : ''"
+                                 th:onclick="'selectRevision(' + ${history.historyId} + ')'">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="checkbox" class="rev-checkbox" 
+                                               th:value="${history.historyId}" 
+                                               th:onclick="'handleCheckboxClick(event, ' + ${history.historyId} + ')'"/>
+                                        <img th:src="${history.editorAvatar != null ? history.editorAvatar : 'assets/img/default-avatar.png'}" 
+                                             class="avatar-img" 
+                                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"/>
+                                        <div>
+                                            <span class="fw-bold" th:text="${history.editorName}">editor</span>
+                                            <div class="small text-muted" th:text="${#dates.format(history.editedAt, 'yyyy-MM-dd HH:mm:ss')}">date</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-secondary" th:text="${history.historyId == 0 ? 'Original' : '#' + history.historyId}">Version</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diff display area (Right Column) -->
+                <div class="col-lg-7 col-md-12">
+                    <div class="diff-container shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                            <h5 id="diff-header-text" class="mb-0 fw-semibold text-secondary">Viewing version...</h5>
+                        </div>
+
+                        <div class="diff-section-title">Title</div>
+                        <div id="diff-title" class="diff-text diff-title-text text-dark"></div>
+
+                        <div class="diff-section-title">Body</div>
+                        <div id="diff-body" class="diff-text text-dark" style="background: var(--bg-panel); border: 1px solid var(--border-color); padding: 12px; border-radius: 4px;"></div>
+
+                        <div id="diff-code-wrapper">
+                            <div class="diff-section-title">Code Snippet</div>
+                            <pre id="diff-code" class="diff-code-text"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{Common/footer :: footer}"></div>
+
+    <!-- Inline JSON representing the revisions -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const revisions = /*[[${historyList}]]*/ [];
+        /*]]>*/
+    </script>
+
+    <script>
+        // Track selected versions for comparison
+        let checkedVersions = [];
+        let activeRevisionId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply dark theme styles if necessary
+            if (localStorage.getItem('devquery-theme') === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+
+            // Default to viewing the most recent revision (first in sorted list) or compare the top two if they exist
+            if (revisions.length > 0) {
+                const latest = revisions[0];
+                activeRevisionId = latest.historyId;
+                if (revisions.length > 1) {
+                    // Default to comparing version 1 (second in array) vs version 2 (first in array)
+                    const prev = revisions[1];
+                    // Check their boxes
+                    const cb1 = document.querySelector(`.rev-checkbox[value="${prev.historyId}"]`);
+                    const cb2 = document.querySelector(`.rev-checkbox[value="${latest.historyId}"]`);
+                    if (cb1) cb1.checked = true;
+                    if (cb2) cb2.checked = true;
+                    checkedVersions = [prev.historyId, latest.historyId];
+                    updateCompareButtonState();
+                    renderDiff(prev.historyId, latest.historyId);
+                } else {
+                    viewRevision(latest.historyId);
+                }
+            }
+        });
+
+        function handleCheckboxClick(event, historyId) {
+            // Prevent timeline item click handler from triggering
+            event.stopPropagation();
+
+            const checkbox = event.target;
+            if (checkbox.checked) {
+                if (checkedVersions.length >= 2) {
+                    // Uncheck the oldest checked version
+                    const oldest = checkedVersions.shift();
+                    const oldCb = document.querySelector(`.rev-checkbox[value="${oldest}"]`);
+                    if (oldCb) oldCb.checked = false;
+                }
+                checkedVersions.push(historyId);
+            } else {
+                checkedVersions = checkedVersions.filter(v => v !== historyId);
+            }
+
+            updateCompareButtonState();
+        }
+
+        function updateCompareButtonState() {
+            const compareBtn = document.getElementById('compare-btn');
+            compareBtn.disabled = checkedVersions.length !== 2;
+        }
+
+        function selectRevision(historyId) {
+            // Remove active classes
+            document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+            
+            // Add active class
+            const item = document.getElementById('rev-item-' + historyId);
+            if (item) item.classList.add('active');
+
+            activeRevisionId = historyId;
+            viewRevision(historyId);
+        }
+
+        function compareSelected() {
+            if (checkedVersions.length !== 2) return;
+            // Sort by chronology so we compare older (index 0) to newer (index 1)
+            // Revisions array is sorted descending (newest at index 0, oldest at the end)
+            // Let's find index in the revisions array to see which is older
+            const idx1 = revisions.findIndex(r => r.historyId === checkedVersions[0]);
+            const idx2 = revisions.findIndex(r => r.historyId === checkedVersions[1]);
+
+            let olderVal, newerVal;
+            if (idx1 > idx2) {
+                // idx1 is older since index is larger
+                olderVal = checkedVersions[0];
+                newerVal = checkedVersions[1];
+            } else {
+                olderVal = checkedVersions[1];
+                newerVal = checkedVersions[0];
+            }
+
+            renderDiff(olderVal, newerVal);
+        }
+
+        function viewRevision(v) {
+            const rev = revisions.find(r => r.historyId === v);
+            if (!rev) return;
+
+            document.getElementById('diff-title').innerText = rev.title || '';
+            document.getElementById('diff-body').innerText = rev.body || '';
+            if (rev.codeSnippet) {
+                document.getElementById('diff-code-wrapper').style.display = 'block';
+                document.getElementById('diff-code').innerText = rev.codeSnippet;
+            } else {
+                document.getElementById('diff-code-wrapper').style.display = 'none';
+            }
+            document.getElementById('diff-header-text').innerText = `Viewing: Version ${rev.historyId === 0 ? 'Original' : '#' + rev.historyId}`;
+        }
+
+        function renderDiff(v1, v2) {
+            const rev1 = revisions.find(r => r.historyId === v1);
+            const rev2 = revisions.find(r => r.historyId === v2);
+            if (!rev1 || !rev2) return;
+
+            const titleDiff = diffTexts(rev1.title || '', rev2.title || '');
+            const bodyDiff = diffTexts(rev1.body || '', rev2.body || '');
+            
+            document.getElementById('diff-title').innerHTML = titleDiff;
+            document.getElementById('diff-body').innerHTML = bodyDiff;
+
+            if (rev1.codeSnippet || rev2.codeSnippet) {
+                document.getElementById('diff-code-wrapper').style.display = 'block';
+                const codeDiff = diffTexts(rev1.codeSnippet || '', rev2.codeSnippet || '');
+                document.getElementById('diff-code').innerHTML = codeDiff;
+            } else {
+                document.getElementById('diff-code-wrapper').style.display = 'none';
+            }
+
+            const label1 = rev1.historyId === 0 ? 'Original' : '#' + rev1.historyId;
+            const label2 = rev2.historyId === 0 ? 'Original' : '#' + rev2.historyId;
+            document.getElementById('diff-header-text').innerHTML = `Comparing: <span class="badge bg-secondary">${label1}</span> vs <span class="badge bg-primary">${label2}</span>`;
+        }
+
+        function diffTexts(oldText, newText) {
+            const diff = Diff.diffWords(oldText, newText);
+            let html = '';
+            diff.forEach(part => {
+                const color = part.added ? '#e6ffec' : part.removed ? '#ffebe9' : 'transparent';
+                const textDecoration = part.removed ? 'line-through' : 'none';
+                const textColor = part.added ? '#0f5132' : part.removed ? '#842029' : 'inherit';
+                const style = `background-color: ${color}; text-decoration: ${textDecoration}; color: ${textColor}; padding: 2px 0;`;
+                html += `<span style="${style}">${escapeHtml(part.value)}</span>`;
+            });
+            return html;
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+
+</html>

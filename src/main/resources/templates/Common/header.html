@@ -10,6 +10,14 @@
         <script>
             (function () {
                 try {
+                    // Admin pages always use light theme
+                    if (window.location.pathname.startsWith('/admin')) {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        document.documentElement.classList.remove('dark-theme');
+                        document.body.classList.remove('dark-theme');
+                        return;
+                    }
+
                     var theme = localStorage.getItem('devquery-theme');
                     var isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -69,8 +77,11 @@
 
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center me-4 ms-4" th:href="@{/home}">
-                <i class="fa-brands fa-stack-overflow fa-lg me-2"></i>
-                <span class="fw-bold text-dark" style="font-family: Arial, sans-serif;">DevQuery</span>
+                <img th:src="@{/assets/img/logo-icon.png}" alt="DevQuery Icon" width="35" height="35" class="me-2"
+                    style="object-fit: contain;">
+
+                <span class="fw-bold text-dark"
+                    style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.3rem; letter-spacing: -0.5px;">DevQuery</span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -91,10 +102,31 @@
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2 mt-2 mt-lg-0">
                     <th:block sec:authorize="isAuthenticated()">
+                        <li class="nav-item me-2" sec:authorize="hasRole('ADMIN')">
+                            <a id="btn-nav-home" class="btn btn-outline-primary btn-sm btn-auth d-none"
+                                th:href="@{/home}" title="Trở về trang chủ">
+                                <i class="fa-solid fa-house me-1"></i> Home
+                            </a>
+
+                            <a id="btn-nav-admin" class="btn btn-outline-danger btn-sm btn-auth d-none"
+                                th:href="@{/admin}" title="Vào trang quản trị">
+                                <i class="fa-solid fa-user-shield me-1"></i> Admin
+                            </a>
+
+                            <script>
+                                if (window.location.pathname.startsWith('/admin')) {
+                                    document.getElementById('btn-nav-home').classList.remove('d-none');
+                                } else {
+                                    document.getElementById('btn-nav-admin').classList.remove('d-none');
+                                }
+                            </script>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center py-0" th:href="@{/profile}">
-                                <img th:src="${loggedInUser?.avatarUrl ?: '/assets/img/Avatar.png'}" alt="Avatar"
-                                    width="32" height="32" class="rounded-circle bg-light border avatar-img" />
+                                <img th:src="${loggedInUser != null and loggedInUser.avatarUrl != null and !#strings.isEmpty(loggedInUser.avatarUrl) ? loggedInUser.avatarUrl : '/assets/img/avatar/default-avatar.jpg'}"
+                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                    alt="Avatar" width="32" height="32"
+                                    class="rounded-circle bg-light border avatar-img" />
                                 <span class="ms-2 fw-bold text-dark small"
                                     th:text="${loggedInUser?.username ?: 'User'}">User</span>
                             </a>
@@ -108,7 +140,8 @@
                         </li>
                         <li class="nav-item me-4">
                             <form th:action="@{/auth/logout}" method="post" class="m-0">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm btn-auth"
+                                    onclick="localStorage.removeItem('devquery_chat_html'); localStorage.removeItem('devquery_quick_replies');">
                                     <i class="fa-solid fa-right-from-bracket"></i>
                                 </button>
                             </form>
@@ -813,6 +846,7 @@
                 color: #d0393e !important;
             }
         </style>
+        <div th:replace="~{Common/chatbot :: chatbot-widget}"></div>
     </nav>
 </body>
 

@@ -25,6 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .withUsername(user.getEmail())
                 .password(user.getPasswordHash()) // Provide hashed password for comparison
                 .roles(user.getRole() != null ? user.getRole().toUpperCase() : "MEMBER")
+                .disabled(!"active".equalsIgnoreCase(user.getStatus()))
                 .build();
     }
 }

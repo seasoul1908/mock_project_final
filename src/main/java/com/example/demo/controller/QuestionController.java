@@ -62,6 +62,7 @@ public class QuestionController {
     public String submitQuestion(
             @RequestParam("title") String title,
             @RequestParam("body") String body,
+            @RequestParam(value = "codeSnippet", required = false) String codeSnippet,
             @RequestParam(value = "tags", required = false) String tags,
             @RequestParam(value = "draftId", required = false) Long draftId,
             @RequestParam(value = "action", defaultValue = "publish") String action,
@@ -100,9 +101,9 @@ public class QuestionController {
 
         try {
             if (draftId != null) {
-                questionService.saveOrUpdateDraft(draftId, user.getUserId(), title, body, tags, isDraft);
+                questionService.saveOrUpdateDraft(draftId, user.getUserId(), title, body, codeSnippet, tags, isDraft);
             } else {
-                questionService.saveQuestion(user.getUserId(), title, body, tags, isDraft);
+                questionService.saveQuestion(user.getUserId(), title, body, codeSnippet, tags, isDraft);
             }
             if (isDraft) {
                 return "redirect:/questions/drafts";

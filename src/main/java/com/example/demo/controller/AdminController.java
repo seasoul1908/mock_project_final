@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.entity.Report;
 import com.example.demo.repository.BadgeRepository;
 import com.example.demo.repository.BlogRepository;
+import com.example.demo.repository.FeedbackRepository;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.RuleRepository;
 import com.example.demo.repository.TagRepository;
@@ -31,6 +32,7 @@ public class AdminController {
     @Autowired private RuleRepository ruleRepository;
     @Autowired private BadgeRepository badgeRepository;
     @Autowired private BlogRepository blogRepository;
+    @Autowired private FeedbackRepository feedbackRepository;
 
     @GetMapping({"", "/"})
     public String adminHome() {
@@ -153,5 +155,23 @@ public class AdminController {
     public String blogs(Model model) {
         model.addAttribute("blogs", blogRepository.findAll());
         return "Admin/blogs";
+    }
+
+    @GetMapping("/feedbacks")
+    public String feedbacks(
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+        int pageSize = 20;
+        long total = feedbackRepository.count();
+        int totalPages = Math.max(1, (int) Math.ceil((double) total / pageSize));
+        int safePage = Math.max(1, Math.min(page, totalPages));
+        org.springframework.data.domain.Pageable pageable =
+                org.springframework.data.domain.PageRequest.of(safePage - 1, pageSize,
+                        org.springframework.data.domain.Sort.by("createdAt").descending());
+        model.addAttribute("feedbacks", feedbackRepository.findAll(pageable).getContent());
+        model.addAttribute("totalFeedbacks", total);
+        model.addAttribute("currentPage", safePage);
+        model.addAttribute("totalPages", totalPages);
+        return "Admin/feedbacks";
     }
 }

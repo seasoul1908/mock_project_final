@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.dto.QuestionDTO;
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
-
-import com.example.demo.dto.GithubUser;
-import com.example.demo.dto.GoogleUser;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -14,18 +14,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.example.demo.dto.GithubUser;
+import com.example.demo.dto.GoogleUser;
+import com.example.demo.dto.QuestionDTO;
+import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.UserPageDTO;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Lazy
+    @Autowired(required = false)
+    private SessionRegistry sessionRegistry;
 
     // Inject BCrypt password encoder configured in SecurityConfig
     @Lazy
@@ -47,6 +58,17 @@ public class UserService {
         dto.setLocation(user.getLocation());
         dto.setWebsite(user.getWebsite());
         dto.setAvatarUrl(user.getAvatarUrl());
+        if (sessionRegistry != null && user.getEmail() != null) {
+            String email = user.getEmail();
+            boolean online = sessionRegistry.getAllPrincipals().stream()
+                .filter(p -> !sessionRegistry.getAllSessions(p, false).isEmpty())
+                .anyMatch(p -> {
+                    if (p instanceof UserDetails) return ((UserDetails) p).getUsername().equals(email);
+                    if (p instanceof OAuth2User) return email.equals(((OAuth2User) p).getAttribute("email"));
+                    return false;
+                });
+            dto.setOnline(online);
+        }
         return dto;
     }
 
@@ -240,23 +262,15 @@ public class UserService {
     }
 
     public List<Map<String, Object>> getCurrentMonthQuestionCountByTag(int limit) {
-        return userRepository.getCurrentMonthQuestionCountByTag(PageRequest.of(0, limit));
+        return userRepository.getTopTagsByQuestionCount(PageRequest.of(0, limit));
     }
 
     public List<Map<String, Object>> getUserRegistrationTrend(int days) {
-        List<Map<String, Object>> trend = userRepository.getUserRegistrationTrend(days);
-        for (Map<String, Object> map : trend) {
-            map.put("date", new java.sql.Date(((java.util.Date) map.get("date")).getTime()));
-        }
-        return trend;
+        return userRepository.getUserRegistrationTrend(days);
     }
 
     public List<Map<String, Object>> getQuestionTrend(int days) {
-        List<Map<String, Object>> trend = userRepository.getQuestionTrend(days);
-        for (Map<String, Object> map : trend) {
-            map.put("date", new java.sql.Date(((java.util.Date) map.get("date")).getTime()));
-        }
-        return trend;
+        return userRepository.getQuestionTrend(days);
     }
 
     public List<String> getReputationChanges(long userId, int limit) {
@@ -383,4 +397,60 @@ public class UserService {
             e.printStackTrace();
         }
     }
+    public Page<UserPageDTO> getUsersForUserPage(String keyword, String filter, int page,Long currentUserId) {
+    if (keyword == null) {
+        keyword = "";
+    }
+
+    keyword = keyword.trim();
+
+    if (filter == null
+            || (!filter.equals("reputation")
+            && !filter.equals("voted")
+            && !filter.equals("new"))) {
+        filter = "reputation";
+    }
+
+    if (page < 0) {
+        page = 0;
+    }
+
+    Pageable pageable = PageRequest.of(page, 15);
+
+    return userRepository.findUsersForUserPage(keyword, filter,currentUserId, pageable);
+}
+public void changePasswordWithOldPassword(
+        String email,
+        String oldPassword,
+        String newPassword,
+        String confirmPassword)
+        throws Exception {
+
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException("User not found."));
+
+    if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
+        throw new RuntimeException("Current password is incorrect.");
+    }
+
+    if (newPassword.length() < 8) {
+        throw new RuntimeException(
+                "New password must contain at least 8 characters.");
+    }
+
+    if (!newPassword.equals(confirmPassword)) {
+        throw new RuntimeException(
+                "New password and confirmation password do not match.");
+    }
+
+    if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+        throw new RuntimeException(
+                "New password must be different from the current password.");
+    }
+
+    String hash = passwordEncoder.encode(newPassword);
+
+    userRepository.changePassword(email, hash);
+}
 }

@@ -173,23 +173,24 @@
             color: #0074cc;
             text-decoration: underline;
         }
+
         .forgot-password-row {
-    text-align: right;
-    margin-top: 6px;
-    margin-bottom: 14px;
-}
+            text-align: right;
+            margin-top: 6px;
+            margin-bottom: 14px;
+        }
 
-.forgot-password-link {
-    color: #6a737c;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-}
+        .forgot-password-link {
+            color: #6a737c;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
 
-.forgot-password-link:hover {
-    color: #3b4045;
-    text-decoration: underline;
-}
+        .forgot-password-link:hover {
+            color: #3b4045;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -205,11 +206,20 @@
 
         <div class="ok" th:if="${param.registered}">Registration successful! Please log in.</div>
         <div class="ok" th:if="${param.logout}">You have been logged out.</div>
-        <div class="err" th:if="${param.error}">Invalid email or password.</div>
+        <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null and session['SPRING_SECURITY_LAST_EXCEPTION'].class.name == 'org.springframework.security.authentication.DisabledException'}"
+            class="err">
+            <i class="fa-solid fa-triangle-exclamation"></i> Your account has been disabled. Please contact the
+            administrator for assistance.
+        </div>
+        <!-- Fallback for generic errors like wrong credentials -->
+        <div th:if="${param.error != null and (session['SPRING_SECURITY_LAST_EXCEPTION'] == null or session['SPRING_SECURITY_LAST_EXCEPTION'].class.name != 'org.springframework.security.authentication.DisabledException')}"
+            class="err">
+            Invalid email or password. Please try again.
+        </div>
 
         <div class="social-buttons">
             <a th:href="@{/oauth2/authorization/google}" class="social-btn btn-google">
-                <i class="fab fa-google text-danger" ></i> Log in with Google
+                <i class="fab fa-google text-danger"></i> Log in with Google
             </a>
             <a th:href="@{/oauth2/authorization/github}" class="social-btn btn-github">
                 <i class="fab fa-github"></i> Log in with GitHub

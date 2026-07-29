@@ -17,9 +17,8 @@
 
             <div class="d-flex">
                 <div class="me-4">
-                    <img th:src="${not #strings.isEmpty(uPro.avatarUrl) ? uPro.avatarUrl : '/assets/img/Avatar.png'}"
-                        alt="Avatar" class="rounded-circle shadow-sm"
-                        style="width: 144px; height: 144px; object-fit: cover;">
+                    <img th:src="${uPro.avatarUrl != null and !#strings.isEmpty(uPro.avatarUrl) ? uPro.avatarUrl : '/assets/img/avatar/default-avatar.jpg'}" 
+                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';" alt="Avatar" class="rounded-circle shadow-sm" style="width: 144px; height: 144px; object-fit: cover;">
                 </div>
 
                 <div class="pt-1">
@@ -53,18 +52,21 @@
                             <a class="nav-link" th:classappend="${activeTab == 'badge' ? 'active' : ''}"
                                 th:href="@{/badge(id=${uPro.userId})}">Badge</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:classappend="${activeTab == 'saves' ? 'active' : ''}"
-                                th:href="@{/saves(id=${uPro.userId})}">Saves</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
+                        <th:block sec:authorize="isAuthenticated()"
+                            th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
+                            <li class="nav-item">
+                                <a class="nav-link" th:classappend="${activeTab == 'saves' ? 'active' : ''}"
+                                    th:href="@{/saves(id=${uPro.userId})}">Saves</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:classappend="${activeTab == 'preferences' ? 'active' : ''}"
                                 th:href="@{/settings/preferences}">Preferences</a>
-                        </li>
-                        <li class="nav-item" th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
-                            <a class="nav-link" th:classappend="${activeTab == 'drafts' ? 'active' : ''}"
-                                th:href="@{/questions/drafts}">Drafts</a>
-                        </li>
+                            </li>
+                            <li class="nav-item" th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}">
+                                <a class="nav-link" th:classappend="${activeTab == 'drafts' ? 'active' : ''}"
+                                    th:href="@{/questions/drafts}">Drafts</a>
+                            </li>
+                        </th:block>
                     </ul>
                 </div>
             </div>
@@ -74,6 +76,12 @@
                     <a th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}" th:href="@{/edit-profile}"
                         class="btn btn-outline-secondary btn-sm text-secondary">
                         <i class="fas fa-pencil-alt me-1"></i> Edit profile
+                    </a>
+                    <a  th:if="${loggedInUser != null && loggedInUser.userId == uPro.userId}"
+                        th:href="@{/change-password}"
+                        class="btn btn-outline-secondary btn-sm profile-action-btn">
+                            <i class="fa-solid fa-key"></i>
+                                Change Password
                     </a>
                 </th:block>
             </div>

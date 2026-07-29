@@ -14,6 +14,7 @@ public class UserDTO {
     private String location;
     private String website;
     private String avatarUrl;
+    private boolean online;
 
     public UserDTO() {}
 
@@ -58,6 +59,9 @@ public class UserDTO {
 
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+
+    public boolean isOnline() { return online; }
+    public void setOnline(boolean online) { this.online = online; }
 
     // Helper method for frontend avatar rendering
     public String getDisplayAvatar() {

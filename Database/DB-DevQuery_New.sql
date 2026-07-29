@@ -387,7 +387,7 @@ CREATE TABLE [dbo].[Blogs](
     [blog_id]       [int]           IDENTITY(1,1) PRIMARY KEY,
     [title]         [nvarchar](max) NOT NULL,
     [content]       [nvarchar](max) NOT NULL,
-    [thumbnail_url] [varchar](500)  NULL,
+    [thumbnail_url] [varchar](max)  NULL,
     [author_id]     [bigint]        NOT NULL,
     [created_at]    [datetime]      DEFAULT GETDATE(),
     [updated_at]    [datetime]      DEFAULT GETDATE(),
@@ -449,3 +449,23 @@ CREATE TABLE user_preferences (
     FOREIGN KEY (user_id) REFERENCES Users(user_id) -- (Thay 'users' bằng tên bảng user thực tế của ông)
 );
 Go
+
+-- =============================================
+-- 26. FEEDBACKS
+-- =============================================
+CREATE TABLE [dbo].[Feedbacks](
+    [feedback_id] [bigint] IDENTITY(1,1) PRIMARY KEY,
+    [user_id]     [bigint] NOT NULL,
+    [name]        [nvarchar](100) NOT NULL,
+    [email]       [varchar](120) NOT NULL,
+    [message]     [nvarchar](max) NOT NULL,
+    [created_at]  [datetime] DEFAULT GETDATE(),
+    FOREIGN KEY ([user_id]) REFERENCES [dbo].[Users]([user_id]) ON DELETE CASCADE
+)
+GO
+
+ALTER TABLE [dbo].[Feedbacks] ADD [title] [nvarchar](255) NOT NULL DEFAULT 'Feedback';
+GO
+ALTER TABLE Users
+ADD accepted_terms BIT NOT NULL DEFAULT 0;
+

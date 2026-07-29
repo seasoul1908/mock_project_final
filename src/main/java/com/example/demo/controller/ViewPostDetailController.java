@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
+import java.util.Optional;                              // ← THÊM
+import com.example.demo.entity.Answer;                    // ← THÊM
+import com.example.demo.repository.AnswerRepository;      // ← THÊM
 import com.example.demo.dto.AnswerViewDTO;
 import com.example.demo.dto.QuestionDetailDTO;
 import com.example.demo.dto.TrendingQuestionDTO;
+import com.example.demo.dto.PostEditHistoryDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.QuestionDetailService;
@@ -30,6 +34,9 @@ public class ViewPostDetailController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;   // ← THÊM
 
     @Value("")
     private String baseUrl;
@@ -71,12 +78,14 @@ public class ViewPostDetailController {
 
         List<AnswerViewDTO> answers = questionDetailService.getAnswersForQuestion(id, currentUserId, isAdmin, sort);
         List<TrendingQuestionDTO> trending = questionDetailService.getTrendingQuestions(5);
+        List<TrendingQuestionDTO> popular = questionDetailService.getPopularQuestions(5);
 
         model.addAttribute("question", question);
         model.addAttribute("answers", answers);
         model.addAttribute("trendingQuestions", trending);
+        model.addAttribute("popularQuestions", popular);
         model.addAttribute("sort", sort);
-        model.addAttribute("shareUrl", baseUrl + "/question/" + id);
+        model.addAttribute("shareUrl", baseUrl + "/question?id=" + id);
         model.addAttribute("isAdmin", isAdmin);
         if (editQuestion != null) {
             model.addAttribute("editQuestion", true);
@@ -89,5 +98,66 @@ public class ViewPostDetailController {
         }
 
         return "User/viewpostdetail";
+    }
+
+    @GetMapping("/question/{id}/history")
+    public String viewQuestionHistory(@PathVariable("id") Long id, HttpSession session, Model model) {
+        if (id == null) {
+            return "redirect:/home";
+        }
+
+        User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
+        Long currentUserId = currentUser != null ? currentUser.getUserId() : null;
+        boolean isAdmin = currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getRole());
+
+        QuestionDetailDTO question = questionDetailService.getQuestionDetail(id, currentUserId, isAdmin);
+        if (question == null) {
+            return "redirect:/home";
+        }
+
+        List<PostEditHistoryDTO> history = questionDetailService.getQuestionHistory(id);
+
+        model.addAttribute("question", question);
+        model.addAttribute("historyList", history);
+        model.addAttribute("isAdmin", isAdmin);
+        if (currentUser != null) {
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "User/question_history";
+    }
+
+    @GetMapping("/answer/{id}/history")
+    public String viewAnswerHistory(@PathVariable("id") Long id, HttpSession session, Model model) {
+        if (id == null) {
+            return "redirect:/home";
+        }
+
+        User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
+        boolean isAdmin = currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getRole());
+
+        Optional<Answer> answerOpt = answerRepository.findById(id);
+        if (answerOpt.isEmpty()) {
+            return "redirect:/home";
+        }
+        Answer answer = answerOpt.get();
+
+        // Cần question để hiển thị nút "Back to Question" và title
+        QuestionDetailDTO question = questionDetailService.getQuestionDetail(
+                answer.getQuestionId(), currentUser != null ? currentUser.getUserId() : null, isAdmin);
+        if (question == null) {
+            return "redirect:/home";
+        }
+
+        List<PostEditHistoryDTO> history = questionDetailService.getAnswerHistory(id);
+
+        model.addAttribute("question", question);
+        model.addAttribute("historyList", history);
+        model.addAttribute("isAdmin", isAdmin);
+        if (currentUser != null) {
+            model.addAttribute("currentUser", currentUser);
+        }
+
+        return "User/question_history"; // dùng chung template với question
     }
 }

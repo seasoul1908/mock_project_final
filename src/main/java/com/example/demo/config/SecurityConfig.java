@@ -6,10 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.example.demo.service.CustomOAuth2UserService;
 
@@ -29,11 +32,21 @@ public class SecurityConfig {
         }
 
         @Bean
+        public SessionRegistry sessionRegistry() {
+                return new SessionRegistryImpl();
+        }
+
+        @Bean
+        public static HttpSessionEventPublisher httpSessionEventPublisher() {
+                return new HttpSessionEventPublisher();
+        }
+
+        @Bean
         public AuthenticationSuccessHandler roleBasedSuccessHandler() {
                 return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
                         boolean isAdmin = authentication.getAuthorities().stream()
                                         .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/system-rules");
+                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
                 };
         }
 
@@ -48,7 +61,7 @@ public class SecurityConfig {
                                                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
                                                                 "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
                                                                 "/login/oauth2/**", "/question", "/question/**", "/question-detail",
-                                                                "/trending")
+                                                                "/trending" , "/accept-terms", "/api/code/**")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
                                                 .hasRole("ADMIN")
@@ -70,6 +83,9 @@ public class SecurityConfig {
                                                 .logoutUrl("/auth/logout")
                                                 .logoutSuccessUrl("/auth/login?logout=true")
                                                 .invalidateHttpSession(true))
+                                .sessionManagement(session -> {
+                                        session.maximumSessions(-1).sessionRegistry(sessionRegistry());
+                                })
                                 .csrf(csrf -> csrf.disable());
 
                 return http.build();
