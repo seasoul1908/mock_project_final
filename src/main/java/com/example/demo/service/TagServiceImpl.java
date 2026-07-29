@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @Service
 public class TagServiceImpl implements TagService {
 
@@ -37,6 +40,38 @@ public class TagServiceImpl implements TagService {
             dtos.add(mapRowToTagDTO(row));
         }
         return dtos;
+    }
+
+    @Override
+    public Map<String, Object> getTagsPaginated(String keyword, String sort, int page, int pageSize, Long userId) {
+        List<TagDTO> allTags = searchAndSortTags(keyword, sort);
+        if (userId != null) {
+            for (TagDTO tag : allTags) {
+                tag.setIsFollowed(tagFollowRepository.existsByUserIdAndTagId(userId, tag.getId()));
+            }
+        } else {
+            for (TagDTO tag : allTags) {
+                tag.setIsFollowed(false);
+            }
+        }
+
+        int totalItems = allTags.size();
+        if (pageSize <= 0) pageSize = 12;
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        if (totalPages == 0) totalPages = 1;
+        if (page < 1) page = 1;
+        if (page > totalPages && totalItems > 0) page = totalPages;
+
+        int fromIndex = Math.min((page - 1) * pageSize, totalItems);
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+        List<TagDTO> pagedTags = allTags.subList(fromIndex, toIndex);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("currentPage", page);
+        response.put("totalPages", totalPages);
+        response.put("totalItems", totalItems);
+        response.put("data", pagedTags);
+        return response;
     }
 
     @Override
@@ -79,15 +114,33 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void followOrUnfollowTag(Long userId, Long tagId, String action) {
-        Optional<TagFollow> followOpt = tagFollowRepository.findByUserIdAndTagId(userId, tagId);
+        toggleTagFollow(userId, tagId, action);
+    }
+
+    @Override
+    public boolean toggleTagFollow(Long userId, Long tagId, String action) {
+        boolean currentlyFollowing = tagFollowRepository.existsByUserIdAndTagId(userId, tagId);
+        boolean shouldFollow;
         if ("follow".equalsIgnoreCase(action)) {
-            if (followOpt.isEmpty()) {
+            shouldFollow = true;
+        } else if ("unfollow".equalsIgnoreCase(action)) {
+            shouldFollow = false;
+        } else {
+            shouldFollow = !currentlyFollowing;
+        }
+
+        if (shouldFollow) {
+            if (!currentlyFollowing) {
                 tagFollowRepository.save(new TagFollow(userId, tagId));
             }
-        } else if ("unfollow".equalsIgnoreCase(action)) {
+            return true;
+        } else {
+            Optional<TagFollow> followOpt = tagFollowRepository.findByUserIdAndTagId(userId, tagId);
             followOpt.ifPresent(tagFollowRepository::delete);
+            return false;
         }
     }
+
 
     @Override
     public boolean isFollowing(Long userId, Long tagId) {

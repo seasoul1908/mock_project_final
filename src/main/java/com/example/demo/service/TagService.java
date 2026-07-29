@@ -4,12 +4,17 @@ import com.example.demo.dto.TagDTO;
 import com.example.demo.dto.QuestionViewDTO;
 import java.util.List;
 
+import java.util.Map;
+
 public interface TagService {
     List<TagDTO> searchAndSortTags(String keyword, String sort);
+    Map<String, Object> getTagsPaginated(String keyword, String sort, int page, int pageSize, Long userId);
     TagDTO getTagById(Long id);
     List<QuestionViewDTO> getQuestionsByTag(Long tagId, String filter, int page, int pageSize);
     int countQuestionsByTag(Long tagId, String filter);
     void followOrUnfollowTag(Long userId, Long tagId, String action);
+    boolean toggleTagFollow(Long userId, Long tagId, String action);
     boolean isFollowing(Long userId, Long tagId);
     void createTag(String tagName, String description);
 }
+

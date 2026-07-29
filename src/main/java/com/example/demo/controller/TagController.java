@@ -34,15 +34,26 @@ public class TagController {
     public String viewTagList(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "sort", required = false, defaultValue = "name") String sort,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false) Integer sizeParam,
+            @RequestParam(value = "limit", required = false) Integer limitParam,
             Model model) {
         
-        List<TagDTO> tagList = tagService.searchAndSortTags(search, sort);
-        
+        int size = (sizeParam != null) ? sizeParam : ((limitParam != null) ? limitParam : 12);
         User user = getAuthenticatedUser();
         boolean isLoggedIn = (user != null);
         boolean canCreateTag = isLoggedIn && (user.getReputation() != null && user.getReputation() >= 50);
+        Long userId = isLoggedIn ? user.getUserId() : null;
+
+        java.util.Map<String, Object> paginated = tagService.getTagsPaginated(search, sort, page, size, userId);
+
+        @SuppressWarnings("unchecked")
+        List<TagDTO> tagList = (List<TagDTO>) paginated.get("data");
         
         model.addAttribute("tagList", tagList);
+        model.addAttribute("currentPage", paginated.get("currentPage"));
+        model.addAttribute("totalPages", paginated.get("totalPages"));
+        model.addAttribute("totalItems", paginated.get("totalItems"));
         model.addAttribute("keyword", search);
         model.addAttribute("sort", sort);
         model.addAttribute("isLoggedIn", isLoggedIn);
@@ -50,6 +61,7 @@ public class TagController {
         
         return "User/tag";
     }
+
 
     @GetMapping("/{id}")
     public String viewTagDetail(
