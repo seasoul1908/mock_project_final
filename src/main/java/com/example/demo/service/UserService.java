@@ -415,7 +415,7 @@ public class UserService {
         page = 0;
     }
 
-    Pageable pageable = PageRequest.of(page, 15);
+    Pageable pageable = PageRequest.of(page, 16);
 
     return userRepository.findUsersForUserPage(keyword, filter,currentUserId, pageable);
 }
@@ -444,10 +444,33 @@ public void changePasswordWithOldPassword(
                 "New password and confirmation password do not match.");
     }
 
-    if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
-        throw new RuntimeException(
-                "New password must be different from the current password.");
-    }
+    
+
+    List<String> errors = new ArrayList<>();
+
+if (newPassword.length() < 8) {
+    errors.add("Password must contain at least 8 characters.");
+}
+
+if (!newPassword.matches(".*[A-Z].*")) {
+    errors.add("Password must contain at least one uppercase letter.");
+}
+
+if (!newPassword.matches(".*[a-z].*")) {
+    errors.add("Password must contain at least one lowercase letter.");
+}
+
+if (!newPassword.matches(".*\\d.*")) {
+    errors.add("Password must contain at least one number.");
+}
+
+if (!newPassword.matches(".*[@$!%*?&.#^()_+\\-=:;,/\\\\].*")) {
+    errors.add("Password must contain at least one special character.");
+}
+
+if (!errors.isEmpty()) {
+    throw new RuntimeException(String.join("<br>", errors));
+}
 
     String hash = passwordEncoder.encode(newPassword);
 
