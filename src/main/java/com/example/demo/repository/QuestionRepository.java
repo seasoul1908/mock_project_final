@@ -183,4 +183,11 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Transactional
     @Query(value = "UPDATE Questions SET is_deleted = 1, deleted_at = GETDATE(), deleted_by = :deletedBy WHERE question_id = :questionId", nativeQuery = true)
     void softDeleteQuestion(@Param("questionId") long questionId, @Param("deletedBy") long deletedBy);
+
+    @Query(value = "SELECT * FROM Questions " +
+            "WHERE ISNULL(is_deleted, 0) = 0 " +
+            "AND bounty_amount > 0 " +
+            "AND bounty_expires_at IS NOT NULL " +
+            "AND bounty_expires_at <= GETDATE()", nativeQuery = true)
+    List<Question> findExpiredActiveBounties();
 }
