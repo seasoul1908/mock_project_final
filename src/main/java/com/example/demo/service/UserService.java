@@ -291,6 +291,44 @@ public class UserService {
         userRepository.changePassword(email, hash);
     }
 
+    public void validatePassword(String password, String confirmPassword) {
+
+        List<String> errors = new ArrayList<>();
+
+        if (password == null || password.isBlank()) {
+            errors.add("Password is required.");
+        } else {
+
+        if (password.length() < 8) {
+            errors.add("Password must contain at least 8 characters.");
+        }
+
+        if (!password.matches(".*[A-Z].*")) {
+            errors.add("Password must contain at least one uppercase letter.");
+        }
+
+        if (!password.matches(".*[a-z].*")) {
+            errors.add("Password must contain at least one lowercase letter.");
+        }
+
+        if (!password.matches(".*\\d.*")) {
+            errors.add("Password must contain at least one number.");
+        }
+
+        if (!password.matches(".*[@$!%*?&.#^()_+\\-=:;,/\\\\].*")) {
+            errors.add("Password must contain at least one special character.");
+        }
+    }
+
+        if (!password.equals(confirmPassword)) {
+            errors.add("Confirm password does not match.");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new RuntimeException(String.join("<br>", errors));
+        }
+    }
+
     // USER FOR USER
 
     public List<UserDTO> getTopUsers() {
@@ -433,47 +471,52 @@ public void changePasswordWithOldPassword(
     if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) {
         throw new RuntimeException("Current password is incorrect.");
     }
-
-    if (newPassword.length() < 8) {
-        throw new RuntimeException(
-                "New password must contain at least 8 characters.");
-    }
-
-    if (!newPassword.equals(confirmPassword)) {
-        throw new RuntimeException(
-                "New password and confirmation password do not match.");
-    }
-
+    validatePassword(newPassword, confirmPassword);
+    changPassword(email, newPassword);
     
-
-    List<String> errors = new ArrayList<>();
-
-if (newPassword.length() < 8) {
-    errors.add("Password must contain at least 8 characters.");
-}
-
-if (!newPassword.matches(".*[A-Z].*")) {
-    errors.add("Password must contain at least one uppercase letter.");
-}
-
-if (!newPassword.matches(".*[a-z].*")) {
-    errors.add("Password must contain at least one lowercase letter.");
-}
-
-if (!newPassword.matches(".*\\d.*")) {
-    errors.add("Password must contain at least one number.");
-}
-
-if (!newPassword.matches(".*[@$!%*?&.#^()_+\\-=:;,/\\\\].*")) {
-    errors.add("Password must contain at least one special character.");
-}
-
-if (!errors.isEmpty()) {
-    throw new RuntimeException(String.join("<br>", errors));
-}
-
     String hash = passwordEncoder.encode(newPassword);
 
     userRepository.changePassword(email, hash);
+}
+public boolean canChangePassword(String email) {
+
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() ->
+                new IllegalStateException(
+                    "Authenticated user '" + email + "' does not exist in database."
+                )
+            );
+
+    return "local".equalsIgnoreCase(user.getProvider());
+}
+public boolean isLocalAccount(String email) {
+
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() ->
+                    new IllegalStateException("User not found."));
+
+    return "local".equalsIgnoreCase(user.getProvider());
+}
+public void validateRegisterPassword(String password, String confirmPassword){
+    if (password == null || password.isBlank()) {
+        throw new RuntimeException("Password is required.");
+    }
+
+    if (!password.equals(confirmPassword)) {
+        throw new RuntimeException("Passwords do not match.");
+    }
+
+    int score = 0;
+
+    if (password.length() >= 8) score++;
+    if (password.matches(".*[a-z].*")) score++;
+    if (password.matches(".*[A-Z].*")) score++;
+    if (password.matches(".*\\d.*")) score++;
+    if (password.matches(".*[@$!%*?&.#^()_+\\-=:;,/\\\\].*")) score++;
+
+    // Weak (score <= 2)
+    if (score <= 2) {
+        throw new RuntimeException("Password is too weak.");
+    }
 }
 }
