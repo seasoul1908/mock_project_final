@@ -1,21 +1,25 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Answer;
-import com.example.demo.entity.Question;
-import com.example.demo.repository.AnswerRepository;
-import com.example.demo.repository.CommentRepository;
-import com.example.demo.repository.QuestionRepository;
-import com.example.demo.repository.VoteRepository;
-import com.example.demo.entity.PostEditHistory;      // ← THÊM
-import com.example.demo.repository.PostEditHistoryRepository;
+import java.sql.Timestamp;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import com.example.demo.entity.Answer;
+import com.example.demo.entity.PostEditHistory;
+import com.example.demo.entity.Question;
+import com.example.demo.repository.AnswerRepository;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.PostEditHistoryRepository;
+import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.VoteRepository;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
+
+    private static final int ACCEPTED_ANSWER_REP = 15;
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -28,6 +32,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Autowired
     private VoteRepository voteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private PostEditHistoryRepository postEditHistoryRepository;
@@ -82,19 +89,65 @@ public class AnswerServiceImpl implements AnswerService {
         }
 
         Long currentAccepted = question.getAcceptedAnswerId();
+        long answerAuthorId = answer.getUserId();
+
         if (currentAccepted != null && currentAccepted.equals(answerId)) {
+            // ---- UNACCEPT: clear + TRỪ điểm đã cộng trước đó ----
             question.setAcceptedAnswerId(null);
             answerRepository.clearAcceptedForQuestion(questionId);
+
+            userRepository.addReputation(answerAuthorId, -ACCEPTED_ANSWER_REP);
+            userRepository.insertReputationHistory(
+                    answerAuthorId,
+                    -ACCEPTED_ANSWER_REP,
+                    "Answer unaccepted",
+                    "answer_unaccepted",
+                    "answer",
+                    answerId,
+                    userId
+            );
+
         } else {
+            // ---- ACCEPT (mới, hoặc chuyển từ answer khác sang) ----
+
+            // Nếu đang có answer khác được accept, phải TRỪ điểm answer đó trước
+            if (currentAccepted != null) {
+                Answer previousAccepted = answerRepository.findById(currentAccepted)
+                        .orElse(null);
+                if (previousAccepted != null) {
+                    long previousAuthorId = previousAccepted.getUserId();
+                    userRepository.addReputation(previousAuthorId, -ACCEPTED_ANSWER_REP);
+                    userRepository.insertReputationHistory(
+                            previousAuthorId,
+                            -ACCEPTED_ANSWER_REP,
+                            "Answer unaccepted (replaced by another answer)",
+                            "answer_unaccepted",
+                            "answer",
+                            currentAccepted,
+                            userId
+                    );
+                }
+            }
+
             answerRepository.clearAcceptedForQuestion(questionId);
             answerRepository.markAccepted(answerId);
             question.setAcceptedAnswerId(answerId);
+
+            userRepository.addReputation(answerAuthorId, ACCEPTED_ANSWER_REP);
+            userRepository.insertReputationHistory(
+                    answerAuthorId,
+                    ACCEPTED_ANSWER_REP,
+                    "Answer accepted",
+                    "answer_accepted",
+                    "answer",
+                    answerId,
+                    userId
+            );
         }
 
         questionRepository.save(question);
         questionRepository.touchUpdatedAt(questionId);
     }
-
     @Override
     @Transactional
     public void editAnswer(long answerId, long userId, String body, String codeSnippet, boolean isAdmin) {
