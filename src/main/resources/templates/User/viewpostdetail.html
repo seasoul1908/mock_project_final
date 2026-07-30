@@ -590,6 +590,19 @@
         .runner-output-error {
             color: #b02a37;
         }
+        .question-code-static {
+            position: relative;
+        }
+
+        .question-code-static::before {
+            content: "Code (read-only)";
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary, #6a737c);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
 
         /* =========================
@@ -786,8 +799,7 @@
                 <div class="post-text" th:text="${question.body}">Question body</div>
 
                 <div th:if="${question.codeSnippet != null and !#strings.isEmpty(question.codeSnippet)}"
-                     class="code-block executable-java-snippet" data-lang="java"
-                     th:data-can-edit="${question.canEdit}"
+                     class="code-block question-code-static"
                      th:text="${question.codeSnippet}">code</div>
 
                 <div class="mb-3 d-flex gap-2 flex-wrap" th:if="${question.tags != null}">
@@ -933,10 +945,6 @@
                                         th:attr="data-bs-toggle='collapse', data-bs-target='#reply-form-q-' + ${c.commentId}"
                                         sec:authorize="isAuthenticated()">Reply</button>
 
-                                <button type="button"
-                                        th:attr="data-bs-toggle='modal', data-bs-target='#reportCommentQModal-' + ${c.commentId}"
-                                        sec:authorize="isAuthenticated()">Report</button>
-
                                 <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post" class="d-inline m-0"
                                       onsubmit="return confirm('Delete this comment?');">
                                     <input type="hidden" name="questionId" th:value="${question.questionId}" />
@@ -970,9 +978,6 @@
                                 </form>
                             </div>
 
-                            <div th:id="'reportCommentQModal-' + ${c.commentId}" class="modal fade" tabindex="-1">
-                                <!-- ... nội dung modal ... -->
-                            </div>
                         </div>
                     </div>
 
@@ -1165,9 +1170,6 @@
                                                 th:attr="data-bs-toggle='collapse', data-bs-target='#reply-form-a-' + ${c.commentId}"
                                                 sec:authorize="isAuthenticated()">Reply</button>
 
-                                        <button type="button"
-                                                th:attr="data-bs-toggle='modal', data-bs-target='#reportCommentAModal-' + ${c.commentId}"
-                                                sec:authorize="isAuthenticated()">Report</button>
 
                                         <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post" class="d-inline m-0"
                                               onsubmit="return confirm('Delete this comment?');">
@@ -1202,9 +1204,6 @@
                                         </form>
                                     </div>
 
-                                    <div th:id="'reportCommentAModal-' + ${c.commentId}" class="modal fade" tabindex="-1">
-                                        <!-- ... nội dung modal ... -->
-                                    </div>
                                 </div>
                             </div>
 
@@ -1223,12 +1222,7 @@
                 <div class="answer-form-box so-panel" sec:authorize="isAuthenticated()">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="m-0" style="font-size: 18px; font-weight: 400;">Your Answer</h3>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('**', '**')" title="Bold"><i class="fa-solid fa-bold"></i> Bold</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('*', '*')" title="Italic"><i class="fa-solid fa-italic"></i> Italic</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerMarkdown('[', '](url)')" title="Link"><i class="fa-solid fa-link"></i> Link</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="insertAnswerCodeTemplate()" title="Code Snippet"><i class="fa-solid fa-code"></i> Code Snippet</button>
-                        </div>
+
                     </div>
                     <form th:action="@{/answers/post}" method="post">
                         <input type="hidden" name="questionId" th:value="${question.questionId}" />
@@ -1246,7 +1240,7 @@
                             </div>
                             <textarea id="answerCodeSnippet" name="codeSnippet"
                                       class="form-control code-runner-textarea font-monospace small" rows="4"
-                                      placeholder="public class Main {&#10;    public static void main(String[] args) {&#10;        System.out.println(&quot;Code solution...&quot;);&#10;    }&#10;}"></textarea>
+                                      placeholder="put some code here..."></textarea>
                         </div>
 
                         <div class="mt-3">
@@ -1635,12 +1629,22 @@
             const widget = createRunnerWidget(codeText, el.getAttribute('data-lang') || 'java', canEdit);
             el.parentNode.replaceChild(widget, el);
         });
+        // Vòng lặp mới: xử lý rieng code snippet cua QUESTION - chi hien thi, khong Run/stdin/output
+        const staticBlocks = document.querySelectorAll('.question-code-static');
+        staticBlocks.forEach(el => {
+            const codeText = el.textContent || '';
+            const widget = createStaticCodeBlock(codeText, 'java');
+            el.parentNode.replaceChild(widget, el);
+        });
 
         // Process code blocks in question/answer bodies (pre code, code-block, etc.)
         // These are free-form code mentioned in the post text, not tied to a canEdit flag,
         // so they are always treated as read-only for everyone.
-        const codeBlocks = document.querySelectorAll('.post-text pre code, .code-block:not(.executable-java-snippet)');
-        codeBlocks.forEach(el => {
+        // Trước: '.post-text pre code, .code-block:not(.executable-java-snippet)'
+        // Sau:
+        const codeBlocks = document.querySelectorAll(
+            '.post-text pre code, .code-block:not(.executable-java-snippet):not(.question-code-static)'
+        );        codeBlocks.forEach(el => {
             const codeText = el.textContent || '';
             if (codeText.includes('class ') || codeText.includes('System.out') || codeText.includes('public static void main')) {
                 const widget = createRunnerWidget(codeText, 'java', false);
@@ -1649,6 +1653,56 @@
             }
         });
     });
+
+    function createStaticCodeBlock(codeText, lang) {
+        lang = lang || 'java';
+        const container = document.createElement('div');
+        container.className = 'code-runner-box my-3';
+
+        const rawCode = codeText || '';
+
+        container.innerHTML = `
+        <div class="code-runner-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold snippet-title">
+                <i class="fa-brands fa-java me-2"></i>
+                Code Snippet
+            </span>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-secondary text-light" title="This code is for reference only">
+                    <i class="fa-solid fa-lock me-1"></i>Read-only
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-secondary text-light copy-code-btn" title="Copy code to clipboard">
+                    <i class="fa-regular fa-copy me-1"></i>Copy
+                </button>
+            </div>
+        </div>
+        <div class="code-runner-editor-wrapper">
+            <textarea class="form-control code-runner-textarea p-3" rows="6" spellcheck="false" readonly></textarea>
+        </div>
+    `;
+
+        const textarea = container.querySelector('.code-runner-textarea');
+        textarea.value = rawCode;
+
+        const copyBtn = container.querySelector('.copy-code-btn');
+        copyBtn.addEventListener('click', function() {
+            const codeToCopy = textarea.value;
+
+            function showCopied() {
+                const originalHtml = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Copied!';
+                setTimeout(function() {
+                    copyBtn.innerHTML = originalHtml;
+                }, 1500);
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(codeToCopy).then(showCopied);
+            }
+        });
+
+        return container;
+    }
 
     function insertAnswerMarkdown(prefix, suffix) {
         const textarea = document.getElementById('answerBody');
@@ -1673,5 +1727,69 @@
         }
     }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toast').forEach(function (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+            toast.show();
+        });
+    });
+
+    document.querySelectorAll('.toast').forEach(function (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+        toast.show();
+    });
+</script>
+<!-- Toast container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    <div th:if="${reportSuccess}" class="toast align-items-center text-bg-success border-0 show" role="alert" id="reportSuccessToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                <span th:text="${reportSuccess}">Success message</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+
+    <div th:if="${reportError}" class="toast align-items-center text-bg-danger border-0 show" role="alert" id="reportErrorToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                <span th:text="${reportError}">Error message</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    <div th:if="${reportSuccess}" class="toast align-items-center text-bg-success border-0 show" role="alert" id="reportSuccessToast">
+        ...
+    </div>
+    <div th:if="${reportError}" class="toast align-items-center text-bg-danger border-0 show" role="alert" id="reportErrorToast">
+        ...
+    </div>
+
+    <!-- THÊM MỚI: toast cho bounty -->
+    <div th:if="${bountySuccess}" class="toast align-items-center text-bg-success border-0 show" role="alert" id="bountySuccessToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fa-solid fa-trophy me-2"></i>
+                <span th:text="${bountySuccess}">Bounty awarded successfully</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+
+    <div th:if="${bountyError}" class="toast align-items-center text-bg-danger border-0 show" role="alert" id="bountyErrorToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                <span th:text="${bountyError}">Bounty award failed</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

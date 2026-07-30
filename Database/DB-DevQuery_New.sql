@@ -468,4 +468,3 @@ ALTER TABLE [dbo].[Feedbacks] ADD [title] [nvarchar](255) NOT NULL DEFAULT 'Feed
 GO
 ALTER TABLE Users
 ADD accepted_terms BIT NOT NULL DEFAULT 0;
-
