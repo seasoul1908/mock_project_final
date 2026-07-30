@@ -510,6 +510,14 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentTheme = localStorage.getItem('devquery-theme') || 'system';
+            var radio = document.querySelector('input[name="theme"][value="' + currentTheme + '"]');
+            if (radio) {
+                radio.checked = true;
+            }
+        });
+
         function changeTheme(themeName) {
             localStorage.setItem('devquery-theme', themeName);
 
