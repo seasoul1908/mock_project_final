@@ -52,7 +52,7 @@
             <table class="table table-hover table-sm mb-0" style="font-size:13px;">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>Badge</th>
                         <th>Type</th>
                         <th>Description</th>
@@ -61,8 +61,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="b : ${badges}" th:id="'row-' + ${b.badgeId}">
-                        <td class="text-muted" th:text="${b.badgeId}"></td>
+                    <tr th:each="b, bStat : ${badges}" th:id="'row-' + ${b.badgeId}">
+                        <td class="text-muted" th:text="${(currentPage - 1) * 15 + bStat.count}"></td>
                         <td>
                             <i class="fa-solid fa-medal badge-icon"
                                 th:classappend="${b.type == 'gold'} ? 'icon-gold' : (${b.type == 'silver'} ? 'icon-silver' : 'icon-bronze')"></i>
@@ -96,6 +96,22 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="mt-3">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${currentPage - 1})}">«</a>
+                    </li>
+                    <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                        th:classappend="${p == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${p})}" th:text="${p}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${currentPage + 1})}">»</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </main>
 </div>

@@ -26,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         Optional<User> findByEmail(String email);
 
+        List<User> findByEmailIn(List<String> emails);
+
         Optional<User> findByUsername(String username);
 
         @Query("SELECT u FROM User u WHERE u.email = :email AND u.passwordHash = :hash")
@@ -57,13 +59,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         @Param("excludeUserId") Long excludeUserId);
 
         // --- Admin Actions ---
-        @Modifying
+        // clearAutomatically evicts the persistence-context cache, otherwise the entity re-fetched
+        // right after this bulk update in the same request would still show the stale pre-update value
+        @Modifying(clearAutomatically = true)
         @Transactional
         @Query("UPDATE User u SET u.role = :role, u.status = :status WHERE u.userId = :userId")
         int updateUserRoleAndStatus(@Param("userId") long userId, @Param("role") String role,
                         @Param("status") String status);
 
-        @Modifying
+        @Modifying(clearAutomatically = true)
         @Transactional
         @Query(value = "UPDATE Users SET status = CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END, updated_at = GETDATE() WHERE user_id = :userId", nativeQuery = true)
         int toggleUserStatus(@Param("userId") long userId);

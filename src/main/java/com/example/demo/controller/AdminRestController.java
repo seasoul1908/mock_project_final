@@ -42,6 +42,7 @@ public class AdminRestController {
     @Autowired private RuleRepository ruleRepository;
     @Autowired private BadgeRepository badgeRepository;
     @Autowired private ReportRepository reportRepository;
+    @Autowired private com.example.demo.service.UserService userService;
 
     // ==================== BLOGS ====================
 
@@ -129,6 +130,11 @@ public class AdminRestController {
         return userRepository.findAll();
     }
 
+    @GetMapping("/users/online-ids")
+    public ResponseEntity<List<Long>> getOnlineUserIds() {
+        return ResponseEntity.ok(userService.getOnlineUserIds());
+    }
+
     @PutMapping("/users/{id}/toggle-status")
     public ResponseEntity<Map<String, Object>> toggleUserStatus(@PathVariable Long id, Authentication auth) {
         Map<String, Object> resp = new HashMap<>();
@@ -152,6 +158,9 @@ public class AdminRestController {
         int updated = userRepository.toggleUserStatus(id);
         if (updated > 0) {
             User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            if ("inactive".equalsIgnoreCase(user.getStatus())) {
+                userService.expireSessionsForEmail(user.getEmail());
+            }
             resp.put("success", true);
             resp.put("newStatus", user.getStatus());
             return ResponseEntity.ok(resp);

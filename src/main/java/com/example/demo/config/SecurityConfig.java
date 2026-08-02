@@ -93,7 +93,10 @@ public class SecurityConfig {
                                                 .logoutSuccessUrl("/auth/login?logout=true")
                                                 .invalidateHttpSession(true))
                                 .sessionManagement(session -> {
-                                        session.maximumSessions(-1).sessionRegistry(sessionRegistry());
+                                        // expiredUrl redirects to login instead of silently halting the
+                                        // response when a banned user's session is force-expired mid-request
+                                        session.maximumSessions(-1).sessionRegistry(sessionRegistry())
+                                                        .expiredUrl("/auth/login?expired=true");
                                 })
                                 .csrf(csrf -> csrf.disable());
 

@@ -76,6 +76,42 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    // Force-expires every active session for this email, logging the user out on their very next request
+    public void expireSessionsForEmail(String email) {
+        if (sessionRegistry == null || email == null)
+            return;
+        sessionRegistry.getAllPrincipals().stream()
+                .filter(p -> {
+                    if (p instanceof UserDetails) return ((UserDetails) p).getUsername().equals(email);
+                    if (p instanceof OAuth2User) return email.equals(((OAuth2User) p).getAttribute("email"));
+                    return false;
+                })
+                .forEach(p -> sessionRegistry.getAllSessions(p, false)
+                        .forEach(org.springframework.security.core.session.SessionInformation::expireNow));
+    }
+
+    // Returns the IDs of users with at least one active session, used to live-refresh the admin Online column
+    public List<Long> getOnlineUserIds() {
+        if (sessionRegistry == null)
+            return List.of();
+        List<String> onlineEmails = sessionRegistry.getAllPrincipals().stream()
+                .filter(p -> !sessionRegistry.getAllSessions(p, false).isEmpty())
+                .map(p -> {
+                    if (p instanceof UserDetails)
+                        return ((UserDetails) p).getUsername();
+                    if (p instanceof OAuth2User)
+                        return (String) ((OAuth2User) p).getAttribute("email");
+                    return null;
+                })
+                .filter(email -> email != null)
+                .collect(Collectors.toList());
+        if (onlineEmails.isEmpty())
+            return List.of();
+        return userRepository.findByEmailIn(onlineEmails).stream()
+                .map(User::getUserId)
+                .collect(Collectors.toList());
+    }
+
     public boolean usernameExists(String username) {
         return userRepository.existsByUsername(username);
     }

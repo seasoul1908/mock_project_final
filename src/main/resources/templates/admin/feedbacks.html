@@ -76,7 +76,7 @@
                 </colgroup>
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>User</th>
@@ -86,7 +86,7 @@
                 </thead>
                 <tbody>
                     <tr class="feedback-row"
-                        th:each="fb : ${feedbacks}"
+                        th:each="fb, fbStat : ${feedbacks}"
                         th:data-msg="${fb.message}"
                         th:data-title="${fb.title}"
                         th:data-name="${fb.name}"
@@ -94,7 +94,7 @@
                         th:data-user="${fb.user != null ? fb.user.username : '—'}"
                         th:data-time="${fb.createdAt != null ? #temporals.format(fb.createdAt.toLocalDateTime(), 'dd/MM/yyyy HH:mm') : '—'}"
                         onclick="showMessage(this)">
-                        <td class="text-muted" th:text="${fb.feedbackId}"></td>
+                        <td class="text-muted" th:text="${(currentPage - 1) * 15 + fbStat.count}"></td>
                         <td th:text="${fb.name}"></td>
                         <td th:text="${fb.email}"></td>
                         <td>

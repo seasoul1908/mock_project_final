@@ -48,7 +48,7 @@
             <table class="table table-hover table-sm mb-0" style="font-size:13px;" id="tagsTable">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>Tag Name</th>
                         <th>Description</th>
                         <th>Status</th>
@@ -56,8 +56,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="t : ${tags}" th:id="'tr-' + ${t.id}">
-                        <td class="text-muted" th:text="${t.id}"></td>
+                    <tr th:each="t, tStat : ${tags}" th:id="'tr-' + ${t.id}">
+                        <td class="text-muted" th:text="${(currentPage - 1) * 15 + tStat.count}"></td>
                         <td><span class="tag-chip" th:text="${t.tagName}"></span></td>
                         <td class="text-muted" style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                             th:text="${t.description}"></td>
@@ -87,6 +87,22 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="mt-3">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/tags(page=${currentPage - 1})}">«</a>
+                    </li>
+                    <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                        th:classappend="${p == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/tags(page=${p})}" th:text="${p}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/tags(page=${currentPage + 1})}">»</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </main>
 </div>
