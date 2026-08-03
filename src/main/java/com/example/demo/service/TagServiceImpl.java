@@ -93,8 +93,25 @@ public class TagServiceImpl implements TagService {
             String body = (String) row[2];
             Integer score = ((Number) row[3]).intValue();
             Integer viewCount = ((Number) row[4]).intValue();
-            Timestamp createdAt = (Timestamp) row[5];
-            Timestamp updatedAt = (Timestamp) row[6];
+            Timestamp createdAt = null;
+            Object rawCreated = row[5];
+            if (rawCreated instanceof Timestamp) {
+                createdAt = (Timestamp) rawCreated;
+            } else if (rawCreated instanceof java.time.LocalDateTime ldt) {
+                createdAt = Timestamp.valueOf(ldt);
+            } else if (rawCreated instanceof java.util.Date date) {
+                createdAt = new Timestamp(date.getTime());
+            }
+
+            Timestamp updatedAt = null;
+            Object rawUpdated = row[6];
+            if (rawUpdated instanceof Timestamp) {
+                updatedAt = (Timestamp) rawUpdated;
+            } else if (rawUpdated instanceof java.time.LocalDateTime ldt) {
+                updatedAt = Timestamp.valueOf(ldt);
+            } else if (rawUpdated instanceof java.util.Date date) {
+                updatedAt = new Timestamp(date.getTime());
+            }
             Boolean isClosed = (Boolean) row[7];
             String authorName = (String) row[8];
             String authorAvatar = (String) row[9];
