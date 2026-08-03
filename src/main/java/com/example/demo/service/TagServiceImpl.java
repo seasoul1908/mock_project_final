@@ -9,7 +9,6 @@ import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.TagFollowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,8 @@ public class TagServiceImpl implements TagService {
     private final TagFollowRepository tagFollowRepository;
 
     @Autowired
-    public TagServiceImpl(TagRepository tagRepository, QuestionRepository questionRepository, TagFollowRepository tagFollowRepository) {
+    public TagServiceImpl(TagRepository tagRepository, QuestionRepository questionRepository,
+            TagFollowRepository tagFollowRepository) {
         this.tagRepository = tagRepository;
         this.questionRepository = questionRepository;
         this.tagFollowRepository = tagFollowRepository;
@@ -56,11 +56,15 @@ public class TagServiceImpl implements TagService {
         }
 
         int totalItems = allTags.size();
-        if (pageSize <= 0) pageSize = 12;
+        if (pageSize <= 0)
+            pageSize = 12;
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-        if (totalPages == 0) totalPages = 1;
-        if (page < 1) page = 1;
-        if (page > totalPages && totalItems > 0) page = totalPages;
+        if (totalPages == 0)
+            totalPages = 1;
+        if (page < 1)
+            page = 1;
+        if (page > totalPages && totalItems > 0)
+            page = totalPages;
 
         int fromIndex = Math.min((page - 1) * pageSize, totalItems);
         int toIndex = Math.min(fromIndex + pageSize, totalItems);
@@ -85,7 +89,8 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<QuestionViewDTO> getQuestionsByTag(Long tagId, String filter, int page, int pageSize) {
-        List<Object[]> results = questionRepository.findQuestionsByTagNative(tagId, filter, org.springframework.data.domain.PageRequest.of(page - 1, pageSize));
+        List<Object[]> results = questionRepository.findQuestionsByTagNative(tagId, filter,
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize));
         List<QuestionViewDTO> questions = new ArrayList<>();
         for (Object[] row : results) {
             Long qId = ((Number) row[0]).longValue();
@@ -119,7 +124,8 @@ public class TagServiceImpl implements TagService {
 
             List<String> tags = questionRepository.findTagNamesByQuestionIdNative(qId);
 
-            questions.add(new QuestionViewDTO(qId, title, body, score, viewCount, createdAt, updatedAt, isClosed, authorName, authorAvatar, answerCount, tags));
+            questions.add(new QuestionViewDTO(qId, title, body, score, viewCount, createdAt, updatedAt, isClosed,
+                    authorName, authorAvatar, answerCount, tags));
         }
         return questions;
     }
@@ -157,7 +163,6 @@ public class TagServiceImpl implements TagService {
             return false;
         }
     }
-
 
     @Override
     public boolean isFollowing(Long userId, Long tagId) {
