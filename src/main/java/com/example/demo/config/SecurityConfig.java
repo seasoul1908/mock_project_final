@@ -23,72 +23,84 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig {
 
-        @Autowired
-        private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Bean
-        public SessionRegistry sessionRegistry() {
-                return new SessionRegistryImpl();
-        }
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
-        @Bean
-        public static HttpSessionEventPublisher httpSessionEventPublisher() {
-                return new HttpSessionEventPublisher();
-        }
+    @Bean
+    public static HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
 
-        @Bean
-        public AuthenticationSuccessHandler roleBasedSuccessHandler() {
-                return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
-                        boolean isAdmin = authentication.getAuthorities().stream()
-                                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                        response.sendRedirect(isAdmin ? "/admin/dashboard" : "/home");
-                };
-        }
+    @Bean
+    public AuthenticationSuccessHandler roleBasedSuccessHandler() {
+        return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
+            // MODERATOR shares the admin area (minus Rules) with ADMIN, so both land on the admin dashboard
+            boolean isAdminOrModerator = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
+                            || a.getAuthority().equals("ROLE_MODERATOR"));
+            response.sendRedirect(isAdminOrModerator ? "/admin/dashboard" : "/home");
+        };
+    }
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http
-                                .authorizeHttpRequests(auth -> auth
-                                                // Expose /error endpoint to stop Spring Security from redirecting to
-                                                // login on
-                                                // failure
-                                                .requestMatchers("/", "/home", "/search", "/tags", "/tags/**", "/api/tags", "/api/tags/**",
-                                                                "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
-                                                                "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
-                                                                "/login/oauth2/**", "/question", "/question/**", "/question-detail",
-                                                                "/trending" , "/accept-terms", "/api/code/**")
-                                                .permitAll()
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        // Expose /error endpoint to stop Spring Security from redirecting to login on failure
+                        .requestMatchers("/", "/home", "/search", "/tags", "/tags/**", "/api/tags", "/api/tags/**",
+                                "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
+                                "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
+                                "/login/oauth2/**", "/question", "/question/**", "/question-detail",
+                                "/trending", "/accept-terms", "/api/code/**")
+                        .permitAll()
 
-                                                .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
-                                                .hasRole("ADMIN")
-                                                .anyRequest().authenticated())
-                                .formLogin(form -> form
-                                                .loginPage("/auth/login")
-                                                .loginProcessingUrl("/auth/login")
-                                                .usernameParameter("email")
-                                                .passwordParameter("password")
-                                                .successHandler(roleBasedSuccessHandler())
-                                                .failureUrl("/auth/login?error=true")
-                                                .permitAll())
-                                .oauth2Login(oauth2 -> oauth2
-                                                .loginPage("/auth/login")
-                                                .successHandler(roleBasedSuccessHandler())
-                                                .userInfoEndpoint(userInfo -> userInfo
-                                                                .userService(customOAuth2UserService)))
-                                .logout(logout -> logout
-                                                .logoutUrl("/auth/logout")
-                                                .logoutSuccessUrl("/auth/login?logout=true")
-                                                .invalidateHttpSession(true))
-                                .sessionManagement(session -> {
-                                        session.maximumSessions(-1).sessionRegistry(sessionRegistry());
-                                })
-                                .csrf(csrf -> csrf.disable());
+                        // Rules management is restricted to ADMIN only (MODERATOR cannot access)
+                        .requestMatchers("/admin/rules", "/admin/rules/**",
+                                "/api/admin/rules", "/api/admin/rules/**")
+                        .hasRole("ADMIN")
 
-                return http.build();
-        }
+                        // All other admin pages/APIs are shared between ADMIN and MODERATOR;
+                        // fine-grained checks (e.g. moderator cannot ban another moderator)
+                        // are enforced in the controllers themselves.
+                        .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
+                        .hasAnyRole("ADMIN", "MODERATOR")
+
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler(roleBasedSuccessHandler())
+                        .failureUrl("/auth/login?error=true")
+                        .permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth/login")
+                        .successHandler(roleBasedSuccessHandler())
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)))
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/auth/login?logout=true")
+                        .invalidateHttpSession(true))
+                .sessionManagement(session -> {
+                    // expiredUrl redirects to login instead of silently halting the
+                    // response when a banned user's session is force-expired mid-request
+                    session.maximumSessions(-1).sessionRegistry(sessionRegistry())
+                            .expiredUrl("/auth/login?expired=true");
+                })
+                .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
 }
