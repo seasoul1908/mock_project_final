@@ -205,6 +205,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                         "ORDER BY v.created_at DESC", countQuery = "SELECT COUNT(*) FROM Votes WHERE user_id = :userId", nativeQuery = true)
         Page<Map<String, Object>> getVotesActivityByUser(@Param("userId") long userId, Pageable pageable);
 
+        @Query(value = "SELECT COUNT(*) FROM Reputation_History WHERE user_id = :userId AND event_type = 'answer_accepted' AND related_post_id = :answerId", nativeQuery = true)
+        int countReputationAwardedForAcceptedAnswer(@Param("userId") long userId, @Param("answerId") long answerId);
+
         @Query(value = "SELECT COUNT(*) FROM Users WHERE email = :email", nativeQuery = true)
         int countByEmailNative(@Param("email") String email);
 

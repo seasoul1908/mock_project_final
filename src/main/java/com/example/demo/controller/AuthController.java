@@ -40,8 +40,10 @@ public class AuthController {
         String cleanUsername = username.trim();
         String cleanEmail = email.trim().toLowerCase();
 
-        if (password.length() < 8 || !password.equals(confirm)) {
-            model.addAttribute("error", "Register failed: password >= 8 and confirm must match.");
+        try {
+            userService.validateRegisterPassword(password, confirm);
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
             return "User/register";
         }
 

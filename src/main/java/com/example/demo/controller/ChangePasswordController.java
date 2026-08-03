@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,25 @@ public class ChangePasswordController {
     }
 
     @GetMapping("/change-password")
-    public String showChangePasswordPage() {
+    public String showChangePasswordPage(
+        Authentication authentication , org.springframework.ui.Model model) {
+        
+        String email;
+
+        if (authentication.getPrincipal() instanceof OAuth2User oauthUser) {
+            email = oauthUser.getAttribute("email");
+        } else {
+            email = authentication.getName();
+        }
+        
+
+        model.addAttribute("canChangePassword", userService.canChangePassword(email));
+
+       
+        
         return "User/change-password";
+
+        
     }
 
     @PostMapping("/change-password")
@@ -31,7 +49,23 @@ public class ChangePasswordController {
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
-        String email = authentication.getName();
+        String email;
+
+        if (authentication.getPrincipal() instanceof OAuth2User oauthUser) {
+            email = oauthUser.getAttribute("email");
+        } else {
+            email = authentication.getName();
+        }
+
+        if (!userService.canChangePassword(email)) {
+
+            redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "This account was created using Google/GitHub Sign-In and does not use a password. Please manage your account through your authentication provider."
+        );
+
+        return "redirect:/change-password";
+        }
 
         try {
 

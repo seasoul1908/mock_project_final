@@ -31,4 +31,9 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Transactional
     @Query(value = "UPDATE Answers SET is_accepted = 1 WHERE answer_id = :answerId", nativeQuery = true)
     void markAccepted(@Param("answerId") long answerId);
+
+    @Query(value = "SELECT TOP 1 * FROM Answers " +
+            "WHERE question_id = :questionId " +
+            "ORDER BY score DESC, created_at ASC", nativeQuery = true)
+    Answer findTopScoringAnswer(@Param("questionId") long questionId);
 }

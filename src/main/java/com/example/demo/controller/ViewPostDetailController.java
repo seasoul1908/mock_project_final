@@ -64,7 +64,10 @@ public class ViewPostDetailController {
             return "redirect:/home";
         }
 
-        questionDetailService.incrementViewCount(id);
+        List<Long> viewedIds = questionViewHistoryService.getViewedQuestionIds(session);
+        if (!viewedIds.contains(id)) {
+            questionDetailService.incrementViewCount(id);
+        }
         questionViewHistoryService.recordViewedQuestion(session, id);
 
         User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
