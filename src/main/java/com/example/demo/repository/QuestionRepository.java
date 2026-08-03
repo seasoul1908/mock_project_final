@@ -192,4 +192,11 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     void deleteQuestionTagsByQuestionId(@Param("questionId") Long questionId);
 
     List<Question> findByUserIdAndIsDraftTrueAndIsDeletedFalseOrderByCreatedAtDesc(long userId);
+
+    @Query(value = "SELECT * FROM Questions " +
+            "WHERE ISNULL(is_deleted, 0) = 0 " +
+            "AND bounty_amount > 0 " +
+            "AND bounty_expires_at IS NOT NULL " +
+            "AND bounty_expires_at <= GETDATE()", nativeQuery = true)
+    List<Question> findExpiredActiveBounties();
 }

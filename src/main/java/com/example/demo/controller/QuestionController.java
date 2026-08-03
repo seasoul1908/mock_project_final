@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.Question;
 import com.example.demo.repository.QuestionRepository;
@@ -181,8 +182,9 @@ public class QuestionController {
 
     @PostMapping("/bounty/add")
     public String addBounty(@RequestParam("questionId") long questionId,
-            @RequestParam("amount") int amount,
-            @RequestParam(value = "days", defaultValue = "7") int days) {
+                            @RequestParam("amount") int amount,
+                            @RequestParam(value = "days", defaultValue = "7") int days,
+                            RedirectAttributes redirectAttributes) {
         User user = getAuthenticatedUser();
         if (user == null) {
             return "redirect:/auth/login";
@@ -190,16 +192,17 @@ public class QuestionController {
 
         try {
             questionService.addBounty(questionId, user.getUserId(), amount, days);
-        } catch (Exception e) {
-            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("bountySuccess", "Bounty added successfully!");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("bountyError", e.getMessage());
         }
 
         return "redirect:/question?id=" + questionId;
     }
-
     @PostMapping("/bounty/award")
     public String awardBounty(@RequestParam("questionId") long questionId,
-            @RequestParam("answerId") long answerId) {
+                              @RequestParam("answerId") long answerId,
+                              RedirectAttributes redirectAttributes) {
         User user = getAuthenticatedUser();
         if (user == null) {
             return "redirect:/auth/login";
@@ -207,13 +210,18 @@ public class QuestionController {
 
         try {
             questionService.awardBounty(questionId, answerId, user.getUserId());
-        } catch (Exception e) {
-            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("bountySuccess", "Bounty awarded successfully!");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            // Bắt đúng message tự nhiên từ service, bao gồm:
+            // "Cannot award bounty to your own answer"
+            // "Only the question owner can award the bounty"
+            // "There is no active bounty on this question"
+            // "Answer does not belong to this question"
+            redirectAttributes.addFlashAttribute("bountyError", e.getMessage());
         }
 
         return "redirect:/question?id=" + questionId + "#answer-" + answerId;
     }
-
     private User getAuthenticatedUser() {
         org.springframework.security.core.Authentication auth = 
                 org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();

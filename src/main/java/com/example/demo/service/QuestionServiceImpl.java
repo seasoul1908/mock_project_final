@@ -23,6 +23,12 @@ import java.util.List;
 @Service
 @SuppressWarnings("null")
 public class QuestionServiceImpl implements QuestionService {
+    private static final int MIN_BOUNTY_AMOUNT = 50;
+    private static final int MAX_BOUNTY_AMOUNT = 500;
+    private static final int BOUNTY_AMOUNT_STEP = 50;
+    private static final int MIN_BOUNTY_DAYS = 1;
+    private static final int MAX_BOUNTY_DAYS = 30;
+    private static final int MIN_REPUTATION_FLOOR = 1;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -310,15 +316,18 @@ public class QuestionServiceImpl implements QuestionService {
         // stay in the DB but become inaccessible because the question is hidden.
         questionRepository.softDeleteQuestion(questionId, userId);
     }
-
     @Override
     @Transactional
     public void addBounty(long questionId, long userId, int amount, int days) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Bounty amount must be greater than 0");
+        if (days < MIN_BOUNTY_DAYS || days > MAX_BOUNTY_DAYS) {
+            throw new IllegalArgumentException(
+                    "Bounty duration must be between " + MIN_BOUNTY_DAYS + " and " + MAX_BOUNTY_DAYS + " days");
         }
-        if (days <= 0) {
-            days = 7;
+
+        if (amount < MIN_BOUNTY_AMOUNT || amount > MAX_BOUNTY_AMOUNT || amount % BOUNTY_AMOUNT_STEP != 0) {
+            throw new IllegalArgumentException(
+                    "Bounty amount must be between " + MIN_BOUNTY_AMOUNT + " and " + MAX_BOUNTY_AMOUNT
+                            + ", in increments of " + BOUNTY_AMOUNT_STEP);
         }
 
         Question question = questionRepository.findById(questionId)
@@ -334,11 +343,13 @@ public class QuestionServiceImpl implements QuestionService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         int currentRep = owner.getReputation() != null ? owner.getReputation() : 0;
-        if (currentRep < amount) {
-            throw new IllegalStateException("You do not have enough reputation to offer this bounty");
+
+        if (currentRep - amount < MIN_REPUTATION_FLOOR) {
+            throw new IllegalStateException(
+                    "You do not have enough reputation to offer this bounty (must keep at least "
+                            + MIN_REPUTATION_FLOOR + " reputation)");
         }
 
-        // Deduct reputation immediately (committed bounty)
         userRepository.addReputation(userId, -amount);
         userRepository.insertReputationHistory(userId, -amount,
                 "Placed bounty on question", "bounty", "question", questionId, userId);
@@ -370,19 +381,23 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("Answer does not belong to this question");
         }
 
+        if (answer.getUserId() == userId) {
+            throw new IllegalStateException("Cannot award bounty to your own answer");
+        }
+
         int amount = question.getBountyAmount();
         long authorId = answer.getUserId();
 
-        // Transfer bounty reputation to the answer author
         userRepository.addReputation(authorId, amount);
         userRepository.insertReputationHistory(authorId, amount,
                 "Bounty awarded on answer", "bounty", "answer", answerId, userId);
 
-        // Reset bounty fields
         question.setBountyAmount(0);
         question.setBountyAwarderId(null);
         question.setBountyStartedAt(null);
         question.setBountyExpiresAt(null);
         questionRepository.save(question);
     }
+
+
 }

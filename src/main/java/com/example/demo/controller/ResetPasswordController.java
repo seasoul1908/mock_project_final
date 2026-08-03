@@ -1,5 +1,5 @@
 package com.example.demo.controller;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,22 +9,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.MailService;
 import com.example.demo.service.PasswordResetTokenStore;
+import com.example.demo.service.UserService;
 
 @Controller
 public class ResetPasswordController {
     private final UserRepository userRepository;
     private final PasswordResetTokenStore tokenStore;
     private final MailService mailService;
-    private final PasswordEncoder passwordEncoder;
     
+    private final UserService userService;
     public ResetPasswordController(UserRepository userRepository,
                                    PasswordResetTokenStore tokenStore,
                                    MailService mailService,
-                                   PasswordEncoder passwordEncoder) {
+                                   
+                                   UserService userService) {
         this.userRepository = userRepository;
         this.tokenStore = tokenStore;
         this.mailService = mailService;
-        this.passwordEncoder = passwordEncoder;
+        
+        this.userService = userService;
     }
 
      @GetMapping("/forgot-password")
@@ -45,6 +48,14 @@ public class ResetPasswordController {
         if (userRepository.countByEmailNative(safeEmail) <= 0) {
             model.addAttribute("error", "Email does not exist.");
             return "User/forgot_password";
+        }
+
+        if (!userService.isLocalAccount(safeEmail)) {
+        model.addAttribute(
+        "error",
+        "This account uses Google/GitHub Sign-In. Please sign in using your authentication provider."
+        );
+        return "User/forgot_password";
         }
 
         try {
@@ -69,6 +80,12 @@ public class ResetPasswordController {
             return "User/reset_password";
         }
 
+        if (!userService.isLocalAccount(email)) {
+        model.addAttribute("error",
+            "This account uses Google/GitHub Sign-In.");
+        return "User/reset_password";
+        }
+        
         model.addAttribute("token", token);
         return "User/reset_password";
     }
@@ -85,30 +102,33 @@ public class ResetPasswordController {
             return "User/reset_password";
         }
 
-        if (password == null || password.length() < 8) {
+        try {
+
+            userService.validatePassword(password, confirmPassword);
+
+
+            userService.changPassword(email, password);
+
+        }catch (RuntimeException e){
             model.addAttribute("token", token);
-            model.addAttribute("error", "Password must be at least 8 characters.");
+            model.addAttribute("error", e.getMessage());
+
             return "User/reset_password";
-        }
+        }catch (Exception e) {
 
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("token", token);
-            model.addAttribute("error", "Confirm password does not match.");
-            return "User/reset_password";
-        }
-
-        String encodedPassword = passwordEncoder.encode(password);
-
-        int updatedRows = userRepository.updatePasswordByEmail(email, encodedPassword);
-
-        if (updatedRows <= 0) {
             model.addAttribute("token", token);
             model.addAttribute("error", "Could not update password.");
+
             return "User/reset_password";
         }
 
         tokenStore.removeToken(token);
 
-        return "redirect:/auth/login?resetSuccess=true";
+        model.addAttribute(
+            "success",
+        "Your password has been reset successfully."
+        );
+
+        return "User/reset_password";
     }
 }
