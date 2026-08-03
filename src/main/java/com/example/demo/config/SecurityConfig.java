@@ -57,12 +57,13 @@ public class SecurityConfig {
                                                 // Expose /error endpoint to stop Spring Security from redirecting to
                                                 // login on
                                                 // failure
-                                                .requestMatchers("/", "/home", "/search", "/tags", "/tags/**",
+                                                .requestMatchers("/", "/home", "/search", "/tags", "/tags/**", "/api/tags", "/api/tags/**",
                                                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
                                                                 "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
                                                                 "/login/oauth2/**", "/question", "/question/**", "/question-detail",
                                                                 "/trending" , "/accept-terms", "/api/code/**")
                                                 .permitAll()
+
                                                 .requestMatchers("/admin/**", "/api/admin/**", "/dashboard")
                                                 .hasRole("ADMIN")
                                                 .anyRequest().authenticated())
