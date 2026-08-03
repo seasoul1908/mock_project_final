@@ -12,7 +12,7 @@
 | 2 | Backend Tag Pagination & Follow API | Update/implement Tag listing REST API (`page`, `limit`/`size`, `totalPages`, `totalItems`, `currentPage`, `data`) & Follow REST API | M1 | DONE |
 | 3 | Frontend Tag Pagination & Dynamic Follow UI | Implement pagination UI controls & dynamic state/color toggle for Follow button | M2 | DONE |
 | 4 | Automated E2E Testing & Coverage | Create & execute Playwright test suite verifying pagination, button states, 200 HTTP, 0 console errors | M3 | DONE |
-| 5 | DevOps / Git Verification & Push | Verify 100% test pass, semantic commit, and push to remote branch `dphu` | M4 | IN_PROGRESS |
+| 5 | DevOps / Git Verification & Push | Verify 100% test pass, semantic commit, and push to remote branch `dphu` | M4 | DONE |
 
 ## Interface Contracts
 ### Tag REST Controller ↔ Frontend Client
