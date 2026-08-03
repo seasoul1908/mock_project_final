@@ -311,6 +311,150 @@
         body.dark-theme .empty-state {
             color: var(--text-muted) !important;
         }
+
+        /* Modal Custom Styling */
+        .modal-custom {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content-custom {
+            background-color: var(--bg-panel, #fff);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color, #d6d9dc);
+            width: 400px;
+            border-radius: 5px;
+            color: var(--text-primary);
+        }
+
+        .close-custom {
+            color: var(--text-secondary);
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-custom:hover {
+            color: var(--text-primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            gap: 4px;
+            margin-top: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color, #d6d9dc);
+            border-radius: 3px;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--blue, #0074cc);
+            background: var(--bg-panel, #fff);
+            transition: all 0.2s ease;
+        }
+
+        .pagination a:hover {
+            background: var(--btn-hover-bg, #f8f9f9);
+        }
+
+        .pagination span.current {
+            background: #f48024;
+            color: #fff;
+            border-color: #f48024;
+            font-weight: 600;
+        }
+
+        .pagination span.disabled,
+        .pagination a.disabled {
+            color: var(--text-muted, #9fa6ad);
+            background: var(--bg-panel, #f8f9f9);
+            border-color: var(--border-color, #d6d9dc);
+            cursor: not-allowed;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Watch / Follow Button */
+        .btn-watch {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .btn-watch.not-followed {
+            background: var(--blue, #0074cc);
+            color: #fff;
+            border-color: var(--blue, #0074cc);
+        }
+
+        .btn-watch.not-followed:hover {
+            background: #005999;
+            border-color: #005999;
+        }
+
+        .btn-watch.followed {
+            background: #fff;
+            color: #6a737c;
+            border-color: #9fa6ad;
+        }
+
+        .btn-watch.followed:hover {
+            background: #f8f9f9;
+        }
+
+        body.dark-theme .pagination a,
+        body.dark-theme .pagination span {
+            background-color: var(--bg-panel) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        body.dark-theme .pagination span.current {
+            background-color: #f48024 !important;
+            color: #fff !important;
+            border-color: #f48024 !important;
+        }
+
+        body.dark-theme .pagination span.disabled {
+            color: var(--text-muted) !important;
+            opacity: 0.5;
+        }
+
+        body.dark-theme .btn-watch.followed {
+            background-color: var(--bg-panel) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        body.dark-theme .btn-watch.not-followed {
+            background-color: #0074cc !important;
+            color: #fff !important;
+            border-color: #0074cc !important;
+        }
     </style>
 </head>
 
@@ -339,16 +483,29 @@
                             th:value="${keyword}" />
                     </div>
 
-                    <div class="sort-buttons">
-                        <a th:href="@{/tags(sort='popular', search=${keyword})}"
-                            th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
-                        <a th:href="@{/tags(sort='name', search=${keyword})}"
-                            th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
-                        <a th:href="@{/tags(sort='newest', search=${keyword})}"
-                            th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="sort-buttons">
+                            <a th:href="@{/tags(sort='popular', search=${keyword})}"
+                                th:classappend="${sort == 'popular' ? 'active' : ''}">Popular</a>
+                            <a th:href="@{/tags(sort='name', search=${keyword})}"
+                                th:classappend="${sort == 'name' || sort == null ? 'active' : ''}">Name</a>
+                            <a th:href="@{/tags(sort='newest', search=${keyword})}"
+                                th:classappend="${sort == 'newest' ? 'active' : ''}">New</a>
+                        </div>
+                        
+                        <button th:if="${canCreateTag}" type="button" id="btnCreateTagOpen" class="btn btn-primary btn-sm px-3 text-white" style="border: none; height: 35px; font-weight: 500;"
+                            onclick="document.getElementById('createTagModal').style.display = 'block'">
+                            <i class="fa-solid fa-plus me-1"></i> Create Tag
+                        </button>
                     </div>
                 </div>
             </form>
+
+            <div class="alert alert-danger" th:if="${param.error != null}">
+                <span th:if="${param.error[0] == 'reputation'}">You need at least 50 reputation to create a new tag.</span>
+                <span th:if="${param.error[0] == 'exists'}">Tag already exists!</span>
+                <span th:if="${param.error[0] == 'empty_name'}">Tag name cannot be empty.</span>
+            </div>
 
             <div th:if="${keyword != null && !keyword.isEmpty()}">
                 <p class="search-result-count">
@@ -369,6 +526,14 @@
                 <div th:each="tag : ${tagList}" class="tag-card">
                     <div class="tag-card-header">
                         <a th:href="@{'/tags/' + ${tag.id}}" class="tag-badge" th:text="${tag.tagName}">TagName</a>
+                        <button type="button" 
+                                class="btn-watch tag-follow-btn" 
+                                th:classappend="${tag.isFollowed != null && tag.isFollowed ? 'followed' : 'not-followed'}"
+                                th:data-tag-id="${tag.id}"
+                                th:data-is-followed="${tag.isFollowed != null && tag.isFollowed}">
+                            <i class="fa-solid" th:classappend="${tag.isFollowed != null && tag.isFollowed ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            <span class="follow-text" th:text="${tag.isFollowed != null && tag.isFollowed ? 'Following' : 'Follow'}">Follow</span>
+                        </button>
                     </div>
                     <p class="tag-desc">
                         <span th:if="${tag.description != null && !tag.description.isEmpty()}"
@@ -378,8 +543,31 @@
                     </p>
                     <div class="tag-stats">
                         <span th:text="${tag.questionCount}">0</span> questions
+                        &nbsp;·&nbsp;
+                        <span class="follower-count-val" th:text="${tag.followerCount != null ? tag.followerCount : 0}">0</span> followers
                     </div>
                 </div>
+            </div>
+
+            <!-- Pagination UI Controls -->
+            <div th:if="${totalPages != null && totalPages > 0}" class="pagination">
+                <!-- Previous Button -->
+                <span th:if="${currentPage <= 1}" class="disabled">Prev</span>
+                <a th:if="${currentPage > 1}" 
+                   th:href="@{/tags(page=${currentPage - 1}, size=${param.size != null ? param.size : 12}, search=${keyword}, sort=${sort})}">Prev</a>
+
+                <!-- Page Numbers -->
+                <th:block th:each="p : ${#numbers.sequence(1, totalPages)}">
+                    <span th:if="${p == currentPage}" class="current" th:text="${p}">1</span>
+                    <a th:unless="${p == currentPage}" 
+                       th:href="@{/tags(page=${p}, size=${param.size != null ? param.size : 12}, search=${keyword}, sort=${sort})}" 
+                       th:text="${p}">1</a>
+                </th:block>
+
+                <!-- Next Button -->
+                <span th:if="${currentPage >= totalPages}" class="disabled">Next</span>
+                <a th:if="${currentPage < totalPages}" 
+                   th:href="@{/tags(page=${currentPage + 1}, size=${param.size != null ? param.size : 12}, search=${keyword}, sort=${sort})}">Next</a>
             </div>
         </main>
     </div>
@@ -407,6 +595,104 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.tag-follow-btn, .btn-watch');
+                if (!btn) return;
+
+                const tagId = btn.getAttribute('data-tag-id');
+                if (!tagId) return;
+
+                e.preventDefault();
+
+                const isCurrentlyFollowed = btn.classList.contains('followed');
+                const nextAction = isCurrentlyFollowed ? 'unfollow' : 'follow';
+
+                fetch(`/api/tags/${tagId}/follow?action=${nextAction}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = '/auth/login';
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data || data.status !== 'success') return;
+
+                    const isFollowed = data.isFollowed;
+
+                    if (isFollowed) {
+                        btn.classList.remove('not-followed');
+                        btn.classList.add('followed');
+                    } else {
+                        btn.classList.remove('followed');
+                        btn.classList.add('not-followed');
+                    }
+                    btn.setAttribute('data-is-followed', isFollowed);
+
+                    const textSpan = btn.querySelector('.follow-text');
+                    if (textSpan) {
+                        textSpan.textContent = isFollowed ? 'Following' : 'Follow';
+                    } else {
+                        btn.textContent = isFollowed ? 'Following' : 'Follow';
+                    }
+
+                    const icon = btn.querySelector('i');
+                    if (icon) {
+                        icon.className = isFollowed ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+                    }
+
+                    const card = btn.closest('.tag-card, .main-content, .action-bar');
+                    if (card) {
+                        const followerSpan = card.querySelector('.follower-count-val');
+                        if (followerSpan) {
+                            let currentVal = parseInt(followerSpan.textContent, 10) || 0;
+                            followerSpan.textContent = isFollowed ? currentVal + 1 : Math.max(0, currentVal - 1);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error toggling tag follow state:', err);
+                });
+            });
+        });
+    </script>
+    <!-- Create Tag Modal -->
+    <div id="createTagModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <span onclick="document.getElementById('createTagModal').style.display = 'none'"
+                class="close-custom" id="closeCreateTagModal">&times;</span>
+            <h4 style="margin-top: 0; font-size: 18px; font-weight: 500;">Create a new tag</h4>
+            <form th:action="@{/tags/new}" method="post">
+                <div class="mb-3 mt-3">
+                    <label class="form-label fw-bold small">Tag Name</label>
+                    <input type="text" name="tagName" class="form-control" placeholder="e.g. spring-security" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Describe what this tag is for..." required></textarea>
+                </div>
+                <div class="text-end mt-4">
+                    <button type="button" onclick="document.getElementById('createTagModal').style.display = 'none'"
+                        class="btn btn-outline-secondary btn-sm me-2">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm text-white" id="btnCreateTagSubmit" style="border: none;">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('click', function (event) {
+            if (event.target == document.getElementById('createTagModal')) {
+                document.getElementById('createTagModal').style.display = "none";
+            }
+        });
     </script>
 </body>
 

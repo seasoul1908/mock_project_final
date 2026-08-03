@@ -16,7 +16,7 @@ public class Question {
     private long userId;
 
     private String title;
-    
+
     private String body;
 
     @Column(name = "code_snippet")
@@ -70,10 +70,14 @@ public class Question {
     @Column(name = "deleted_by")
     private Long deletedBy;
 
+    @Column(name = "is_draft", nullable = false, columnDefinition = "bit default 0")
+    private boolean isDraft = false;
+
     public Question() {
     }
 
-    public Question(long questionId, long userId, String title, String body, String codeSnippet, int viewCount, boolean isClosed, String closedReason, Timestamp createdAt, Timestamp updatedAt, int score) {
+    public Question(long questionId, long userId, String title, String body, String codeSnippet, int viewCount,
+            boolean isClosed, String closedReason, Timestamp createdAt, Timestamp updatedAt, int score) {
         this.questionId = questionId;
         this.userId = userId;
         this.title = title;
@@ -106,59 +110,149 @@ public class Question {
         this.acceptedAnswerId = acceptedAnswerId;
     }
 
-    public long getQuestionId() { return questionId; }
-    public void setQuestionId(long questionId) { this.questionId = questionId; }
+    public long getQuestionId() {
+        return questionId;
+    }
 
-    public long getUserId() { return userId; }
-    public void setUserId(long userId) { this.userId = userId; }
+    public void setQuestionId(long questionId) {
+        this.questionId = questionId;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public long getUserId() {
+        return userId;
+    }
 
-    public String getBody() { return body; }
-    public void setBody(String body) { this.body = body; }
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
-    public String getCodeSnippet() { return codeSnippet; }
-    public void setCodeSnippet(String codeSnippet) { this.codeSnippet = codeSnippet; }
+    public String getTitle() {
+        return title;
+    }
 
-    public int getViewCount() { return viewCount; }
-    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public boolean isIsClosed() { return isClosed; }
-    public void setIsClosed(boolean isClosed) { this.isClosed = isClosed; }
+    public String getBody() {
+        return body;
+    }
 
-    public String getClosedReason() { return closedReason; }
-    public void setClosedReason(String closedReason) { this.closedReason = closedReason; }
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-    public Long getClosedBy() { return closedBy; }
-    public void setClosedBy(Long closedBy) { this.closedBy = closedBy; }
+    public String getCodeSnippet() {
+        return codeSnippet;
+    }
 
-    public Timestamp getClosedAt() { return closedAt; }
-    public void setClosedAt(Timestamp closedAt) { this.closedAt = closedAt; }
+    public void setCodeSnippet(String codeSnippet) {
+        this.codeSnippet = codeSnippet;
+    }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public int getViewCount() {
+        return viewCount;
+    }
 
-    public Timestamp getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
 
-    public int getScore() { return score; }
-    public void setScore(int score) { this.score = score; }
+    public boolean isIsClosed() {
+        return isClosed;
+    }
 
-    public Long getAcceptedAnswerId() { return acceptedAnswerId; }
-    public void setAcceptedAnswerId(Long acceptedAnswerId) { this.acceptedAnswerId = acceptedAnswerId; }
+    public void setIsClosed(boolean isClosed) {
+        this.isClosed = isClosed;
+    }
 
-    public int getBountyAmount() { return bountyAmount; }
-    public void setBountyAmount(int bountyAmount) { this.bountyAmount = bountyAmount; }
+    public String getClosedReason() {
+        return closedReason;
+    }
 
-    public Long getBountyAwarderId() { return bountyAwarderId; }
-    public void setBountyAwarderId(Long bountyAwarderId) { this.bountyAwarderId = bountyAwarderId; }
+    public void setClosedReason(String closedReason) {
+        this.closedReason = closedReason;
+    }
 
-    public Timestamp getBountyStartedAt() { return bountyStartedAt; }
-    public void setBountyStartedAt(Timestamp bountyStartedAt) { this.bountyStartedAt = bountyStartedAt; }
+    public Long getClosedBy() {
+        return closedBy;
+    }
 
-    public Timestamp getBountyExpiresAt() { return bountyExpiresAt; }
-    public void setBountyExpiresAt(Timestamp bountyExpiresAt) { this.bountyExpiresAt = bountyExpiresAt; }
+    public void setClosedBy(Long closedBy) {
+        this.closedBy = closedBy;
+    }
+
+    public Timestamp getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(Timestamp closedAt) {
+        this.closedAt = closedAt;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public Long getAcceptedAnswerId() {
+        return acceptedAnswerId;
+    }
+
+    public void setAcceptedAnswerId(Long acceptedAnswerId) {
+        this.acceptedAnswerId = acceptedAnswerId;
+    }
+
+    public int getBountyAmount() {
+        return bountyAmount;
+    }
+
+    public void setBountyAmount(int bountyAmount) {
+        this.bountyAmount = bountyAmount;
+    }
+
+    public Long getBountyAwarderId() {
+        return bountyAwarderId;
+    }
+
+    public void setBountyAwarderId(Long bountyAwarderId) {
+        this.bountyAwarderId = bountyAwarderId;
+    }
+
+    public Timestamp getBountyStartedAt() {
+        return bountyStartedAt;
+    }
+
+    public void setBountyStartedAt(Timestamp bountyStartedAt) {
+        this.bountyStartedAt = bountyStartedAt;
+    }
+
+    public Timestamp getBountyExpiresAt() {
+        return bountyExpiresAt;
+    }
+
+    public void setBountyExpiresAt(Timestamp bountyExpiresAt) {
+        this.bountyExpiresAt = bountyExpiresAt;
+    }
 
     public boolean hasBounty() {
         return bountyAmount > 0;
@@ -169,12 +263,35 @@ public class Question {
                 && bountyExpiresAt.after(new Timestamp(System.currentTimeMillis()));
     }
 
-    public boolean isIsDeleted() { return isDeleted; }
-    public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
+    public boolean isIsDeleted() {
+        return isDeleted;
+    }
 
-    public Timestamp getDeletedAt() { return deletedAt; }
-    public void setDeletedAt(Timestamp deletedAt) { this.deletedAt = deletedAt; }
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
-    public Long getDeletedBy() { return deletedBy; }
-    public void setDeletedBy(Long deletedBy) { this.deletedBy = deletedBy; }
+    public Timestamp getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Timestamp deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public Long getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(Long deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public boolean isDraft() {
+        return isDraft;
+    }
+
+    public void setIsDraft(boolean isDraft) {
+        this.isDraft = isDraft;
+    }
 }

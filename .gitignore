@@ -56,3 +56,5 @@ application-local.properties
 logs/
 .DS_Store
 Thumbs.db
+
+application-secrets.properties
