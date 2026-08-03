@@ -51,6 +51,17 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     @Transactional
     public Question saveQuestion(Long userId, String title, String body, String codeSnippet, String tagsStr) {
+        return saveQuestion(userId, title, body, codeSnippet, tagsStr, false);
+    }
+
+    @Override
+    @Transactional
+    public Question saveQuestion(Long userId, String title, String body, String tagsStr, boolean isDraft) {
+        return saveQuestion(userId, title, body, null, tagsStr, isDraft);
+    }
+
+    @Transactional
+    public Question saveQuestion(Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -67,6 +78,7 @@ public class QuestionServiceImpl implements QuestionService {
         question.setViewCount(0);
         question.setScore(0);
         question.setIsClosed(false);
+        question.setIsDraft(isDraft);
 
         Question savedQuestion = questionRepository.save(question);
 
@@ -83,7 +95,7 @@ public class QuestionServiceImpl implements QuestionService {
                 Long tagId = questionRepository.findTagIdByName(tagName);
                 if (tagId == null) {
                     // Check user reputation
-                    int reputation = user.getReputation();
+                    int reputation = user.getReputation() != null ? user.getReputation() : 0;
                     if (reputation < 50) {
                         invalidTags.add(tagName);
                     } else {
@@ -111,8 +123,10 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
 
-        // Create Notifications
-        createNotifications(user, savedQuestion);
+        // Create Notifications ONLY if not draft
+        if (!isDraft) {
+            createNotifications(user, savedQuestion);
+        }
 
         // Save Original version history entry
         String finalTags = (tagsStr != null) ? tagsStr.trim() : "";
@@ -128,6 +142,90 @@ public class QuestionServiceImpl implements QuestionService {
         ));
 
         return savedQuestion;
+    }
+
+    @Override
+    @Transactional
+    public void saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft) {
+        Question question = questionRepository.findById(draftId)
+                .orElseThrow(() -> new IllegalArgumentException("Draft not found"));
+
+        if (question.getUserId() != userId) {
+            throw new IllegalStateException("You can only update your own draft");
+        }
+        if (!question.isDraft()) {
+            throw new IllegalStateException("This post is already published and cannot be saved as a draft");
+        }
+
+        question.setTitle(title.trim());
+        question.setBody(body.trim());
+        if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
+            question.setCodeSnippet(codeSnippet.trim());
+        } else {
+            question.setCodeSnippet(null);
+        }
+        question.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        question.setIsDraft(isDraft);
+
+        Question savedQuestion = questionRepository.save(question);
+
+        // Delete existing tags
+        questionRepository.deleteQuestionTagsByQuestionId(draftId);
+
+        // Process Tags
+        if (tagsStr != null && !tagsStr.trim().isEmpty()) {
+            String[] tags = tagsStr.split(",");
+            List<String> invalidTags = new ArrayList<>();
+            List<Long> tagIdsToLink = new ArrayList<>();
+
+            for (String rawTag : tags) {
+                String tagName = rawTag.trim().toLowerCase();
+                if (tagName.isEmpty()) continue;
+
+                Long tagId = questionRepository.findTagIdByName(tagName);
+                if (tagId == null) {
+                    // Check user reputation
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                    int reputation = user.getReputation() != null ? user.getReputation() : 0;
+                    if (reputation < 50) {
+                        invalidTags.add(tagName);
+                    } else {
+                        // Create new tag
+                        Tag newTag = new Tag();
+                        newTag.setTagName(tagName);
+                        newTag.setDescription("Description for " + tagName);
+                        newTag.setIsActive(true);
+                        newTag = tagRepository.save(newTag);
+                        tagIdsToLink.add(newTag.getId());
+                    }
+                } else {
+                    tagIdsToLink.add(tagId);
+                }
+            }
+
+            if (!invalidTags.isEmpty()) {
+                throw new IllegalArgumentException("You need at least 50 reputation to create new tags. Invalid tags: " 
+                        + String.join(", ", invalidTags));
+            }
+
+            // Link tags in Question_Tags
+            for (Long tagId : tagIdsToLink) {
+                questionRepository.insertQuestionTag(savedQuestion.getQuestionId(), tagId);
+            }
+        }
+
+        // If transitioning from draft to published, create notifications
+        if (!isDraft) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            createNotifications(user, savedQuestion);
+        }
+    }
+
+    @Override
+    public List<Question> getDraftsByUserId(Long userId) {
+        return questionRepository.findByUserIdAndIsDraftTrueAndIsDeletedFalseOrderByCreatedAtDesc(userId);
     }
 
     private void createNotifications(User author, Question question) {

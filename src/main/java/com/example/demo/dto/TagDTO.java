@@ -7,6 +7,7 @@ public class TagDTO {
     private Boolean isActive;
     private Integer questionCount;
     private Integer followerCount;
+    private Boolean isFollowed = false;
 
     public TagDTO() {
     }
@@ -18,6 +19,17 @@ public class TagDTO {
         this.isActive = isActive;
         this.questionCount = questionCount;
         this.followerCount = followerCount;
+        this.isFollowed = false;
+    }
+
+    public TagDTO(Long id, String tagName, String description, Boolean isActive, Integer questionCount, Integer followerCount, Boolean isFollowed) {
+        this.id = id;
+        this.tagName = tagName;
+        this.description = description;
+        this.isActive = isActive;
+        this.questionCount = questionCount;
+        this.followerCount = followerCount;
+        this.isFollowed = isFollowed;
     }
 
     public Long getId() {
@@ -67,4 +79,17 @@ public class TagDTO {
     public void setFollowerCount(Integer followerCount) {
         this.followerCount = followerCount;
     }
+
+    public Boolean getIsFollowed() {
+        return isFollowed;
+    }
+
+    public Boolean isFollowed() {
+        return isFollowed;
+    }
+
+    public void setIsFollowed(Boolean isFollowed) {
+        this.isFollowed = isFollowed;
+    }
 }
+

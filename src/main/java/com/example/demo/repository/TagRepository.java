@@ -7,13 +7,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
     @Query(value = "SELECT t.tag_id as id, t.tag_name as tagName, t.description as description, t.IsActive as isActive, " +
             "(SELECT COUNT(*) FROM Question_Tags qt WHERE qt.tag_id = t.tag_id) as questionCount, " +
-            "0 as followerCount " +
+            "(SELECT COUNT(*) FROM TagFollow tf WHERE tf.tag_id = t.tag_id) as followerCount " +
             "FROM Tags t " +
             "WHERE t.IsActive = 1 " +
             "AND (:keyword IS NULL OR LOWER(t.tag_name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
@@ -25,8 +26,11 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
     @Query(value = "SELECT t.tag_id as id, t.tag_name as tagName, t.description as description, t.IsActive as isActive, " +
             "(SELECT COUNT(*) FROM Question_Tags qt WHERE qt.tag_id = t.tag_id) as questionCount, " +
-            "0 as followerCount " +
+            "(SELECT COUNT(*) FROM TagFollow tf WHERE tf.tag_id = t.tag_id) as followerCount " +
             "FROM Tags t " +
             "WHERE t.tag_id = :id AND t.IsActive = 1", nativeQuery = true)
     List<Object[]> findTagByIdNative(@Param("id") Long id);
+
+
+    Optional<Tag> findByTagNameIgnoreCase(String tagName);
 }
