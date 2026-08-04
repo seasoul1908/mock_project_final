@@ -180,8 +180,9 @@
 <script>
     const toast = new bootstrap.Toast(document.getElementById('toast'), { delay: 2500 });
 
-    // Online/Offline is computed live from active sessions, so poll periodically instead of
-    // requiring a full page reload to see when a user comes online/offline.
+    // Online/Offline is computed live from active sessions (works for member AND moderator rows
+    // alike, since both appear in this table). Poll periodically so the badge flips the moment a
+    // user logs in/out, without ever requiring a full page reload.
     function refreshOnlineStatus() {
         fetch('/api/admin/users/online-ids').then(r => r.json()).then(onlineIds => {
             document.querySelectorAll('tr[id^="row-"]').forEach(row => {
@@ -195,7 +196,11 @@
             });
         }).catch(() => {});
     }
-    setInterval(refreshOnlineStatus, 10000);
+    // Re-sync right away (covers logins/logouts that happened between server render and page load),
+    // then keep polling at a short interval so status changes feel instant.
+    refreshOnlineStatus();
+    setInterval(refreshOnlineStatus, 3000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshOnlineStatus(); });
 
     function showToast(msg, success) {
         const el = document.getElementById('toast');

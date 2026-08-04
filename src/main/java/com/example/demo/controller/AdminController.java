@@ -174,14 +174,33 @@ public class AdminController {
     }
 
     @GetMapping("/badges")
-    public String badges(@RequestParam(defaultValue = "1") int page, Model model) {
+    public String badges(
+            @RequestParam(defaultValue = "") String type,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String sortDir,
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
         int pageSize = 15;
-        org.springframework.data.domain.Page<com.example.demo.entity.Badge> badgePage = badgeRepository.findAll(
-                org.springframework.data.domain.PageRequest.of(page - 1, pageSize,
-                        org.springframework.data.domain.Sort.by("badgeId")));
+        org.springframework.data.domain.Sort sort;
+        if ("asc".equalsIgnoreCase(sortDir)) {
+            sort = org.springframework.data.domain.Sort.by("requiredReputation").ascending();
+        } else if ("desc".equalsIgnoreCase(sortDir)) {
+            sort = org.springframework.data.domain.Sort.by("requiredReputation").descending();
+        } else {
+            sort = org.springframework.data.domain.Sort.by("badgeId");
+        }
+
+        org.springframework.data.domain.Page<com.example.demo.entity.Badge> badgePage = badgeRepository.findByFilters(
+                type.isBlank() ? null : type,
+                keyword.isBlank() ? null : keyword,
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize, sort));
+
         model.addAttribute("badges", badgePage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", Math.max(1, badgePage.getTotalPages()));
+        model.addAttribute("type", type);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortDir", sortDir);
         return "Admin/badges";
     }
 
