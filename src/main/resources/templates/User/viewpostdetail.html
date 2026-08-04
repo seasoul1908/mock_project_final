@@ -797,7 +797,7 @@
                     <!-- Edited label and timestamp -->
                     <div th:if="${question.edited}" class="text-muted small mb-2 d-flex align-items-center gap-1">
                         <i class="fa-solid fa-pen"></i> Edited <span
-                            th:text="${question.updatedAt != null ? #temporals.format(question.updatedAt, 'MMM dd yyyy HH:mm') : ''}">timestamp</span>
+                            th:text="${question.updatedAt != null ? #dates.format(question.updatedAt, 'MMM dd yyyy HH:mm') : ''}">timestamp</span>
                     </div>
 
                     <div class="post-text" th:text="${question.body}">Question body</div>
@@ -816,7 +816,7 @@
                         <i class="fa-solid fa-trophy"></i>
                         <strong th:text="'+' + ${question.bountyAmount} + ' bounty'">+50 bounty</strong>
                         <span class="text-muted" th:if="${question.bountyExpiresAt != null}"
-                            th:text="'(expires ' + ${#temporals.format(question.bountyExpiresAt, 'MMM dd yyyy')} + ')'">(expires
+                            th:text="'(expires ' + ${#dates.format(question.bountyExpiresAt, 'MMM dd yyyy')} + ')'">(expires
                             Jan 15 2026)</span>
                     </div>
 
@@ -853,12 +853,12 @@
                                 </button>
                             </form>
 
-                        <!-- Report button -->
-                        <button type="button" class="action-btn" data-bs-toggle="modal"
+                            <!-- Report button -->
+                            <button type="button" class="action-btn" data-bs-toggle="modal"
                                 data-bs-target="#reportQuestionModal"
                                 th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != question.authorId}">
-                            <i class="fa-solid fa-flag"></i> Report
-                        </button>
+                                <i class="fa-solid fa-flag"></i> Report
+                            </button>
 
                             <!-- Suggest deletion (admin only) -->
                             <button type="button" class="action-btn text-danger" data-bs-toggle="modal"
@@ -874,7 +874,7 @@
 
                             <span class="text-muted">
                                 asked <span
-                                    th:text="${question.createdAt != null ? #temporals.format(question.createdAt, 'MMM dd yyyy HH:mm') : ''}">date</span>
+                                    th:text="${question.createdAt != null ? #dates.format(question.createdAt, 'MMM dd yyyy HH:mm') : ''}">date</span>
                                 &middot;
                                 <span th:text="${question.viewCount != null ? question.viewCount : 0}">0</span> views
                             </span>
@@ -941,7 +941,7 @@
                                     <a href="#" class="comment-author-so" th:text="${c.authorName}">user</a>
                                     <span th:text="${c.body}">comment text</span>
                                     <span class="comment-time-so ms-1"
-                                        th:text="${c.createdAt != null ? '· ' + #temporals.format(c.createdAt, 'MMM dd, yyyy') : ''}">·
+                                        th:text="${c.createdAt != null ? '· ' + #dates.format(c.createdAt, 'MMM dd, yyyy') : ''}">·
                                         time</span>
                                 </span>
 
@@ -950,21 +950,21 @@
                                         th:attr="data-bs-toggle='collapse', data-bs-target='#reply-form-q-' + ${c.commentId}"
                                         sec:authorize="isAuthenticated()">Reply</button>
 
-                                <button type="button" class="btn p-0 border-0 text-secondary ms-2" style="font-size: 12px;"
-                                        data-bs-toggle="modal"
+                                    <button type="button" class="btn p-0 border-0 text-secondary ms-2"
+                                        style="font-size: 12px;" data-bs-toggle="modal"
                                         th:attr="data-bs-target='#reportCommentModal-' + ${c.commentId}"
                                         th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != c.userId}">
-                                    Report
-                                </button>
+                                        Report
+                                    </button>
 
-                                <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post" class="d-inline m-0"
-                                      onsubmit="return confirm('Delete this comment?');">
-                                    <input type="hidden" name="questionId" th:value="${question.questionId}" />
-                                    <input type="hidden" name="commentId" th:value="${c.commentId}" />
-                                    <button type="submit" class="text-danger">Delete</button>
-                                </form>
+                                    <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post"
+                                        class="d-inline m-0" onsubmit="return confirm('Delete this comment?');">
+                                        <input type="hidden" name="questionId" th:value="${question.questionId}" />
+                                        <input type="hidden" name="commentId" th:value="${c.commentId}" />
+                                        <button type="submit" class="text-danger">Delete</button>
+                                    </form>
 
-                            </div>
+                                </div>
 
                                 <!-- Threaded replies -->
                                 <div th:if="${c.replies != null and !c.replies.isEmpty()}" class="ms-3 mt-2">
@@ -977,7 +977,7 @@
                                             <a href="#" class="comment-author-so" th:text="${r.authorName}">user</a>
                                             <span th:text="${r.body}">reply</span>
                                             <span class="comment-time-so ms-1"
-                                                th:text="${r.createdAt != null ? '· ' + #temporals.format(r.createdAt, 'MMM dd, yyyy') : ''}">·
+                                                th:text="${r.createdAt != null ? '· ' + #dates.format(r.createdAt, 'MMM dd, yyyy') : ''}">·
                                                 time</span>
                                         </div>
                                     </div>
@@ -1123,8 +1123,8 @@
                                     <button type="button" class="action-btn" data-bs-toggle="modal"
                                         th:attr="data-bs-target='#reportAnswerModal-' + ${a.answerId}"
                                         th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != a.authorId}">
-                                    <i class="fa-solid fa-flag"></i> Report
-                                </button>
+                                        <i class="fa-solid fa-flag"></i> Report
+                                    </button>
 
                                     <!-- Suggest deletion (admin only) -->
                                     <button type="button" class="action-btn text-danger" data-bs-toggle="modal"
@@ -1140,7 +1140,7 @@
                                     <div>
                                         <div class="fw-bold" th:text="${a.authorName}">Author</div>
                                         <div class="small text-muted"
-                                            th:text="${a.createdAt != null ? #temporals.format(a.createdAt, 'MMM dd yyyy HH:mm') : ''}">
+                                            th:text="${a.createdAt != null ? #dates.format(a.createdAt, 'MMM dd yyyy HH:mm') : ''}">
                                             date</div>
                                     </div>
                                 </div>
@@ -1182,7 +1182,7 @@
                                             <a href="#" class="comment-author-so" th:text="${c.authorName}">user</a>
                                             <span th:text="${c.body}">comment text</span>
                                             <span class="comment-time-so ms-1"
-                                                th:text="${c.createdAt != null ? '· ' + #temporals.format(c.createdAt, 'MMM dd, yyyy') : ''}">·
+                                                th:text="${c.createdAt != null ? '· ' + #dates.format(c.createdAt, 'MMM dd, yyyy') : ''}">·
                                                 time</span>
                                         </span>
 
@@ -1191,12 +1191,12 @@
                                                 th:attr="data-bs-toggle='collapse', data-bs-target='#reply-form-a-' + ${c.commentId}"
                                                 sec:authorize="isAuthenticated()">Reply</button>
 
-                                        <button type="button" class="btn p-0 border-0 text-secondary ms-2" style="font-size: 12px;"
-                                                data-bs-toggle="modal"
+                                            <button type="button" class="btn p-0 border-0 text-secondary ms-2"
+                                                style="font-size: 12px;" data-bs-toggle="modal"
                                                 th:attr="data-bs-target='#reportCommentModal-' + ${c.commentId}"
                                                 th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != c.userId}">
-                                            Flag
-                                        </button>
+                                                Flag
+                                            </button>
 
                                             <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post"
                                                 class="d-inline m-0" onsubmit="return confirm('Delete this comment?');">
@@ -1219,7 +1219,7 @@
                                                         th:text="${r.authorName}">user</a>
                                                     <span th:text="${r.body}">reply</span>
                                                     <span class="comment-time-so ms-1"
-                                                        th:text="${r.createdAt != null ? '· ' + #temporals.format(r.createdAt, 'MMM dd, yyyy') : ''}">·
+                                                        th:text="${r.createdAt != null ? '· ' + #dates.format(r.createdAt, 'MMM dd, yyyy') : ''}">·
                                                         time</span>
                                                 </div>
                                             </div>
@@ -1375,92 +1375,16 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Question Comment Report Modals -->
-<div th:each="c : ${question.comments}">
-    <div class="modal fade" th:id="'reportCommentModal-' + ${c.commentId}" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Report Comment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form th:action="@{/reports/submit}" method="post">
-                    <div class="modal-body">
-                        <input type="hidden" name="targetType" value="comment" />
-                        <input type="hidden" name="targetId" th:value="${c.commentId}" />
-                        <input type="hidden" name="questionId" th:value="${question.questionId}" />
-                        <div class="mb-3">
-                            <label class="form-label">Reason</label>
-                            <input type="text" name="reason" class="form-control" required maxlength="200" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Additional Notes (optional)</label>
-                            <textarea name="note" class="form-control" rows="2" maxlength="500"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Report</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Answer Comment Report Modals -->
-<div th:each="a : ${answers}" th:if="${!a.deleted}">
-    <div th:each="c : ${a.comments}">
-        <div class="modal fade" th:id="'reportCommentModal-' + ${c.commentId}" tabindex="-1">
+    <!-- Answer Modals (Report & Suggest Deletion) -->
+    <div th:each="a : ${answers}" th:if="${!a.deleted}">
+        <!-- Report Answer Modal -->
+        <div class="modal fade" th:id="'reportAnswerModal-' + ${a.answerId}" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Report Comment</h5>
+                        <h5 class="modal-title">Report Answer</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form th:action="@{/reports/submit}" method="post">
-                        <div class="modal-body">
-                            <input type="hidden" name="targetType" value="comment" />
-                            <input type="hidden" name="targetId" th:value="${c.commentId}" />
-                            <input type="hidden" name="questionId" th:value="${question.questionId}" />
-                            <div class="mb-3">
-                                <label class="form-label">Reason</label>
-                                <input type="text" name="reason" class="form-control" required maxlength="200" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Additional Notes (optional)</label>
-                                <textarea name="note" class="form-control" rows="2" maxlength="500"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger">Report</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Bounty Modal -->
-<div class="modal fade" id="addBountyModal" tabindex="-1" th:if="${question.canEdit}">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Bounty</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form th:action="@{/questions/bounty/add}" method="post">
-                <div class="modal-body">
-                    <input type="hidden" name="questionId" th:value="${question.questionId}" />
-                    <div class="mb-3">
-                        <label class="form-label">Bounty Amount</label>
-                        <input type="number" name="amount" class="form-control" min="50" max="500" step="50"
-                               value="50" required />
-                        <small class="text-muted">Must be between 50 and 500 (multiples of 50)</small>
                     </div>
                     <form th:action="@{/reports/submit}" method="post">
                         <div class="modal-body">
@@ -1509,6 +1433,74 @@
                             <button type="submit" class="btn btn-danger">Suggest Deletion</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Comment Report Modals -->
+    <div th:each="c : ${question.comments}">
+        <div class="modal fade" th:id="'reportCommentModal-' + ${c.commentId}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Report Comment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/reports/submit}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="targetType" value="comment" />
+                            <input type="hidden" name="targetId" th:value="${c.commentId}" />
+                            <input type="hidden" name="questionId" th:value="${question.questionId}" />
+                            <div class="mb-3">
+                                <label class="form-label">Reason</label>
+                                <input type="text" name="reason" class="form-control" required maxlength="200" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Additional Notes (optional)</label>
+                                <textarea name="note" class="form-control" rows="2" maxlength="500"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Comment Report Modals -->
+    <div th:each="a : ${answers}" th:if="${!a.deleted}">
+        <div th:each="c : ${a.comments}">
+            <div class="modal fade" th:id="'reportCommentModal-' + ${c.commentId}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Report Comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form th:action="@{/reports/submit}" method="post">
+                            <div class="modal-body">
+                                <input type="hidden" name="targetType" value="comment" />
+                                <input type="hidden" name="targetId" th:value="${c.commentId}" />
+                                <input type="hidden" name="questionId" th:value="${question.questionId}" />
+                                <div class="mb-3">
+                                    <label class="form-label">Reason</label>
+                                    <input type="text" name="reason" class="form-control" required maxlength="200" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Additional Notes (optional)</label>
+                                    <textarea name="note" class="form-control" rows="2" maxlength="500"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Report</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
