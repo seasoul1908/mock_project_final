@@ -389,7 +389,7 @@
                                         th:text="${item.questionTitle}">Question Title</a>
                                     <div class="saved-meta mt-1">
                                         Saved on <span
-                                            th:text="${#dates.format(item.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                            th:text="${#temporals.format(item.createdAt, 'MMM dd, yyyy')}">Date</span>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center">

@@ -361,8 +361,7 @@
                         <input type="hidden" name="redirectTo"
                             th:value="'/tags/' + ${tag.id} + '?filter=' + ${filter} + '&page=' + ${currentPage}" />
                         <button type="button" class="btn-watch tag-follow-btn"
-                            th:classappend="${isFollowed ? 'followed' : 'not-followed'}"
-                            th:data-tag-id="${tag.id}"
+                            th:classappend="${isFollowed ? 'followed' : 'not-followed'}" th:data-tag-id="${tag.id}"
                             th:data-is-followed="${isFollowed}">
                             <i class="fa-solid" th:classappend="${isFollowed ? 'fa-eye-slash' : 'fa-eye'}"></i>
                             <span class="follow-text" th:text="${isFollowed ? 'Following' : 'Follow'}">Follow</span>
@@ -420,7 +419,7 @@
                             <div class="q-meta">
                                 asked by <strong th:text="${q.authorName}">Author</strong>
                                 &nbsp;·&nbsp;
-                                <span th:text="${#dates.format(q.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                                <span th:text="${#temporals.format(q.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
                             </div>
                         </div>
                     </div>
@@ -469,42 +468,42 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                .then(response => {
-                    if (response.status === 401) {
-                        window.location.href = '/auth/login';
-                        return null;
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data || data.status !== 'success') return;
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = '/auth/login';
+                            return null;
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (!data || data.status !== 'success') return;
 
-                    const isFollowed = data.isFollowed;
+                        const isFollowed = data.isFollowed;
 
-                    if (isFollowed) {
-                        btn.classList.remove('not-followed');
-                        btn.classList.add('followed');
-                    } else {
-                        btn.classList.remove('followed');
-                        btn.classList.add('not-followed');
-                    }
-                    btn.setAttribute('data-is-followed', isFollowed);
+                        if (isFollowed) {
+                            btn.classList.remove('not-followed');
+                            btn.classList.add('followed');
+                        } else {
+                            btn.classList.remove('followed');
+                            btn.classList.add('not-followed');
+                        }
+                        btn.setAttribute('data-is-followed', isFollowed);
 
-                    const textSpan = btn.querySelector('.follow-text');
-                    if (textSpan) {
-                        textSpan.textContent = isFollowed ? 'Following' : 'Follow';
-                    } else {
-                        btn.textContent = isFollowed ? 'Following' : 'Follow';
-                    }
+                        const textSpan = btn.querySelector('.follow-text');
+                        if (textSpan) {
+                            textSpan.textContent = isFollowed ? 'Following' : 'Follow';
+                        } else {
+                            btn.textContent = isFollowed ? 'Following' : 'Follow';
+                        }
 
-                    const icon = btn.querySelector('i');
-                    if (icon) {
-                        icon.className = isFollowed ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error toggling tag follow state:', err);
-                });
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            icon.className = isFollowed ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error toggling tag follow state:', err);
+                    });
             });
         });
     </script>
