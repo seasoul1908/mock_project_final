@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,9 +17,15 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     List<Report> findAllByOrderByCreatedAtDesc();
 
+    Page<Report> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
+
+    Page<Report> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
     // Deletion suggestions are stored as Reports with note = 'DELETION_SUGGESTION'
     List<Report> findByNoteOrderByCreatedAtDesc(String note);
 
     @Query("SELECT COUNT(r) FROM Report r WHERE r.status = :status")
     int countByStatus(@Param("status") String status);
+
+    long countByReporterIdAndCreatedAtBetween(Long reporterId, java.util.Date startOfDay, java.util.Date endOfDay);
 }

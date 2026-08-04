@@ -250,7 +250,7 @@
                             <span class="badge bg-primary ms-1">Admin</span>
                         </div>
                         <div class="small">
-                            Published on <span th:text="${#dates.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
+                            Published on <span th:text="${#temporals.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
                             <span class="ms-3"><i class="fa-solid fa-eye"></i> <span
                                     th:text="${blog.viewCount}">0</span> Views</span>
                         </div>
@@ -333,7 +333,7 @@
                     <h6 class="fw-bold mb-0" style="font-size:13px;"
                         th:text="${node.username != null ? node.username : 'Unknown User'}">Username</h6>
                     <span class="text-muted fw-normal small"
-                        th:text="${#dates.format(node.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                        th:text="${#temporals.format(node.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
                 </div>
                 <div th:id="'commentText' + ${node.commentId}" class="comment-text-content mb-0"
                     style="font-size: 14px;" th:text="${node.content}">Content</div>

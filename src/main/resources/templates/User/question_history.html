@@ -136,11 +136,13 @@
             background-color: #2d3135 !important;
             color: #f8f9fa !important;
         }
+
         body.dark-theme .diff-container {
             background: #343a40;
             border-color: #495057;
             color: #f8f9fa;
         }
+
         body.dark-theme .diff-code-text {
             background: #212529;
             border-color: #495057;
@@ -159,13 +161,15 @@
 
         <div class="main-content container-fluid">
             <!-- Back to question link -->
-            <a th:href="@{/question(id=${question.questionId})}" class="text-decoration-none text-muted mb-3 d-inline-block">
+            <a th:href="@{/question(id=${question.questionId})}"
+                class="text-decoration-none text-muted mb-3 d-inline-block">
                 <i class="fa-solid fa-arrow-left"></i> Back to Question Detail
             </a>
 
             <div class="row">
                 <div class="col-12 mb-4">
-                    <h2 class="fw-normal">Revision History for: <span class="fw-semibold text-primary" th:text="${question.title}">Question Title</span></h2>
+                    <h2 class="fw-normal">Revision History for: <span class="fw-semibold text-primary"
+                            th:text="${question.title}">Question Title</span></h2>
                 </div>
             </div>
 
@@ -175,30 +179,31 @@
                     <div class="card p-3 shadow-sm border-0">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0 fw-semibold">Revisions List</h5>
-                            <button id="compare-btn" class="btn btn-primary btn-sm rounded-pill" onclick="compareSelected()" disabled>
+                            <button id="compare-btn" class="btn btn-primary btn-sm rounded-pill"
+                                onclick="compareSelected()" disabled>
                                 <i class="fa-solid fa-code-compare"></i> Compare Selected
                             </button>
                         </div>
                         <div class="timeline mt-2" style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
-                            <div th:each="history, iter : ${historyList}" 
-                                 th:id="'rev-item-' + ${history.historyId}" 
-                                 class="timeline-item p-2 rounded" 
-                                 th:classappend="${iter.first} ? ' active' : ''"
-                                 th:onclick="'selectRevision(' + ${history.historyId} + ')'">
+                            <div th:each="history, iter : ${historyList}" th:id="'rev-item-' + ${history.historyId}"
+                                class="timeline-item p-2 rounded" th:classappend="${iter.first} ? ' active' : ''"
+                                th:onclick="'selectRevision(' + ${history.historyId} + ')'">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div class="d-flex align-items-center gap-2">
-                                        <input type="checkbox" class="rev-checkbox" 
-                                               th:value="${history.historyId}" 
-                                               th:onclick="'handleCheckboxClick(event, ' + ${history.historyId} + ')'"/>
-                                        <img th:src="${history.editorAvatar != null ? history.editorAvatar : 'assets/img/default-avatar.png'}" 
-                                             class="avatar-img" 
-                                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"/>
+                                        <input type="checkbox" class="rev-checkbox" th:value="${history.historyId}"
+                                            th:onclick="'handleCheckboxClick(event, ' + ${history.historyId} + ')'" />
+                                        <img th:src="${history.editorAvatar != null ? history.editorAvatar : 'assets/img/default-avatar.png'}"
+                                            class="avatar-img"
+                                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'" />
                                         <div>
                                             <span class="fw-bold" th:text="${history.editorName}">editor</span>
-                                            <div class="small text-muted" th:text="${#dates.format(history.editedAt, 'yyyy-MM-dd HH:mm:ss')}">date</div>
+                                            <div class="small text-muted"
+                                                th:text="${#temporals.format(history.editedAt, 'yyyy-MM-dd HH:mm:ss')}">date
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="badge bg-secondary" th:text="${history.historyId == 0 ? 'Original' : '#' + history.historyId}">Version</span>
+                                    <span class="badge bg-secondary"
+                                        th:text="${history.historyId == 0 ? 'Original' : '#' + history.historyId}">Version</span>
                                 </div>
                             </div>
                         </div>
@@ -216,7 +221,9 @@
                         <div id="diff-title" class="diff-text diff-title-text text-dark"></div>
 
                         <div class="diff-section-title">Body</div>
-                        <div id="diff-body" class="diff-text text-dark" style="background: var(--bg-panel); border: 1px solid var(--border-color); padding: 12px; border-radius: 4px;"></div>
+                        <div id="diff-body" class="diff-text text-dark"
+                            style="background: var(--bg-panel); border: 1px solid var(--border-color); padding: 12px; border-radius: 4px;">
+                        </div>
 
                         <div id="diff-code-wrapper">
                             <div class="diff-section-title">Code Snippet</div>
@@ -233,7 +240,7 @@
     <!-- Inline JSON representing the revisions -->
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const revisions = /*[[${historyList}]]*/ [];
+        const revisions = /*[[${historyList}]]*/[];
         /*]]>*/
     </script>
 
@@ -297,7 +304,7 @@
         function selectRevision(historyId) {
             // Remove active classes
             document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
-            
+
             // Add active class
             const item = document.getElementById('rev-item-' + historyId);
             if (item) item.classList.add('active');
@@ -349,7 +356,7 @@
 
             const titleDiff = diffTexts(rev1.title || '', rev2.title || '');
             const bodyDiff = diffTexts(rev1.body || '', rev2.body || '');
-            
+
             document.getElementById('diff-title').innerHTML = titleDiff;
             document.getElementById('diff-body').innerHTML = bodyDiff;
 

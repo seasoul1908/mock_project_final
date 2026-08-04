@@ -268,7 +268,7 @@
                                         th:text="${v.title}">Title</a>
                                 </div>
                                 <div class="text-muted" style="font-size: 12px; min-width: 100px; text-align: right;"
-                                    th:text="${#dates.format(v.createdAt, 'MMM dd, yyyy')}">Date</div>
+                                    th:text="${#temporals.format(v.createdAt, 'MMM dd, yyyy')}">Date</div>
                             </div>
                         </th:block>
                         <th:block th:if="${itemsList == null or itemsList.isEmpty()}">

@@ -90,18 +90,27 @@ public class AdminController {
             @RequestParam(defaultValue = "") String role,
             @RequestParam(defaultValue = "") String status,
             @RequestParam(defaultValue = "1") int page,
-            Model model) {
+            Model model,
+            org.springframework.security.core.Authentication authentication) {
+
+        // Neither ADMIN nor MODERATOR should see their own row in the user list.
+        // No admin-role account should ever appear in the list, for either viewer.
+        boolean isModerator = authentication.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        Long currentUserId = userService.getUserIdByEmail(authentication.getName());
+        Long excludeUserId = currentUserId;
+        String excludeRole = "admin";
 
         int pageSize = 15;
         List<?> users;
         int total;
 
         if (!keyword.isBlank()) {
-            users = userService.searchUsers(keyword, 200);
+            users = userService.searchUsers(keyword, 200, excludeUserId, excludeRole);
             total = users.size();
         } else {
-            users = userService.getUsersByFilter(role, status, page, pageSize);
-            total = userService.getUserCountByFilter(role, status);
+            users = userService.getUsersByFilter(role, status, page, pageSize, excludeUserId, excludeRole);
+            total = userService.getUserCountByFilter(role, status, excludeUserId, excludeRole);
         }
 
         int totalPages = Math.max(1, (int) Math.ceil((double) total / pageSize));
@@ -112,26 +121,39 @@ public class AdminController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalUsers", total);
+        model.addAttribute("isModerator", isModerator);
+        model.addAttribute("currentUserId", currentUserId);
         return "Admin/users";
     }
 
     @GetMapping("/tags")
-    public String tags(Model model) {
-        model.addAttribute("tags", tagRepository.findAll());
+    public String tags(@RequestParam(defaultValue = "1") int page, Model model) {
+        int pageSize = 15;
+        org.springframework.data.domain.Page<com.example.demo.entity.Tag> tagPage = tagRepository.findAll(
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize,
+                        org.springframework.data.domain.Sort.by("id")));
+        model.addAttribute("tags", tagPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, tagPage.getTotalPages()));
         return "Admin/tags";
     }
 
     @GetMapping("/reports")
     public String reports(
             @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "1") int page,
             Model model) {
 
-        List<Report> reports = "all".equals(status)
-                ? reportRepository.findAllByOrderByCreatedAtDesc()
-                : reportRepository.findByStatusOrderByCreatedAtDesc(status);
+        int pageSize = 15;
+        org.springframework.data.domain.PageRequest pageable = org.springframework.data.domain.PageRequest.of(page - 1, pageSize);
+        org.springframework.data.domain.Page<Report> reportPage = "all".equals(status)
+                ? reportRepository.findAllByOrderByCreatedAtDesc(pageable)
+                : reportRepository.findByStatusOrderByCreatedAtDesc(status, pageable);
 
-        model.addAttribute("reports", reports);
+        model.addAttribute("reports", reportPage.getContent());
         model.addAttribute("status", status);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, reportPage.getTotalPages()));
         model.addAttribute("openCount", reportRepository.countByStatus("open"));
         model.addAttribute("resolvedCount", reportRepository.countByStatus("resolved"));
         model.addAttribute("dismissedCount", reportRepository.countByStatus("dismissed"));
@@ -140,20 +162,57 @@ public class AdminController {
     }
 
     @GetMapping("/rules")
-    public String rules(Model model) {
-        model.addAttribute("rules", ruleRepository.findAll());
+    public String rules(@RequestParam(defaultValue = "1") int page, Model model) {
+        int pageSize = 15;
+        org.springframework.data.domain.Page<com.example.demo.entity.Rule> rulePage = ruleRepository.findAll(
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize,
+                        org.springframework.data.domain.Sort.by("createdAt").descending()));
+        model.addAttribute("rules", rulePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, rulePage.getTotalPages()));
         return "Admin/rules";
     }
 
     @GetMapping("/badges")
-    public String badges(Model model) {
-        model.addAttribute("badges", badgeRepository.findAll());
+    public String badges(
+            @RequestParam(defaultValue = "") String type,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String sortDir,
+            @RequestParam(defaultValue = "1") int page,
+            Model model) {
+        int pageSize = 15;
+        org.springframework.data.domain.Sort sort;
+        if ("asc".equalsIgnoreCase(sortDir)) {
+            sort = org.springframework.data.domain.Sort.by("requiredReputation").ascending();
+        } else if ("desc".equalsIgnoreCase(sortDir)) {
+            sort = org.springframework.data.domain.Sort.by("requiredReputation").descending();
+        } else {
+            sort = org.springframework.data.domain.Sort.by("badgeId");
+        }
+
+        org.springframework.data.domain.Page<com.example.demo.entity.Badge> badgePage = badgeRepository.findByFilters(
+                type.isBlank() ? null : type,
+                keyword.isBlank() ? null : keyword,
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize, sort));
+
+        model.addAttribute("badges", badgePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, badgePage.getTotalPages()));
+        model.addAttribute("type", type);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortDir", sortDir);
         return "Admin/badges";
     }
 
     @GetMapping("/blogs")
-    public String blogs(Model model) {
-        model.addAttribute("blogs", blogRepository.findAll());
+    public String blogs(@RequestParam(defaultValue = "1") int page, Model model) {
+        int pageSize = 15;
+        org.springframework.data.domain.Page<com.example.demo.entity.Blog> blogPage = blogRepository.findAll(
+                org.springframework.data.domain.PageRequest.of(page - 1, pageSize,
+                        org.springframework.data.domain.Sort.by("blogId").descending()));
+        model.addAttribute("blogs", blogPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", Math.max(1, blogPage.getTotalPages()));
         return "Admin/blogs";
     }
 
@@ -161,7 +220,7 @@ public class AdminController {
     public String feedbacks(
             @RequestParam(defaultValue = "1") int page,
             Model model) {
-        int pageSize = 20;
+        int pageSize = 15;
         long total = feedbackRepository.count();
         int totalPages = Math.max(1, (int) Math.ceil((double) total / pageSize));
         int safePage = Math.max(1, Math.min(page, totalPages));

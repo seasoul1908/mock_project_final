@@ -34,20 +34,34 @@ public class TagController {
     public String viewTagList(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "sort", required = false, defaultValue = "name") String sort,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false) Integer sizeParam,
+            @RequestParam(value = "limit", required = false) Integer limitParam,
             Model model) {
         
-        List<TagDTO> tagList = tagService.searchAndSortTags(search, sort);
-        
+        int size = (sizeParam != null) ? sizeParam : ((limitParam != null) ? limitParam : 12);
         User user = getAuthenticatedUser();
         boolean isLoggedIn = (user != null);
+        boolean canCreateTag = isLoggedIn && (user.getReputation() != null && user.getReputation() >= 50);
+        Long userId = isLoggedIn ? user.getUserId() : null;
+
+        java.util.Map<String, Object> paginated = tagService.getTagsPaginated(search, sort, page, size, userId);
+
+        @SuppressWarnings("unchecked")
+        List<TagDTO> tagList = (List<TagDTO>) paginated.get("data");
         
         model.addAttribute("tagList", tagList);
+        model.addAttribute("currentPage", paginated.get("currentPage"));
+        model.addAttribute("totalPages", paginated.get("totalPages"));
+        model.addAttribute("totalItems", paginated.get("totalItems"));
         model.addAttribute("keyword", search);
         model.addAttribute("sort", sort);
         model.addAttribute("isLoggedIn", isLoggedIn);
+        model.addAttribute("canCreateTag", canCreateTag);
         
         return "User/tag";
     }
+
 
     @GetMapping("/{id}")
     public String viewTagDetail(
@@ -98,6 +112,30 @@ public class TagController {
         tagService.followOrUnfollowTag(user.getUserId(), tagId, action);
         
         return "redirect:" + redirectTo;
+    }
+
+    @PostMapping("/new")
+    public String createNewTag(
+            @RequestParam("tagName") String tagName,
+            @RequestParam("description") String description,
+            Model model) {
+        User user = getAuthenticatedUser();
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        int rep = user.getReputation() != null ? user.getReputation() : 0;
+        if (rep < 50) {
+            return "redirect:/tags?error=reputation";
+        }
+        if (tagName == null || tagName.trim().isEmpty()) {
+            return "redirect:/tags?error=empty_name";
+        }
+        try {
+            tagService.createTag(tagName.trim(), description.trim());
+        } catch (IllegalArgumentException e) {
+            return "redirect:/tags?error=exists&tagName=" + tagName.trim();
+        }
+        return "redirect:/tags";
     }
 
     private User getAuthenticatedUser() {

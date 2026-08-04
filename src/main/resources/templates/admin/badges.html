@@ -16,6 +16,9 @@
         .content-card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e3e6e8; }
         .page-title { font-size: 22px; font-weight: 600; color: #0c0d0e; margin-bottom: 20px; }
         .badge-icon { font-size: 20px; }
+        .badge-icon.icon-gold { color: #f1c40f; }
+        .badge-icon.icon-silver { color: #adb5bd; }
+        .badge-icon.icon-bronze { color: #d35400; }
     </style>
 </head>
 <body>
@@ -29,7 +32,7 @@
         <a th:href="@{/admin/users}" class="admin-nav-link"><i class="fa-solid fa-users fa-fw me-2"></i> Users</a>
         <a th:href="@{/admin/tags}" class="admin-nav-link"><i class="fa-solid fa-tags fa-fw me-2"></i> Tags</a>
         <a th:href="@{/admin/reports}" class="admin-nav-link"><i class="fa-solid fa-flag fa-fw me-2"></i> Reports</a>
-        <a th:href="@{/admin/rules}" class="admin-nav-link"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
+        <a th:href="@{/admin/rules}" class="admin-nav-link" sec:authorize="hasRole('ADMIN')"><i class="fa-solid fa-gavel fa-fw me-2"></i> Rules</a>
         <a th:href="@{/admin/badges}" class="admin-nav-link active"><i class="fa-solid fa-medal fa-fw me-2"></i> Badges</a>
         <a th:href="@{/admin/blogs}" class="admin-nav-link"><i class="fa-solid fa-newspaper fa-fw me-2"></i> Blogs</a>
         <a th:href="@{/admin/feedbacks}" class="admin-nav-link"><i class="fa-solid fa-comments fa-fw me-2"></i> Feedbacks</a>
@@ -45,11 +48,52 @@
             </button>
         </div>
 
+        <!-- Filter / Search / Sort Toolbar -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <a th:href="@{/admin/badges(type='', keyword=${keyword}, sortDir=${sortDir}, page=1)}"
+                   th:classappend="${type == ''} ? 'btn btn-secondary btn-sm' : 'btn btn-outline-secondary btn-sm'">All</a>
+                <a th:href="@{/admin/badges(type=${type == 'bronze' ? '' : 'bronze'}, keyword=${keyword}, sortDir=${sortDir}, page=1)}"
+                   class="btn btn-sm"
+                   th:classappend="${type == 'bronze'} ? 'text-white' : ''"
+                   th:style="${type == 'bronze'} ? 'background-color:#d35400; border-color:#d35400' : 'border-color:#d35400; color:#d35400'">
+                   <i class="fa-solid fa-medal me-1"></i>Bronze</a>
+                <a th:href="@{/admin/badges(type=${type == 'silver' ? '' : 'silver'}, keyword=${keyword}, sortDir=${sortDir}, page=1)}"
+                   class="btn btn-sm"
+                   th:classappend="${type == 'silver'} ? 'text-white' : ''"
+                   th:style="${type == 'silver'} ? 'background-color:#adb5bd; border-color:#adb5bd' : 'border-color:#adb5bd; color:#6c757d'">
+                   <i class="fa-solid fa-medal me-1"></i>Silver</a>
+                <a th:href="@{/admin/badges(type=${type == 'gold' ? '' : 'gold'}, keyword=${keyword}, sortDir=${sortDir}, page=1)}"
+                   class="btn btn-sm"
+                   th:classappend="${type == 'gold'} ? 'text-white' : ''"
+                   th:style="${type == 'gold'} ? 'background-color:#f1c40f; border-color:#f1c40f' : 'border-color:#f1c40f; color:#b7950b'">
+                   <i class="fa-solid fa-medal me-1"></i>Gold</a>
+
+                <a th:href="@{/admin/badges(type=${type}, keyword=${keyword}, sortDir=${sortDir == 'asc' ? 'desc' : (sortDir == 'desc' ? '' : 'asc')}, page=1)}"
+                   class="btn btn-sm btn-outline-dark ms-2"
+                   th:classappend="${sortDir == 'asc' || sortDir == 'desc'} ? 'active' : ''">
+                    Reputation
+                    <i class="fa-solid ms-1"
+                       th:classappend="${sortDir == 'asc'} ? 'fa-arrow-up-short-wide' : (${sortDir == 'desc'} ? 'fa-arrow-down-wide-short' : 'fa-sort')"></i>
+                </a>
+            </div>
+
+            <form class="d-flex" method="get" th:action="@{/admin/badges}">
+                <input type="hidden" name="type" th:value="${type}"/>
+                <input type="hidden" name="sortDir" th:value="${sortDir}"/>
+                <div class="input-group input-group-sm" style="width:220px;">
+                    <input type="text" name="keyword" class="form-control" placeholder="Search badge name..." th:value="${keyword}"/>
+                    <button class="btn btn-outline-secondary" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <a th:if="${keyword != ''}" th:href="@{/admin/badges(type=${type}, sortDir=${sortDir})}" class="btn btn-outline-secondary"><i class="fa-solid fa-xmark"></i></a>
+                </div>
+            </form>
+        </div>
+
         <div class="content-card">
             <table class="table table-hover table-sm mb-0" style="font-size:13px;">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>No.</th>
                         <th>Badge</th>
                         <th>Type</th>
                         <th>Description</th>
@@ -58,10 +102,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="b : ${badges}" th:id="'row-' + ${b.badgeId}">
-                        <td class="text-muted" th:text="${b.badgeId}"></td>
+                    <tr th:each="b, bStat : ${badges}" th:id="'row-' + ${b.badgeId}">
+                        <td class="text-muted" th:text="${(currentPage - 1) * 15 + bStat.count}"></td>
                         <td>
-                            <i class="fa-solid fa-medal badge-icon"></i>
+                            <i class="fa-solid fa-medal badge-icon"
+                                th:classappend="${b.type == 'gold'} ? 'icon-gold' : (${b.type == 'silver'} ? 'icon-silver' : 'icon-bronze')"></i>
                             <span class="fw-semibold ms-1" th:text="${b.name}"></span>
                         </td>
                         <td>
@@ -92,6 +137,22 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <nav th:if="${totalPages > 1}" class="mt-3">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${currentPage - 1}, type=${type}, keyword=${keyword}, sortDir=${sortDir})}">«</a>
+                    </li>
+                    <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                        th:classappend="${p == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${p}, type=${type}, keyword=${keyword}, sortDir=${sortDir})}" th:text="${p}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/badges(page=${currentPage + 1}, type=${type}, keyword=${keyword}, sortDir=${sortDir})}">»</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </main>
 </div>
