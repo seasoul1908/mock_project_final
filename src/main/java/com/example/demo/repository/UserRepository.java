@@ -257,4 +257,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         SELECT COUNT(*) FROM Users u WHERE u.role != 'admin' AND u.role != 'bot' AND u.user_id <> :currentUserId AND (:keyword IS NULL OR :keyword = '' OR u.username LIKE CONCAT('%', :keyword, '%'))
         """, nativeQuery = true)
         Page<UserPageDTO> findUsersForUserPage(@Param("keyword") String keyword, @Param("filter") String filter,@Param("currentUserId") Long currentUserId, Pageable pageable);
+
+        @Query("SELECT u.userId FROM User u")
+        List<Long> findAllUserIds();
 }

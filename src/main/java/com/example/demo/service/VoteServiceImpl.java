@@ -1,5 +1,12 @@
 package com.example.demo.service;
 
+import java.sql.Timestamp;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.entity.Answer;
 import com.example.demo.entity.Question;
 import com.example.demo.entity.Vote;
@@ -7,12 +14,7 @@ import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.util.Optional;
+import com.example.demo.util.NotificationType;
 
 @Service
 public class VoteServiceImpl implements VoteService {
@@ -33,6 +35,9 @@ public class VoteServiceImpl implements VoteService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -64,7 +69,7 @@ public class VoteServiceImpl implements VoteService {
         }
 
         Optional<Vote> existingOpt = voteRepository.findAnswerVote(userId, answerId);
-        applyVote(existingOpt, userId, voteType, null, answerId,
+        applyVote(existingOpt, userId, voteType, answer.getQuestionId(), answerId,
                 answer.getUserId(), answer.getScore(), false, answer);
     }
 
@@ -73,8 +78,10 @@ public class VoteServiceImpl implements VoteService {
 
         int scoreDelta = 0;
         int repDelta = 0;
+        boolean shouldNotify = false;
 
         if (existingOpt.isEmpty()) {
+            shouldNotify = true;
             insertVote(userId, voteType, questionId, answerId);
             scoreDelta = "up".equals(voteType) ? 1 : -1;
             repDelta = isQuestion
@@ -83,12 +90,14 @@ public class VoteServiceImpl implements VoteService {
         } else {
             Vote existing = existingOpt.get();
             if (existing.getVoteType().equals(voteType)) {
+                shouldNotify = false;
                 voteRepository.delete(existing);
                 scoreDelta = "up".equals(voteType) ? -1 : 1;
                 repDelta = isQuestion
                         ? ("up".equals(voteType) ? -QUESTION_UP_REP : -QUESTION_DOWN_REP)
                         : ("up".equals(voteType) ? -ANSWER_UP_REP : -ANSWER_DOWN_REP);
             } else {
+                shouldNotify = true;
                 existing.setVoteType(voteType);
                 voteRepository.save(existing);
                 scoreDelta = "up".equals(voteType) ? 2 : -2;
@@ -117,6 +126,30 @@ public class VoteServiceImpl implements VoteService {
             userRepository.insertReputationHistory(authorId, repDelta,
                     "Vote on " + postType, "vote", postType, postId, userId);
         }
+        if (isQuestion && shouldNotify) {
+            notificationService.createNotification(
+                authorId,
+                userId,
+                NotificationType.VOTE_QUESTION,
+            "up".equals(voteType)
+                    ? "Someone has upvoted your question"
+                    : "Someone has downvoted your question",
+            questionId,
+            "QUESTION"
+    );
+}
+if (!isQuestion && shouldNotify) {
+    notificationService.createNotification(
+            authorId,                 // Chủ câu trả lời
+            userId,                   // Người vote
+            NotificationType.VOTE_ANSWER,
+            "down".equals(voteType)
+                    ? "Your answer has been downvoted"
+                    : "Your answer has been upvoted",
+            answerId,
+             "ANSWER"
+    );
+}
     }
 
     private void insertVote(long userId, String voteType, Long questionId, Long answerId) {

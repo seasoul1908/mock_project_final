@@ -1,18 +1,20 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.TagDTO;
-import com.example.demo.dto.QuestionViewDTO;
-import com.example.demo.entity.TagFollow;
-import com.example.demo.repository.TagRepository;
-import com.example.demo.repository.QuestionRepository;
-import com.example.demo.repository.TagFollowRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.QuestionViewDTO;
+import com.example.demo.dto.TagDTO;
+import com.example.demo.entity.TagFollow;
+import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.TagFollowRepository;
+import com.example.demo.repository.TagRepository;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -57,8 +59,8 @@ public class TagServiceImpl implements TagService {
             String body = (String) row[2];
             Integer score = ((Number) row[3]).intValue();
             Integer viewCount = ((Number) row[4]).intValue();
-            Timestamp createdAt = (Timestamp) row[5];
-            Timestamp updatedAt = (Timestamp) row[6];
+            Timestamp createdAt = Timestamp.valueOf((LocalDateTime) row[5]);
+            Timestamp updatedAt = Timestamp.valueOf((LocalDateTime) row[6]);
             Boolean isClosed = (Boolean) row[7];
             String authorName = (String) row[8];
             String authorAvatar = (String) row[9];

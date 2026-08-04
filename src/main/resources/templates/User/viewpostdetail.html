@@ -728,6 +728,21 @@
         }        .runner-output-error {
             color: #f48771;
         }
+        .noti-highlight{
+            animation: flash 3s;
+        }
+
+        @keyframes flash{
+
+        0%{
+            background:#fff3cd;
+        }
+
+        100%{
+            background:transparent;
+        }
+
+    }
     </style>
 </head>
 
@@ -1739,6 +1754,30 @@
         const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
         toast.show();
     });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const hash = window.location.hash;
+
+    if (!hash) return;
+
+    const el = document.querySelector(hash);
+
+    if (!el) return;
+
+    el.classList.add("noti-highlight");
+
+    el.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    setTimeout(() => {
+        el.classList.remove("noti-highlight");
+    }, 3000);
+
+});
 </script>
 <!-- Toast container -->
 <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">

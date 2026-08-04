@@ -1,18 +1,35 @@
 package com.example.demo.service;
+import java.util.Date;
 
-import com.example.demo.entity.Report;
-import com.example.demo.repository.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import com.example.demo.entity.Answer;
+import com.example.demo.entity.Comment;
+import com.example.demo.entity.Question;
+import com.example.demo.entity.Report;
+import com.example.demo.repository.AnswerRepository;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.ReportRepository;
+import com.example.demo.util.NotificationType;
 
 @Service
 public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private ReportRepository reportRepository;
+    @Autowired
+private NotificationService notificationService;
+
+@Autowired
+private QuestionRepository questionRepository;
+
+@Autowired
+private AnswerRepository answerRepository;
+@Autowired
+private CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -28,7 +45,49 @@ public class ReportServiceImpl implements ReportService {
         report.setNote(note);
         report.setStatus("open");
         report.setCreatedAt(new Date());
-        return reportRepository.save(report);
+        Report saved = reportRepository.save(report);
+        if ("question".equals(targetType)) {
+
+            Question question = questionRepository.findById(targetId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+            notificationService.createNotification(
+                question.getUserId(),
+                reporterId,
+                NotificationType.REPORT_QUESTION,
+            "Someone has reported your question",
+                question.getQuestionId(),
+            "QUESTION"
+    );
+
+        } else if ("answer".equals(targetType)) {
+
+    Answer answer = answerRepository.findById(targetId)
+            .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+
+    notificationService.createNotification(
+            answer.getUserId(),
+            reporterId,
+            NotificationType.REPORT_ANSWER,
+            "Someone has reported your answer",
+            answer.getQuestionId(),
+            "ANSWER"
+    );
+}else if ("comment".equals(targetType)) {
+
+    Comment comment = commentRepository.findById(targetId)
+            .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+    notificationService.createNotification(
+            comment.getUserId(),          // Chủ comment
+            reporterId,                   // Người report
+            NotificationType.REPORT_COMMENT,
+            "Someone has reported your comment",
+            comment.getCommentId(),      // Redirect về Question
+            "COMMENT"
+    );
+}
+return saved;
     }
 
     @Override
@@ -57,7 +116,7 @@ public class ReportServiceImpl implements ReportService {
 
     // DB CHECK constraint only allows 'question' and 'answer'
     private void validateTargetType(String targetType) {
-        if (!"question".equals(targetType) && !"answer".equals(targetType)) {
+        if (!"question".equals(targetType) && !"answer".equals(targetType) && !"comment".equals(targetType)) {
             throw new IllegalArgumentException("Invalid target type");
         }
     }

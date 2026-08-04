@@ -468,3 +468,39 @@ ALTER TABLE [dbo].[Feedbacks] ADD [title] [nvarchar](255) NOT NULL DEFAULT 'Feed
 GO
 ALTER TABLE Users
 ADD accepted_terms BIT NOT NULL DEFAULT 0;
+
+
+ALTER TABLE Notifications
+ADD
+    sender_id BIGINT NULL,
+    reference_id BIGINT NULL,
+    reference_type VARCHAR(20) NULL,
+    aggregate_count INT DEFAULT 1;
+
+UPDATE Notifications
+	SET aggregate_count = 1
+	WHERE aggregate_count IS NULL;
+
+	UPDATE Notifications
+SET type = 'NEW_ANSWER'
+WHERE type = 'answer';
+
+UPDATE Notifications
+SET type = 'BADGE_EARNED'
+WHERE type = 'badge';
+
+UPDATE Notifications
+SET type = 'NEW_BOUNTY'
+WHERE type = 'bounty';
+
+UPDATE Notifications
+SET type = 'MENTION'
+WHERE type = 'mention';
+
+UPDATE Notifications
+SET type = 'TAG_POST'
+WHERE type = 'tag_post';
+
+	
+
+	
