@@ -265,7 +265,7 @@
                                         <a th:href="@{/question(id=${q.questionId})}" class="so-link"
                                             th:text="${q.title}">Title</a>
                                         <span class="text-muted" style="font-size: 12px;"
-                                            th:text="${#dates.format(q.createdAt, 'MMM dd, yyyy')}">Date</span>
+                                            th:text="${#temporals.format(q.createdAt, 'MMM dd, yyyy')}">Date</span>
                                     </div>
                                     <div class="text-muted mb-2"
                                         style="font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;"

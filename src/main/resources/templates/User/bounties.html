@@ -152,7 +152,7 @@
             gap: 6px;
             color: var(--text-muted);
         }
-        
+
         .bounty-badge {
             background-color: #9a6400;
             color: white;
@@ -404,7 +404,7 @@
                             <div class="d-flex align-items-center gap-3">
                                 <span class="text-danger font-monospace" style="font-size: 11px;">
                                     <i class="fa-solid fa-hourglass-half me-1"></i>Expires:
-                                    <span th:text="${#dates.format(q.bountyExpiresAt, 'dd-MM-yyyy HH:mm')}">expiry
+                                    <span th:text="${#temporals.format(q.bountyExpiresAt, 'dd-MM-yyyy HH:mm')}">expiry
                                         date</span>
                                 </span>
                                 <div class="user-card">
@@ -413,7 +413,7 @@
                                     <i th:if="${q.authorAvatar == null}" class="fa-solid fa-user-circle"></i>
                                     <span th:text="${q.authorName}">Author</span>
                                     <span class="text-muted">asked <span
-                                            th:text="${#dates.format(q.createdAt, 'dd-MM-yyyy')}">date</span></span>
+                                            th:text="${#temporals.format(q.createdAt, 'dd-MM-yyyy')}">date</span></span>
                                 </div>
                             </div>
                         </div>

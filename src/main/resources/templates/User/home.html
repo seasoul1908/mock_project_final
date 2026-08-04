@@ -345,409 +345,410 @@
             justify-content: space-between;
             align-items: center;
         }
-/* ============================
+
+        /* ============================
         Terms Popup
 ============================ */
 
-#termsModal{
-    position:fixed;
-    inset:0;
+        #termsModal {
+            position: fixed;
+            inset: 0;
 
-    background:rgba(0,0,0,.65);
+            background: rgba(0, 0, 0, .65);
 
-    backdrop-filter:blur(8px);
+            backdrop-filter: blur(8px);
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    z-index:999999;
-}
+            z-index: 999999;
+        }
 
-.terms-card{
+        .terms-card {
 
-    width:620px;
-    max-width:92%;
+            width: 620px;
+            max-width: 92%;
 
-    background:#2f3337;
+            background: #2f3337;
 
-    border-radius:10px;
+            border-radius: 10px;
 
-    padding:28px 30px;
+            padding: 28px 30px;
 
-    color:white;
+            color: white;
 
-    box-shadow:0 15px 40px rgba(0,0,0,.45);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .45);
 
-    position: relative;
-}
+            position: relative;
+        }
 
-.terms-card h2{
+        .terms-card h2 {
 
-    text-align:center;
+            text-align: center;
 
-    font-size:34px;
+            font-size: 34px;
 
-    font-weight:700;
+            font-weight: 700;
 
-    margin-bottom:20px;
-}
+            margin-bottom: 20px;
+        }
 
-.terms-description{
+        .terms-description {
 
-    font-size:14px;
+            font-size: 14px;
 
-    color:#d6d9dc;
+            color: #d6d9dc;
 
-    line-height:1.6;
+            line-height: 1.6;
 
-    margin-bottom:14px;
-}
+            margin-bottom: 14px;
+        }
 
-.terms-card hr{
+        .terms-card hr {
 
-    border:none;
+            border: none;
 
-    border-top:1px solid #4b4f53;
+            border-top: 1px solid #4b4f53;
 
-    margin:18px 0;
-}
+            margin: 18px 0;
+        }
 
-.terms-check{
+        .terms-check {
 
-    display:flex;
+            display: flex;
 
-    align-items:flex-start;
+            align-items: flex-start;
 
-    gap:12px;
+            gap: 12px;
 
-    margin-top:18px;
+            margin-top: 18px;
 
-    font-size:15px;
+            font-size: 15px;
 
-    line-height:1.7;
+            line-height: 1.7;
 
-    color:white;
-}
-.terms-check span{
+            color: white;
+        }
 
-    flex:1;
-}
+        .terms-check span {
 
-.terms-check input{
+            flex: 1;
+        }
 
-    margin-top:4px;
+        .terms-check input {
 
-    width:18px;
+            margin-top: 4px;
 
-    height:18px;
-}
+            width: 18px;
 
-.terms-check a{
+            height: 18px;
+        }
 
-    color:#4da3ff;
+        .terms-check a {
 
-    text-decoration:none;
-}
+            color: #4da3ff;
 
-.terms-check a:hover{
+            text-decoration: none;
+        }
 
-    text-decoration:underline;
-}
+        .terms-check a:hover {
 
-.terms-actions{
+            text-decoration: underline;
+        }
 
-    margin-top:28px;
+        .terms-actions {
 
-    display:flex;
+            margin-top: 28px;
 
-    justify-content:flex-end;
+            display: flex;
 
-    gap:12px;
-}
+            justify-content: flex-end;
 
-.btn-decline{
+            gap: 12px;
+        }
 
-    background:none;
+        .btn-decline {
 
-    border:none;
+            background: none;
 
-    color:#b9bec4;
+            border: none;
 
-    cursor:pointer;
+            color: #b9bec4;
 
-    padding:10px 14px;
-}
+            cursor: pointer;
 
-.btn-decline:hover{
+            padding: 10px 14px;
+        }
 
-    color:white;
-}
+        .btn-decline:hover {
 
-.btn-accept{
+            color: white;
+        }
 
-    background:#379fef;
+        .btn-accept {
 
-    color:white;
+            background: #379fef;
 
-    border:none;
+            color: white;
 
-    padding:11px 18px;
+            border: none;
 
-    border-radius:5px;
+            padding: 11px 18px;
 
-    font-weight:600;
+            border-radius: 5px;
 
-    cursor:pointer;
+            font-weight: 600;
 
-    transition:.2s;
-}
+            cursor: pointer;
 
-.btn-accept:hover:not(:disabled){
+            transition: .2s;
+        }
 
-    background:#2388d9;
-}
+        .btn-accept:hover:not(:disabled) {
 
-.btn-accept:disabled{
+            background: #2388d9;
+        }
 
-    opacity:.45;
+        .btn-accept:disabled {
 
-    cursor:not-allowed;
-}
+            opacity: .45;
 
+            cursor: not-allowed;
+        }
 
-.terms-title-light{
 
-    font-weight:600;
-}
-.terms-title{
+        .terms-title-light {
 
-    display:flex;
+            font-weight: 600;
+        }
 
-    justify-content:center;
+        .terms-title {
 
-    align-items:center;
+            display: flex;
 
-    gap:18px;
+            justify-content: center;
 
-    margin-bottom:26px;
-}
+            align-items: center;
 
-.terms-logo{
+            gap: 18px;
 
-    width:58px;
-    height:58px;
+            margin-bottom: 26px;
+        }
 
-    object-fit:contain;
-}
+        .terms-logo {
 
-.brand-name{
+            width: 58px;
+            height: 58px;
 
-    font-size:34px;
-    font-weight:700;
-}
+            object-fit: contain;
+        }
 
-.terms-text{
+        .brand-name {
 
-    font-size:34px;
-    font-weight:600;
-}
+            font-size: 34px;
+            font-weight: 700;
+        }
 
-.title-group{
+        .terms-text {
 
-    display:flex;
-    align-items:baseline;
-    gap:12px;
-}
-.terms-close{
-    position:absolute;
-    top:14px;
-    right:16px;
+            font-size: 34px;
+            font-weight: 600;
+        }
 
-    background:none;
-    border:none;
+        .title-group {
 
-    color:#b9bec4;
-    font-size:22px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
 
-    cursor:pointer;
-    transition:.2s;
-}
+        .terms-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
 
-.terms-close:hover{
-    color:white;
-}
-.terms-content{
-    max-height:260px;
-    overflow-y:auto;
-    margin:18px 0;
-    padding-right:10px;
-    line-height:1.7;
-}
+            background: none;
+            border: none;
 
-.terms-content h4{
-    margin:18px 0 8px;
-    font-size:15px;
-    font-weight:600;
-    color:#ffffff;
-}
+            color: #b9bec4;
+            font-size: 22px;
 
-.terms-list{
-    margin:0 0 12px 18px;
-    padding:0;
-}
+            cursor: pointer;
+            transition: .2s;
+        }
 
-.terms-list li{
-    margin-bottom:8px;
-    color:#d5d8dc;
-}
+        .terms-close:hover {
+            color: white;
+        }
 
-.terms-description{
-    color:#d5d8dc;
-    margin-bottom:15px;
-}
-.terms-content::-webkit-scrollbar{
-    width:8px;
-}
+        .terms-content {
+            max-height: 260px;
+            overflow-y: auto;
+            margin: 18px 0;
+            padding-right: 10px;
+            line-height: 1.7;
+        }
 
-.terms-content::-webkit-scrollbar-track{
-    background:#3b4045;
-    border-radius:10px;
-}
+        .terms-content h4 {
+            margin: 18px 0 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+        }
 
-.terms-content::-webkit-scrollbar-thumb{
-    background:#6a737c;
-    border-radius:10px;
-}
+        .terms-list {
+            margin: 0 0 12px 18px;
+            padding: 0;
+        }
 
-.terms-content::-webkit-scrollbar-thumb:hover{
-    background:#8c959f;
-}
+        .terms-list li {
+            margin-bottom: 8px;
+            color: #d5d8dc;
+        }
+
+        .terms-description {
+            color: #d5d8dc;
+            margin-bottom: 15px;
+        }
+
+        .terms-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terms-content::-webkit-scrollbar-track {
+            background: #3b4045;
+            border-radius: 10px;
+        }
+
+        .terms-content::-webkit-scrollbar-thumb {
+            background: #6a737c;
+            border-radius: 10px;
+        }
+
+        .terms-content::-webkit-scrollbar-thumb:hover {
+            background: #8c959f;
+        }
     </style>
 </head>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    const modal = document.getElementById("termsModal");
-    const checkbox = document.getElementById("agreeTerms");
-    const acceptBtn = document.getElementById("acceptBtn");
-    const declineBtn = document.getElementById("declineBtn");
-    const closeBtn = document.getElementById("closeTermsBtn");
+        const modal = document.getElementById("termsModal");
+        const checkbox = document.getElementById("agreeTerms");
+        const acceptBtn = document.getElementById("acceptBtn");
+        const declineBtn = document.getElementById("declineBtn");
+        const closeBtn = document.getElementById("closeTermsBtn");
 
-    // Enable / Disable Accept button
-    if (checkbox && acceptBtn) {
-        checkbox.addEventListener("change", function () {
-            acceptBtn.disabled = !checkbox.checked;
-        });
-    }
-
-    function closeTermsModal() {
-        if (modal) {
-            modal.style.display = "none";
+        // Enable / Disable Accept button
+        if (checkbox && acceptBtn) {
+            checkbox.addEventListener("change", function () {
+                acceptBtn.disabled = !checkbox.checked;
+            });
         }
-    }
 
-    // Click X
-    if (closeBtn) {
-        closeBtn.addEventListener("click", closeTermsModal);
-    }
-
-    // Click Decline
-    if (declineBtn) {
-        declineBtn.addEventListener("click", closeTermsModal);
-    }
-
-    // Click outside popup
-    if (modal) {
-        modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-                closeTermsModal();
+        function closeTermsModal() {
+            if (modal) {
+                modal.style.display = "none";
             }
+        }
+
+        // Click X
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeTermsModal);
+        }
+
+        // Click Decline
+        if (declineBtn) {
+            declineBtn.addEventListener("click", closeTermsModal);
+        }
+
+        // Click outside popup
+        if (modal) {
+            modal.addEventListener("click", function (e) {
+                if (e.target === modal) {
+                    closeTermsModal();
+                }
+            });
+        }
+        declineBtn.addEventListener("click", function () {
+            window.location.href = "/auth/logout";
         });
-    }
-    declineBtn.addEventListener("click", function () {
-    window.location.href = "/auth/logout";
+
     });
 
-});
-    
 
 </script>
+
 <body>
-     <!-- Terms Popup -->
-<div th:if="${showTermsPopup}" id="termsModal">
-    <div class="terms-card">
-        <button id="closeTermsBtn" class="terms-close" type="button">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-        <h2 class="terms-title">
-            <img th:src="@{/assets/img/logo-icon.png}"
-                alt="DevQuery Logo"
-                class="terms-logo">
+    <!-- Terms Popup -->
+    <div th:if="${showTermsPopup}" id="termsModal">
+        <div class="terms-card">
+            <button id="closeTermsBtn" class="terms-close" type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 class="terms-title">
+                <img th:src="@{/assets/img/logo-icon.png}" alt="DevQuery Logo" class="terms-logo">
                 <div class="title-group">
                     <span class="brand-name">DevQuery</span>
                     <span class="terms-text">Terms & Rules</span>
                 </div>
-        </h2>
-        <div class="terms-content">
+            </h2>
+            <div class="terms-content">
 
-    <p class="terms-description">
-        Welcome to <strong>DevQuery</strong>, a collaborative platform where developers
-        can ask questions, share knowledge, and learn from the community.
-        To ensure a professional, respectful, and secure environment for everyone,
-        please carefully read the following Terms of Use, Community Rules, and Privacy
-        Policy before continuing.
-    </p>
+                <p class="terms-description">
+                    Welcome to <strong>DevQuery</strong>, a collaborative platform where developers
+                    can ask questions, share knowledge, and learn from the community.
+                    To ensure a professional, respectful, and secure environment for everyone,
+                    please carefully read the following Terms of Use, Community Rules, and Privacy
+                    Policy before continuing.
+                </p>
 
-    <h4>Community Rules</h4>
+                <h4>Community Rules</h4>
 
-    <ul class="terms-list">
-        <li>Be respectful and communicate professionally with all members.</li>
-        <li>Do not post offensive, abusive, or misleading content.</li>
-        <li>Avoid spam, advertisements, or duplicate questions.</li>
-        <li>Provide accurate information whenever possible.</li>
-        <li>Respect intellectual property and properly credit original sources.</li>
-    </ul>
+                <ul class="terms-list">
+                    <li>Be respectful and communicate professionally with all members.</li>
+                    <li>Do not post offensive, abusive, or misleading content.</li>
+                    <li>Avoid spam, advertisements, or duplicate questions.</li>
+                    <li>Provide accurate information whenever possible.</li>
+                    <li>Respect intellectual property and properly credit original sources.</li>
+                </ul>
 
-    <h4>Terms of Use</h4>
+                <h4>Terms of Use</h4>
 
-    <ul class="terms-list">
-        <li>You are responsible for all activities performed using your account.</li>
-        <li>DevQuery may remove content that violates community guidelines.</li>
-        <li>Your account may be suspended or terminated for repeated violations.</li>
-        <li>By using DevQuery, you agree to comply with all applicable laws and regulations.</li>
-    </ul>
+                <ul class="terms-list">
+                    <li>You are responsible for all activities performed using your account.</li>
+                    <li>DevQuery may remove content that violates community guidelines.</li>
+                    <li>Your account may be suspended or terminated for repeated violations.</li>
+                    <li>By using DevQuery, you agree to comply with all applicable laws and regulations.</li>
+                </ul>
 
-    <h4>Privacy Policy</h4>
+                <h4>Privacy Policy</h4>
 
-    <ul class="terms-list">
-        <li>Your personal information is handled according to our Privacy Policy.</li>
-        <li>We do not sell your personal data to third parties.</li>
-        <li>Cookies may be used to improve your browsing experience.</li>
-    </ul>
+                <ul class="terms-list">
+                    <li>Your personal information is handled according to our Privacy Policy.</li>
+                    <li>We do not sell your personal data to third parties.</li>
+                    <li>Cookies may be used to improve your browsing experience.</li>
+                </ul>
 
-</div>
-        <hr>
-        <label class="terms-check">
-            <input type="checkbox" id="agreeTerms">
+            </div>
+            <hr>
+            <label class="terms-check">
+                <input type="checkbox" id="agreeTerms">
                 <span>
                     I have read and agree to the community Rules and Terms of Use
                 </span>
-        </label>
-        <div class="terms-actions">
-            <button id="declineBtn" class="btn-decline" type="button">
-                Decline & Logout
-            </button>
-            <form th:action="@{/accept-terms}" method="post" style="display:inline;">
-                <button
-                    id="acceptBtn"
-                    class="btn-accept"
-                    type="submit"
-                    disabled>Accept & Continue</button>
-            </form>
+            </label>
+            <div class="terms-actions">
+                <button id="declineBtn" class="btn-decline" type="button">
+                    Decline & Logout
+                </button>
+                <form th:action="@{/accept-terms}" method="post" style="display:inline;">
+                    <button id="acceptBtn" class="btn-accept" type="submit" disabled>Accept & Continue</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 
     <div th:replace="~{Common/header :: header}"></div>
@@ -765,7 +766,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         th:text="|Search results for '${currentKeyword}'|">
                         Search results
                     </span>
-                         
+
                     <span th:unless="${currentKeyword != null and !#strings.isEmpty(currentKeyword)}">
                         Top Questions
                     </span>
@@ -843,7 +844,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <div class="user-card">
                             <span>asked</span>
-                            <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'MMM dd, yyyy') : ''}">
+                            <span th:text="${q.createdAt != null ? #temporals.format(q.createdAt, 'MMM dd, yyyy') : ''}">
                                 today
                             </span>
                         </div>
