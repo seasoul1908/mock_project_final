@@ -110,140 +110,113 @@
                 Feedbacks</a>
         </nav>
 
-        <div class="content-card">
-            <table class="table table-hover table-sm mb-0" style="font-size:13px;">
-                <thead class="table-light">
-                    <tr>
-                        <th>No.</th>
-                        <th>Type</th>
-                        <th>Target ID</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                        <th>Reported At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="r, rStat : ${reports}" th:id="'row-' + ${r.reportId}">
-                        <td class="text-muted" th:text="${(currentPage - 1) * 15 + rStat.count}"></td>
-                        <td>
-                            <span class="badge bg-info text-dark" th:text="${r.targetType}"></span>
-                        </td>
-                        <td th:text="${r.targetId}"></td>
-                        <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
-                            th:text="${r.reason}" th:title="${r.reason}"></td>
-                        <td>
-                            <span class="badge status-badge" th:id="'status-' + ${r.reportId}"
-                                th:classappend="${r.status == 'open'} ? 'bg-warning text-dark' : (${r.status == 'resolved'} ? 'bg-success' : 'bg-secondary')"
-                                th:text="${r.status}"></span>
-                        </td>
-                        <td class="text-muted" th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></td>
-                        <td th:if="${r.status == 'open'}">
-                            <button class="btn btn-sm btn-outline-info me-1 view-detail-btn"
-                                    data-bs-toggle="modal"
-                                    th:attr="data-bs-target='#reportDetailModal-' + ${r.reportId}">
-                                <i class="fa-solid fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-sm btn-outline-success me-1 resolve-btn" th:data-id="${r.reportId}">
-                                <i class="fa-solid fa-check"></i> Resolve
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary dismiss-btn" th:data-id="${r.reportId}">
-                                <i class="fa-solid fa-xmark"></i> Dismiss
-                            </button>
-                        </td>
-                        <td th:if="${r.status != 'open'}">
-                            <button class="btn btn-sm btn-outline-info me-1 view-detail-btn"
-                                    data-bs-toggle="modal"
-                                    th:attr="data-bs-target='#reportDetailModal-' + ${r.reportId}">
-                                <i class="fa-solid fa-eye"></i> View
-                            </button>
-                            <span class="text-muted small actions-placeholder">No action needed</span>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(reports)}">
-                        <td colspan="7" class="text-center text-muted py-4">No reports found</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Main Content -->
+        <main style="flex:1; padding:24px; overflow:auto;">
+            <div class="page-title"><i class="fa-solid fa-flag me-2 text-warning"></i> Manage Reports</div>
 
-            <!-- Pagination -->
-            <nav th:if="${totalPages > 1}" class="mt-3">
-                <ul class="pagination pagination-sm justify-content-center mb-0">
-                    <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
-                        <a class="page-link" th:href="@{/admin/reports(page=${currentPage - 1}, status=${status})}">«</a>
-                    </li>
-                    <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
-                        th:classappend="${p == currentPage} ? 'active'">
-                        <a class="page-link" th:href="@{/admin/reports(page=${p}, status=${status})}" th:text="${p}"></a>
-                    </li>
-                    <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
-                        <a class="page-link" th:href="@{/admin/reports(page=${currentPage + 1}, status=${status})}">»</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </main>
-</div>
-
-<!-- Report Detail Modals -->
-<div th:each="r : ${reports}">
-    <div class="modal fade" th:id="'reportDetailModal-' + ${r.reportId}" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-circle-info text-primary me-2"></i>Report Details (#<span th:text="${r.reportId}"></span>)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" style="font-size:14px;">
-                    <div class="mb-2">
-                        <strong>Target Type:</strong>
-                        <span class="badge bg-info text-dark ms-1" th:text="${r.targetType}"></span>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Target ID:</strong>
-                        <span class="ms-1" th:text="${r.targetId}"></span>
-                        <a th:if="${r.targetType == 'question'}" th:href="@{/question(id=${r.targetId})}" target="_blank" class="ms-2 small text-primary">View Target <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Reporter ID:</strong>
-                        <span class="ms-1" th:text="${r.reporterId}"></span>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Status:</strong>
-                        <span class="badge status-badge ms-1"
-                              th:classappend="${r.status == 'open'} ? 'bg-warning text-dark' : (${r.status == 'resolved'} ? 'bg-success' : 'bg-secondary')"
-                              th:text="${r.status}"></span>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Reported At:</strong>
-                        <span class="ms-1 text-muted" th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm:ss') : '—'}"></span>
-                    </div>
-                    <hr class="my-2"/>
-                    <div class="mb-2">
-                        <strong>Reason:</strong>
-                        <div class="p-2 bg-light rounded mt-1 text-break" th:text="${r.reason}"></div>
-                    </div>
-                    <div class="mb-2">
-                        <strong>Note / Description:</strong>
-                        <div class="p-2 bg-light rounded mt-1 text-break"
-                             th:text="${r.note != null and !r.note.isEmpty() ? r.note : '(No additional notes provided)'}"
-                             th:classappend="${r.note == null or r.note.isEmpty()} ? 'text-muted fst-italic' : ''"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                </div>
+            <!-- Stats + Filter Tabs -->
+            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                <a th:href="@{/admin/reports(status=all)}"
+                    th:classappend="${status == 'all'} ? 'btn btn-secondary btn-sm' : 'btn btn-outline-secondary btn-sm'">
+                    All <span class="badge bg-white text-dark ms-1" th:text="${totalCount}"></span>
+                </a>
+                <a th:href="@{/admin/reports(status=open)}"
+                    th:classappend="${status == 'open'} ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm'">
+                    Pending <span class="badge ms-1"
+                        th:classappend="${status == 'open'} ? 'bg-white text-dark' : 'bg-danger'"
+                        th:text="${openCount}"></span>
+                </a>
+                <a th:href="@{/admin/reports(status=resolved)}"
+                    th:classappend="${status == 'resolved'} ? 'btn btn-success btn-sm' : 'btn btn-outline-success btn-sm'">
+                    Resolved <span class="badge ms-1"
+                        th:classappend="${status == 'resolved'} ? 'bg-white text-dark' : 'bg-success'"
+                        th:text="${resolvedCount}"></span>
+                </a>
+                <a th:href="@{/admin/reports(status=dismissed)}"
+                    th:classappend="${status == 'dismissed'} ? 'btn btn-secondary btn-sm' : 'btn btn-outline-secondary btn-sm'">
+                    Dismissed <span class="badge ms-1"
+                        th:classappend="${status == 'dismissed'} ? 'bg-white text-dark' : 'bg-secondary'"
+                        th:text="${dismissedCount}"></span>
+                </a>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Toast -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
-    <div id="toast" class="toast align-items-center text-white border-0">
-        <div class="d-flex">
-            <div class="toast-body" id="toast-msg">Done.</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            <div class="content-card">
+                <table class="table table-hover table-sm mb-0" style="font-size:13px;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No.</th>
+                            <th>Type</th>
+                            <th>Target ID</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Reported At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, rStat : ${reports}" th:id="'row-' + ${r.reportId}">
+                            <td class="text-muted" th:text="${(currentPage - 1) * 15 + rStat.count}"></td>
+                            <td>
+                                <span class="badge bg-info text-dark" th:text="${r.targetType}"></span>
+                            </td>
+                            <td th:text="${r.targetId}"></td>
+                            <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                                th:text="${r.reason}" th:title="${r.reason}"></td>
+                            <td>
+                                <span class="badge status-badge" th:id="'status-' + ${r.reportId}"
+                                    th:classappend="${r.status == 'open'} ? 'bg-warning text-dark' : (${r.status == 'resolved'} ? 'bg-success' : 'bg-secondary')"
+                                    th:text="${r.status}"></span>
+                            </td>
+                            <td class="text-muted"
+                                th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm') : '—'}">
+                            </td>
+                            <td th:if="${r.status == 'open'}">
+                                <button class="btn btn-sm btn-outline-success me-1 resolve-btn"
+                                    th:data-id="${r.reportId}">
+                                    <i class="fa-solid fa-check"></i> Resolve
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary dismiss-btn" th:data-id="${r.reportId}">
+                                    <i class="fa-solid fa-xmark"></i> Dismiss
+                                </button>
+                            </td>
+                            <td th:if="${r.status != 'open'}"><span class="text-muted small actions-placeholder">No
+                                    action needed</span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(reports)}">
+                            <td colspan="7" class="text-center text-muted py-4">No reports found</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <nav th:if="${totalPages > 1}" class="mt-3">
+                    <ul class="pagination pagination-sm justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${currentPage <= 1} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/reports(page=${currentPage - 1}, status=${status})}">«</a>
+                        </li>
+                        <li th:each="p : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                            th:classappend="${p == currentPage} ? 'active'">
+                            <a class="page-link" th:href="@{/admin/reports(page=${p}, status=${status})}"
+                                th:text="${p}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage >= totalPages} ? 'disabled'">
+                            <a class="page-link"
+                                th:href="@{/admin/reports(page=${currentPage + 1}, status=${status})}">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+        <div id="toast" class="toast align-items-center text-white border-0">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-msg">Done.</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
         </div>
     </div>
 

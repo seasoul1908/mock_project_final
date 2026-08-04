@@ -138,7 +138,7 @@
                                     th:text="${b.status == 1 ? 'Published' : 'Hidden'}"></span>
                             </td>
                             <td class="text-muted"
-                                th:text="${b.createdAt != null ? #temporals.format(b.createdAt, 'dd/MM/yyyy') : '—'}"></td>
+                                th:text="${b.createdAt != null ? #dates.format(b.createdAt, 'dd/MM/yyyy') : '—'}"></td>
                             <td>
                                 <button class="btn btn-sm btn-outline-primary me-1 edit-btn" th:data-id="${b.blogId}"
                                     th:data-title="${b.title}" th:data-content="${b.content}"
