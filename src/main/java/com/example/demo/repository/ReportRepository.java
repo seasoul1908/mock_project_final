@@ -26,4 +26,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     @Query("SELECT COUNT(r) FROM Report r WHERE r.status = :status")
     int countByStatus(@Param("status") String status);
+
+    long countByReporterIdAndCreatedAtBetween(Long reporterId, java.util.Date startOfDay, java.util.Date endOfDay);
 }
