@@ -1,6 +1,8 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Badge;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,8 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import com.example.demo.entity.Badge;
 
 @Repository
 public interface BadgeRepository extends JpaRepository<Badge, Long> {
@@ -49,4 +50,13 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
     @Query(value = "SELECT privilege_id, name, description, required_reputation " +
             "FROM Privileges ORDER BY required_reputation ASC", nativeQuery = true)
     List<Map<String, Object>> getAllPrivilegesRaw();
+
+    // Admin badge list: optional type filter + name search, sort/pagination via Pageable
+    @Query("SELECT b FROM Badge b " +
+            "WHERE (:type IS NULL OR b.type = :type) " +
+            "AND (:keyword IS NULL OR LOWER(b.name) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    org.springframework.data.domain.Page<Badge> findByFilters(
+            @Param("type") String type,
+            @Param("keyword") String keyword,
+            org.springframework.data.domain.Pageable pageable);
 }
