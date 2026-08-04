@@ -131,7 +131,7 @@
                                     th:text="${loggedInUser?.username ?: 'User'}">User</span>
                             </a>
                         </li>
-                        <li class="nav-item position-relative me-3" id="noti-bell-item" sec:authorize="hasRole('USER')">
+                        <li class="nav-item position-relative me-3" id="noti-bell-item" sec:authorize="!hasAnyRole('ADMIN','MODERATOR')">
                             <a class="nav-link text-secondary" href="#" id="noti-bell-link">
                                 <i class="fa-solid fa-inbox fa-lg"></i>
                                 <span id="noti-badge-count" class="noti-badge" th:if="${unreadNotification != null}"
@@ -1018,7 +1018,7 @@
              Opens EventSource once per page load for the
              authenticated user and updates the badge instantly.
         ====================================================== -->
-        <script sec:authorize="hasRole('USER')" th:if="${loggedInUser != null}" th:inline="javascript">
+        <script sec:authorize="!hasAnyRole('ADMIN','MODERATOR')" th:if="${loggedInUser != null}" th:inline="javascript">
         (function () {
             var userId = /*[[${loggedInUser.userId}]]*/ null;
             const readingNotifications = new Set();

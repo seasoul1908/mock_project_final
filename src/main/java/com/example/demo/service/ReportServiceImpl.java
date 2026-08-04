@@ -1,5 +1,11 @@
 package com.example.demo.service;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.Answer;
 import com.example.demo.entity.Comment;
@@ -12,12 +18,6 @@ import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.NotificationType;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -38,14 +38,7 @@ private CommentRepository commentRepository;
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
-    private AnswerRepository answerRepository;
+    
 
     @Override
     @Transactional
