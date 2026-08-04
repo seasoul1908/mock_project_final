@@ -222,7 +222,7 @@
                                     th:text="${u.status}"></span>
                             </td>
                             <td class="text-muted"
-                                th:text="${u.createdAt != null ? #temporals.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
+                                th:text="${u.createdAt != null ? #dates.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(newestUsers)}">
                             <td colspan="6" class="text-center text-muted py-3">No users found</td>

@@ -24,21 +24,21 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private ReportRepository reportRepository;
+
     @Autowired
-private NotificationService notificationService;
-
-@Autowired
-private QuestionRepository questionRepository;
-
-@Autowired
-private AnswerRepository answerRepository;
-@Autowired
-private CommentRepository commentRepository;
+    private NotificationService notificationService;
 
     @Autowired
     private UserRepository userRepository;
-
     
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+    
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -58,47 +58,43 @@ private CommentRepository commentRepository;
         report.setCreatedAt(new Date());
         Report saved = reportRepository.save(report);
         if ("question".equals(targetType)) {
-
             Question question = questionRepository.findById(targetId)
-                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Question not found"));
 
             notificationService.createNotification(
-                question.getUserId(),
-                reporterId,
-                NotificationType.REPORT_QUESTION,
-            "Someone has reported your question",
-                question.getQuestionId(),
-            "QUESTION"
-    );
-
+                    question.getUserId(),
+                    reporterId,
+                    NotificationType.REPORT_QUESTION,
+                    "Someone has reported your question",
+                    question.getQuestionId(),
+                    "QUESTION"
+            );
         } else if ("answer".equals(targetType)) {
+            Answer answer = answerRepository.findById(targetId)
+                    .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
 
-    Answer answer = answerRepository.findById(targetId)
-            .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+            notificationService.createNotification(
+                    answer.getUserId(),
+                    reporterId,
+                    NotificationType.REPORT_ANSWER,
+                    "Someone has reported your answer",
+                    answer.getQuestionId(),
+                    "ANSWER"
+            );
+        } else if ("comment".equals(targetType)) {
+            Comment comment = commentRepository.findById(targetId)
+                    .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
 
-    notificationService.createNotification(
-            answer.getUserId(),
-            reporterId,
-            NotificationType.REPORT_ANSWER,
-            "Someone has reported your answer",
-            answer.getQuestionId(),
-            "ANSWER"
-    );
-}else if ("comment".equals(targetType)) {
-
-    Comment comment = commentRepository.findById(targetId)
-            .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
-
-    notificationService.createNotification(
-            comment.getUserId(),          // Chủ comment
-            reporterId,                   // Người report
-            NotificationType.REPORT_COMMENT,
-            "Someone has reported your comment",
-            comment.getCommentId(),      // Redirect về Question
-            "COMMENT"
-    );
-}
-return saved;
+            notificationService.createNotification(
+                    comment.getUserId(),
+                    reporterId,
+                    NotificationType.REPORT_COMMENT,
+                    "Someone has reported your comment",
+                    comment.getCommentId(),
+                    "COMMENT"
+            );
+        }
+        return saved;
     }
 
     @Override

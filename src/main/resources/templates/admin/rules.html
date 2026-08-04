@@ -147,7 +147,8 @@
                                     Created: <span
                                         th:text="${r.createdAt != null ? #temporals.format(r.createdAt, 'dd/MM/yyyy') : '—'}"></span>
                                     <span th:if="${r.updatedAt != null}">
-                                        · Updated: <span th:text="${#temporals.format(r.updatedAt, 'dd/MM/yyyy')}"></span>
+                                        · Updated: <span
+                                            th:text="${#temporals.format(r.updatedAt, 'dd/MM/yyyy')}"></span>
                                     </span>
                                 </div>
                             </div>

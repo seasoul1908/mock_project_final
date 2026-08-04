@@ -187,7 +187,7 @@
                         <tr class="feedback-row" th:each="fb, fbStat : ${feedbacks}" th:data-msg="${fb.message}"
                             th:data-title="${fb.title}" th:data-name="${fb.name}" th:data-email="${fb.email}"
                             th:data-user="${fb.user != null ? fb.user.username : '—'}"
-                            th:data-time="${fb.createdAt != null ? #temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"
+                            th:data-time="${fb.createdAt != null ? #temporals.format(fb.createdAt.toLocalDateTime(), 'dd/MM/yyyy HH:mm') : '—'}"
                             onclick="showMessage(this)">
                             <td class="text-muted" th:text="${(currentPage - 1) * 15 + fbStat.count}"></td>
                             <td th:text="${fb.name}"></td>
@@ -203,7 +203,7 @@
                                 </span>
                             </td>
                             <td class="text-muted"
-                                th:text="${fb.createdAt != null ? #temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm') : '—'}">
+                                th:text="${fb.createdAt != null ? #temporals.format(fb.createdAt.toLocalDateTime(), 'dd/MM/yyyy HH:mm') : '—'}">
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(feedbacks)}">

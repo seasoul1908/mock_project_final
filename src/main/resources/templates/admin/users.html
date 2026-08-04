@@ -232,8 +232,7 @@
                             </td>
                             <td th:text="${u.reputation}"></td>
                             <td class="text-muted"
-                                th:text="${u.createdAt != null ? #temporals.format(u.createdAt, 'dd/MM/yyyy') : '—'}">
-                            </td>
+                                th:text="${u.createdAt != null ? #dates.format(u.createdAt, 'dd/MM/yyyy') : '—'}"></td>
                             <td class="text-center">
                                 <button th:if="${!isModerator || u.role == 'member'}" class="btn btn-sm toggle-btn"
                                     th:classappend="${u.status == 'active'} ? 'btn-outline-danger' : 'btn-outline-success'"

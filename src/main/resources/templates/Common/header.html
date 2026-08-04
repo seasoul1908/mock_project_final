@@ -140,14 +140,16 @@
                             <div class="noti-dropdown d-none" id="noti-dropdown-menu">
                                 <div class="noti-dropdown-header d-flex justify-content-between align-items-center">
                                     <span class="fw-bold">INBOX</span>
-                                    <a href="#" class="text-primary small text-decoration-none" id="noti-mark-all">Mark all as read</a>
+                                    <a href="#" class="text-primary small text-decoration-none" id="noti-mark-all">Mark
+                                        all as read</a>
                                 </div>
                                 <div class="noti-dropdown-body" id="noti-list">
                                     <!-- Items injected via JS -->
                                     <div class="p-3 text-center text-secondary small">Loading...</div>
                                 </div>
                                 <div class="noti-dropdown-footer text-center">
-                                    <a href="#" class="text-secondary small text-decoration-none">View all notifications</a>
+                                    <a href="#" class="text-secondary small text-decoration-none">View all
+                                        notifications</a>
                                 </div>
                             </div>
                         </li>
@@ -837,6 +839,7 @@
             body.dark-theme .trending-item {
                 border-color: var(--border-color, #4a4e51) !important;
             }
+
             body.dark-theme .action-btn,
             body.dark-theme .vote-btn {
                 color: var(--text-secondary, #babfc4) !important;
@@ -854,7 +857,7 @@
             body.dark-theme .vote-btn.active-down {
                 color: #d0393e !important;
             }
-            
+
             /* Notification Dropdown Styles */
             .noti-dropdown {
                 position: absolute;
@@ -864,33 +867,40 @@
                 background-color: var(--bg-surface, #ffffff);
                 border: 1px solid var(--border-color, #e3e6e8);
                 border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
                 z-index: 1050;
                 overflow: hidden;
                 text-align: left;
             }
+
             body.dark-theme .noti-dropdown {
                 background-color: var(--bg-surface, #2d3135);
                 border-color: var(--border-color, #4a4e51);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             }
-            .noti-dropdown-header, .noti-dropdown-footer {
+
+            .noti-dropdown-header,
+            .noti-dropdown-footer {
                 padding: 10px 15px;
                 background-color: var(--bg-base, #f8f9f9);
                 border-bottom: 1px solid var(--border-color, #e3e6e8);
             }
-            body.dark-theme .noti-dropdown-header, 
+
+            body.dark-theme .noti-dropdown-header,
             body.dark-theme .noti-dropdown-footer {
                 background-color: var(--bg-base, #1a1b1d);
                 border-color: var(--border-color, #4a4e51);
             }
+
             .noti-dropdown-footer {
                 border-bottom: none;
                 border-top: 1px solid var(--border-color, #e3e6e8);
             }
+
             body.dark-theme .noti-dropdown-footer {
                 border-top-color: var(--border-color, #4a4e51);
             }
+
             .noti-dropdown-body {
                 max-height: 350px;
                 overflow-y: auto;
@@ -898,50 +908,53 @@
                 scrollbar-width: thin;
                 scrollbar-color: #b8b8b8 #f1f1f1;
             }
-            .noti-dropdown-body::-webkit-scrollbar{
-                width:10px;
+
+            .noti-dropdown-body::-webkit-scrollbar {
+                width: 10px;
             }
 
-            .noti-dropdown-body::-webkit-scrollbar-track{
-                background:#f1f1f1;
+            .noti-dropdown-body::-webkit-scrollbar-track {
+                background: #f1f1f1;
             }
 
-            .noti-dropdown-body::-webkit-scrollbar-thumb{
-                background:#b8b8b8;
-                border-radius:10px;
-                border:2px solid #f1f1f1;
+            .noti-dropdown-body::-webkit-scrollbar-thumb {
+                background: #b8b8b8;
+                border-radius: 10px;
+                border: 2px solid #f1f1f1;
             }
 
-            .noti-dropdown-body::-webkit-scrollbar-thumb:hover{
-                background:#8d8d8d;
-            }
-            body.dark-theme .noti-dropdown-body{
-            scrollbar-width: thin;
-            scrollbar-color:#6b7280 #2d3135;
+            .noti-dropdown-body::-webkit-scrollbar-thumb:hover {
+                background: #8d8d8d;
             }
 
-            body.dark-theme .noti-dropdown-body::-webkit-scrollbar{
-            width:10px;
-            height:10px;
+            body.dark-theme .noti-dropdown-body {
+                scrollbar-width: thin;
+                scrollbar-color: #6b7280 #2d3135;
             }
 
-            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-track{
-            background:#2d3135;
+            body.dark-theme .noti-dropdown-body::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
             }
 
-            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-thumb{
-            background:#6b7280;
-            border-radius:10px;
-            border:2px solid #2d3135;
+            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-track {
+                background: #2d3135;
             }
 
-            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-thumb:hover{
-            background:#8b949e;
+            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-thumb {
+                background: #6b7280;
+                border-radius: 10px;
+                border: 2px solid #2d3135;
             }
 
-            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-corner{
-            background:#2d3135;
+            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-thumb:hover {
+                background: #8b949e;
             }
+
+            body.dark-theme .noti-dropdown-body::-webkit-scrollbar-corner {
+                background: #2d3135;
+            }
+
             .noti-item {
                 padding: 12px 15px;
                 border-bottom: 1px solid var(--border-color, #eff0f1);
@@ -952,63 +965,72 @@
                 color: var(--text-primary, #242729);
                 transition: background-color 0.15s;
             }
+
             body.dark-theme .noti-item {
                 border-bottom-color: var(--border-color, #4a4e51);
                 color: var(--text-primary, #f1f2f3);
             }
+
             .noti-item:hover {
                 background-color: var(--bg-base, #f8f9f9);
                 color: var(--text-primary, #242729);
             }
+
             body.dark-theme .noti-item:hover {
                 background-color: var(--bg-input, #1a1b1d);
                 color: var(--text-primary, #f1f2f3);
             }
+
             .noti-item.unread {
                 background-color: rgba(0, 116, 204, 0.05);
             }
+
             body.dark-theme .noti-item.unread {
                 background-color: rgba(55, 159, 239, 0.1);
             }
+
             .noti-item.unread:hover {
                 background-color: rgba(0, 116, 204, 0.1);
             }
+
             body.dark-theme .noti-item.unread:hover {
                 background-color: rgba(55, 159, 239, 0.15);
             }
+
             .noti-time {
                 font-size: 0.8rem;
                 color: var(--text-secondary, #6a737c);
                 margin-top: 4px;
             }
-            .noti-content-wrapper{
-                display:flex;
-                align-items:flex-start;
-                gap:12px;
+
+            .noti-content-wrapper {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
             }
 
-            .noti-icon{
-                width:36px;
-                height:36px;
+            .noti-icon {
+                width: 36px;
+                height: 36px;
 
-                display:flex;
-                justify-content:center;
-                align-items:center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
 
-                font-size:18px;
-                flex-shrink:0;
+                font-size: 18px;
+                flex-shrink: 0;
 
-                border-radius:50%;
-                background:#f1f2f3;
+                border-radius: 50%;
+                background: #f1f2f3;
             }
 
-            body.dark-theme .noti-icon{
-                background:#3b4045;
-                border:1px solid #555;
+            body.dark-theme .noti-icon {
+                background: #3b4045;
+                border: 1px solid #555;
             }
 
-            .noti-content{
-                flex:1;
+            .noti-content {
+                flex: 1;
             }
         </style>
         <div th:replace="~{Common/chatbot :: chatbot-widget}"></div>
@@ -1024,129 +1046,129 @@
             const readingNotifications = new Set();
             if (!userId) return;
 
-            // Utilities
-            function timeAgo(date) {
-                const seconds = Math.floor((new Date() - date) / 1000);
-                let interval = seconds / 31536000;
-                if (interval > 1) return Math.floor(interval) + " years ago";
-                interval = seconds / 2592000;
-                if (interval > 1) return Math.floor(interval) + " months ago";
-                interval = seconds / 86400;
-                if (interval > 1) return Math.floor(interval) + " days ago";
-                interval = seconds / 3600;
-                if (interval > 1) return Math.floor(interval) + " hours ago";
-                interval = seconds / 60;
-                if (interval > 1) return Math.floor(interval) + " mins ago";
-                return "Just now";
-            }
-            function getNotificationIcon(type, content) {
-                if(type === "VOTE_QUESTION" || type === "VOTE_ANSWER"){
-
-                if(content.toLowerCase().includes("downvote")){
-                    return '<i class="fa-solid fa-thumbs-down text-warning"></i>';
+                // Utilities
+                function timeAgo(date) {
+                    const seconds = Math.floor((new Date() - date) / 1000);
+                    let interval = seconds / 31536000;
+                    if (interval > 1) return Math.floor(interval) + " years ago";
+                    interval = seconds / 2592000;
+                    if (interval > 1) return Math.floor(interval) + " months ago";
+                    interval = seconds / 86400;
+                    if (interval > 1) return Math.floor(interval) + " days ago";
+                    interval = seconds / 3600;
+                    if (interval > 1) return Math.floor(interval) + " hours ago";
+                    interval = seconds / 60;
+                    if (interval > 1) return Math.floor(interval) + " mins ago";
+                    return "Just now";
                 }
+                function getNotificationIcon(type, content) {
+                    if (type === "VOTE_QUESTION" || type === "VOTE_ANSWER") {
 
-                return '<i class="fa-solid fa-thumbs-up text-warning "></i>';
-                }
-                switch (type) {
-                    case 'NEW_ANSWER':
-                        return '<i class="fa-solid fa-comment-dots text-primary"></i>';
+                        if (content.toLowerCase().includes("downvote")) {
+                            return '<i class="fa-solid fa-thumbs-down text-warning"></i>';
+                        }
 
-                    case 'ANSWER_ACCEPTED':
-                        return '<i class="fa-solid fa-circle-check text-success"></i>';
-
-                    case 'ANSWER_UNACCEPTED':
-                        return '<i class="fa-solid fa-circle-xmark text-danger"></i>';
-
-                    case 'COMMENT_QUESTION':
-                        return '<i class="fa-solid fa-message text-info"></i>';
-                    case 'COMMENT_ANSWER':
-                        return '<i class="fa-solid fa-comments text-info"></i>';
-                    
-                    case 'REPORT_QUESTION':
-                        return '<i class="fa-solid fa-flag text-danger"></i>';
-                    case 'REPORT_ANSWER':
-                        return '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
-                    case 'REPORT_COMMENT':
-                        return '<i class="fa-solid fa-flag text-danger"></i>';
-
-                    case 'NEW_BOUNTY':
-                        return '<i class="fa-solid fa-trophy text-warning"></i>';
-
-                    case 'REPUTATION_CHANGED':
-                        return '<i class="fa-solid fa-star text-warning"></i>';
-
-                    case 'TAG_POST':
-                        return '<i class="fa-solid fa-tag text-primary"></i>';
-
-                    default:
-                        return '<i class="fa-solid fa-bell"></i>';
-                }
-            }
-            
-
-            function createNotiItem(n) {
-                const div = document.createElement('a');
-                div.className =
-                'noti-item ' + (n.isRead ? '' : 'unread');
-                div.href = '#';
-                div.setAttribute('data-id', n.notificationId);
-                div.onclick = async function(e) {
-                    e.preventDefault();
-                    if (!n.isRead) {
-                        readingNotifications.add(n.notificationId);
-                    n.isRead = true;
-                    div.classList.remove("unread");
-                    decreaseBadge();
-                    setTimeout(() => {
-                        readingNotifications.delete(n.notificationId);
-                    }, 2000);
-
-                    // Gửi request nền, không chờ
-                    fetch('/notifications/' + n.notificationId + '/read', {
-                    method: 'PUT'
-                    }).catch(console.error);
+                        return '<i class="fa-solid fa-thumbs-up text-warning "></i>';
                     }
-                    let url = '/question?id=' + n.questionId;
+                    switch (type) {
+                        case 'NEW_ANSWER':
+                            return '<i class="fa-solid fa-comment-dots text-primary"></i>';
 
-                    if (n.answerId) {
-                        url += '#answer-' + n.answerId;
+                        case 'ANSWER_ACCEPTED':
+                            return '<i class="fa-solid fa-circle-check text-success"></i>';
+
+                        case 'ANSWER_UNACCEPTED':
+                            return '<i class="fa-solid fa-circle-xmark text-danger"></i>';
+
+                        case 'COMMENT_QUESTION':
+                            return '<i class="fa-solid fa-message text-info"></i>';
+                        case 'COMMENT_ANSWER':
+                            return '<i class="fa-solid fa-comments text-info"></i>';
+
+                        case 'REPORT_QUESTION':
+                            return '<i class="fa-solid fa-flag text-danger"></i>';
+                        case 'REPORT_ANSWER':
+                            return '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
+                        case 'REPORT_COMMENT':
+                            return '<i class="fa-solid fa-flag text-danger"></i>';
+
+                        case 'NEW_BOUNTY':
+                            return '<i class="fa-solid fa-trophy text-warning"></i>';
+
+                        case 'REPUTATION_CHANGED':
+                            return '<i class="fa-solid fa-star text-warning"></i>';
+
+                        case 'TAG_POST':
+                            return '<i class="fa-solid fa-tag text-primary"></i>';
+
+                        default:
+                            return '<i class="fa-solid fa-bell"></i>';
                     }
-
-                    if (n.commentId) {
-                        url += '#comment-' + n.commentId;
-                    }
-
-                    window.location.href = url;
-                };
-                // These types already build "{username} ..." directly inside n.content
-                // (see NotificationServiceImpl / *ServiceImpl call sites), so showing the
-                // bold senderName here as well would duplicate the name. Bounty Reward
-                // (REPUTATION_CHANGED) is intentionally left showing both.
-                const HIDE_SENDER_TYPES = [
-                'REPORT_QUESTION',
-                'REPORT_ANSWER',
-                'REPORT_COMMENT',
-                'VOTE_QUESTION',
-                'VOTE_ANSWER',
-                'NEW_BOUNTY'
-                ];
-                const NOTI_TYPES_WITH_NAME_IN_CONTENT = [
-                'NEW_ANSWER',
-                'COMMENT_QUESTION',
-                'COMMENT_ANSWER'
-                ];
-                HIDE_SENDER_TYPES.push("REPUTATION_CHANGED");
-                let senderNameHtml = '';
-
-                if (
-                !NOTI_TYPES_WITH_NAME_IN_CONTENT.includes(n.type) &&
-                !HIDE_SENDER_TYPES.includes(n.type) &&
-                n.senderName
-                ) {
-                senderNameHtml = `<strong>${n.senderName}</strong> `;
                 }
-                div.innerHTML = `
+
+
+                function createNotiItem(n) {
+                    const div = document.createElement('a');
+                    div.className =
+                        'noti-item ' + (n.isRead ? '' : 'unread');
+                    div.href = '#';
+                    div.setAttribute('data-id', n.notificationId);
+                    div.onclick = async function (e) {
+                        e.preventDefault();
+                        if (!n.isRead) {
+                            readingNotifications.add(n.notificationId);
+                            n.isRead = true;
+                            div.classList.remove("unread");
+                            decreaseBadge();
+                            setTimeout(() => {
+                                readingNotifications.delete(n.notificationId);
+                            }, 2000);
+
+                            // Gửi request nền, không chờ
+                            fetch('/notifications/' + n.notificationId + '/read', {
+                                method: 'PUT'
+                            }).catch(console.error);
+                        }
+                        let url = '/question?id=' + n.questionId;
+
+                        if (n.answerId) {
+                            url += '#answer-' + n.answerId;
+                        }
+
+                        if (n.commentId) {
+                            url += '#comment-' + n.commentId;
+                        }
+
+                        window.location.href = url;
+                    };
+                    // These types already build "{username} ..." directly inside n.content
+                    // (see NotificationServiceImpl / *ServiceImpl call sites), so showing the
+                    // bold senderName here as well would duplicate the name. Bounty Reward
+                    // (REPUTATION_CHANGED) is intentionally left showing both.
+                    const HIDE_SENDER_TYPES = [
+                        'REPORT_QUESTION',
+                        'REPORT_ANSWER',
+                        'REPORT_COMMENT',
+                        'VOTE_QUESTION',
+                        'VOTE_ANSWER',
+                        'NEW_BOUNTY'
+                    ];
+                    const NOTI_TYPES_WITH_NAME_IN_CONTENT = [
+                        'NEW_ANSWER',
+                        'COMMENT_QUESTION',
+                        'COMMENT_ANSWER'
+                    ];
+                    HIDE_SENDER_TYPES.push("REPUTATION_CHANGED");
+                    let senderNameHtml = '';
+
+                    if (
+                        !NOTI_TYPES_WITH_NAME_IN_CONTENT.includes(n.type) &&
+                        !HIDE_SENDER_TYPES.includes(n.type) &&
+                        n.senderName
+                    ) {
+                        senderNameHtml = `<strong>${n.senderName}</strong> `;
+                    }
+                    div.innerHTML = `
                     <div class="noti-content-wrapper">
 
                     <div class="noti-icon">
@@ -1176,141 +1198,141 @@
 
                 </div>
             `;
-                return div;
-            }
-            function decreaseBadge() {
+                    return div;
+                }
+                function decreaseBadge() {
 
-            const badge = document.getElementById("noti-badge-count");
+                    const badge = document.getElementById("noti-badge-count");
 
-            if (!badge) return;
+                    if (!badge) return;
 
-            let count = parseInt(badge.textContent) || 0;
+                    let count = parseInt(badge.textContent) || 0;
 
-            count = Math.max(0, count - 1);
+                    count = Math.max(0, count - 1);
 
-            if (count === 0) {
-                badge.style.display = "none";
-            } else {
-                badge.textContent = count;
-            }
-            }
-
-            function fetchNotifications() {
-                const list = document.getElementById('noti-list');
-                list.innerHTML = '<div class="p-3 text-center text-secondary small">Loading...</div>';
-                fetch('/notifications/' + userId)
-                    .then(r => r.json())
-                    .then(notifs => {
-                        list.innerHTML = '';
-                        if (notifs.length === 0) {
-                            list.innerHTML = '<div class="p-3 text-center text-secondary small">No notifications</div>';
-                            return;
-                        }
-                        notifs.forEach(n => list.appendChild(createNotiItem(n)));
-                    })
-                    .catch(err => {
-                        list.innerHTML = '<div class="p-3 text-center text-danger small">Failed to load</div>';
-                    });
-            }
-
-            // Dropdown Toggle
-            const bellLink = document.getElementById('noti-bell-link');
-            const dropdown = document.getElementById('noti-dropdown-menu');
-            
-            if (bellLink && dropdown) {
-                bellLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const isClosed = dropdown.classList.contains('d-none');
-                    dropdown.classList.toggle('d-none');
-                    if (isClosed) {
-                        fetchNotifications();
-                    }
-                });
-
-                // Click outside to close
-                document.addEventListener('click', function(e) {
-                    const bellItem = document.getElementById('noti-bell-item');
-                    if (bellItem && !bellItem.contains(e.target)) {
-                        dropdown.classList.add('d-none');
-                    }
-                });
-            }
-
-            // Mark all as read
-            const markAllBtn = document.getElementById('noti-mark-all');
-            if (markAllBtn) {
-                markAllBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                const unreadItems = Array.from(document.querySelectorAll('.noti-item.unread'));
-
-                if (unreadItems.length === 0) return;
-
-                // Gọi 1 API duy nhất
-                fetch('/notifications/read-all/' + userId, {
-                     method: 'PUT'
-                })
-                .then(() => {
-
-                    // Update UI ngay
-                    unreadItems.forEach(item => {
-                        item.classList.remove('unread');
-                    });
-
-                    // Xóa badge
-                    const badge = document.getElementById('noti-badge-count');
-                    if (badge) {
-                            badge.remove();
-                    }
-
-                })
-            .catch(console.error);
-         });
-        }
-
-            // Prevent duplicate EventSource on Turbolinks / fragment reload
-            if (window.__sseNotifSource) return;
-
-            var es = new EventSource('/notifications/stream/' + userId);
-            window.__sseNotifSource = es;
-
-            es.addEventListener('notification', function (event) {
-                try {
-                    let n = JSON.parse(event.data);
-                    if (n.isRead !== undefined) n.read = n.isRead; 
-                    if (readingNotifications.has(n.notificationId)) {
-                        return;
-                    }
-                    incrementBadge();
-                    
-                    const list = document.getElementById('noti-list');
-                    if (list) {
-                        if (!dropdown.classList.contains('d-none')) {
-                            if (!list.querySelector('.noti-item')) list.innerHTML = '';
-                            list.prepend(createNotiItem(n));
-                        }
-                    }
-                } catch(e) {}
-            });
-
-            function incrementBadge() {
-                var badge = document.getElementById('noti-badge-count');
-                if (badge) {
-                    var current = parseInt(badge.textContent, 10) || 0;
-                    badge.textContent = current + 1;
-                } else {
-                    var bellItem = document.getElementById('noti-bell-item');
-                    if (bellItem) {
-                        var anchor = document.getElementById('noti-bell-link');
-                        var newBadge = document.createElement('span');
-                        newBadge.id = 'noti-badge-count';
-                        newBadge.className = 'noti-badge';
-                        newBadge.textContent = '1';
-                        anchor.appendChild(newBadge);
+                    if (count === 0) {
+                        badge.style.display = "none";
+                    } else {
+                        badge.textContent = count;
                     }
                 }
-            }
-        })();
+
+                function fetchNotifications() {
+                    const list = document.getElementById('noti-list');
+                    list.innerHTML = '<div class="p-3 text-center text-secondary small">Loading...</div>';
+                    fetch('/notifications/' + userId)
+                        .then(r => r.json())
+                        .then(notifs => {
+                            list.innerHTML = '';
+                            if (notifs.length === 0) {
+                                list.innerHTML = '<div class="p-3 text-center text-secondary small">No notifications</div>';
+                                return;
+                            }
+                            notifs.forEach(n => list.appendChild(createNotiItem(n)));
+                        })
+                        .catch(err => {
+                            list.innerHTML = '<div class="p-3 text-center text-danger small">Failed to load</div>';
+                        });
+                }
+
+                // Dropdown Toggle
+                const bellLink = document.getElementById('noti-bell-link');
+                const dropdown = document.getElementById('noti-dropdown-menu');
+
+                if (bellLink && dropdown) {
+                    bellLink.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const isClosed = dropdown.classList.contains('d-none');
+                        dropdown.classList.toggle('d-none');
+                        if (isClosed) {
+                            fetchNotifications();
+                        }
+                    });
+
+                    // Click outside to close
+                    document.addEventListener('click', function (e) {
+                        const bellItem = document.getElementById('noti-bell-item');
+                        if (bellItem && !bellItem.contains(e.target)) {
+                            dropdown.classList.add('d-none');
+                        }
+                    });
+                }
+
+                // Mark all as read
+                const markAllBtn = document.getElementById('noti-mark-all');
+                if (markAllBtn) {
+                    markAllBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        const unreadItems = Array.from(document.querySelectorAll('.noti-item.unread'));
+
+                        if (unreadItems.length === 0) return;
+
+                        // Gọi 1 API duy nhất
+                        fetch('/notifications/read-all/' + userId, {
+                            method: 'PUT'
+                        })
+                            .then(() => {
+
+                                // Update UI ngay
+                                unreadItems.forEach(item => {
+                                    item.classList.remove('unread');
+                                });
+
+                                // Xóa badge
+                                const badge = document.getElementById('noti-badge-count');
+                                if (badge) {
+                                    badge.remove();
+                                }
+
+                            })
+                            .catch(console.error);
+                    });
+                }
+
+                // Prevent duplicate EventSource on Turbolinks / fragment reload
+                if (window.__sseNotifSource) return;
+
+                var es = new EventSource('/notifications/stream/' + userId);
+                window.__sseNotifSource = es;
+
+                es.addEventListener('notification', function (event) {
+                    try {
+                        let n = JSON.parse(event.data);
+                        if (n.isRead !== undefined) n.read = n.isRead;
+                        if (readingNotifications.has(n.notificationId)) {
+                            return;
+                        }
+                        incrementBadge();
+
+                        const list = document.getElementById('noti-list');
+                        if (list) {
+                            if (!dropdown.classList.contains('d-none')) {
+                                if (!list.querySelector('.noti-item')) list.innerHTML = '';
+                                list.prepend(createNotiItem(n));
+                            }
+                        }
+                    } catch (e) { }
+                });
+
+                function incrementBadge() {
+                    var badge = document.getElementById('noti-badge-count');
+                    if (badge) {
+                        var current = parseInt(badge.textContent, 10) || 0;
+                        badge.textContent = current + 1;
+                    } else {
+                        var bellItem = document.getElementById('noti-bell-item');
+                        if (bellItem) {
+                            var anchor = document.getElementById('noti-bell-link');
+                            var newBadge = document.createElement('span');
+                            newBadge.id = 'noti-badge-count';
+                            newBadge.className = 'noti-badge';
+                            newBadge.textContent = '1';
+                            anchor.appendChild(newBadge);
+                        }
+                    }
+                }
+            })();
         </script>
 
     </nav>
