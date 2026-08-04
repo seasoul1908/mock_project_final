@@ -853,7 +853,7 @@
                         <!-- Report button -->
                         <button type="button" class="action-btn" data-bs-toggle="modal"
                                 data-bs-target="#reportQuestionModal"
-                                th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15}">
+                                th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != question.authorId}">
                             <i class="fa-solid fa-flag"></i> Report
                         </button>
 
@@ -949,8 +949,8 @@
                                 <button type="button" class="btn p-0 border-0 text-secondary ms-2" style="font-size: 12px;"
                                         data-bs-toggle="modal"
                                         th:attr="data-bs-target='#reportCommentModal-' + ${c.commentId}"
-                                        th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15}">
-                                    Flag
+                                        th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != c.userId}">
+                                    Report
                                 </button>
 
                                 <form th:if="${c.canDelete}" th:action="@{/comments/delete}" method="post" class="d-inline m-0"
@@ -1111,7 +1111,7 @@
                                 <!-- Report button -->
                                 <button type="button" class="action-btn" data-bs-toggle="modal"
                                         th:attr="data-bs-target='#reportAnswerModal-' + ${a.answerId}"
-                                        th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15}">
+                                        th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != a.authorId}">
                                     <i class="fa-solid fa-flag"></i> Report
                                 </button>
 
@@ -1181,7 +1181,7 @@
                                         <button type="button" class="btn p-0 border-0 text-secondary ms-2" style="font-size: 12px;"
                                                 data-bs-toggle="modal"
                                                 th:attr="data-bs-target='#reportCommentModal-' + ${c.commentId}"
-                                                th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15}">
+                                                th:if="${currentUser != null and currentUser.reputation != null and currentUser.reputation >= 15 and currentUser.userId != c.userId}">
                                             Flag
                                         </button>
 

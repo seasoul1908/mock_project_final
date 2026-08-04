@@ -1,7 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.Answer;
+import com.example.demo.entity.Comment;
+import com.example.demo.entity.Question;
 import com.example.demo.entity.Report;
 import com.example.demo.entity.User;
+import com.example.demo.repository.AnswerRepository;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +27,22 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+
     @Override
     @Transactional
     public Report reportContent(long reporterId, String targetType, long targetId, String reason, String note) {
         validateReporter(reporterId);
         validateReason(reason);
         validateTargetType(targetType);
+        validateSelfReport(reporterId, targetType, targetId);
 
         Report report = new Report();
         report.setReporterId(reporterId);
@@ -45,6 +61,7 @@ public class ReportServiceImpl implements ReportService {
         validateReporter(reporterId);
         validateReason(reason);
         validateTargetType(targetType);
+        validateSelfReport(reporterId, targetType, targetId);
 
         Report report = new Report();
         report.setReporterId(reporterId);
@@ -56,6 +73,28 @@ public class ReportServiceImpl implements ReportService {
         report.setStatus("open");
         report.setCreatedAt(new Date());
         return reportRepository.save(report);
+    }
+
+    private void validateSelfReport(long reporterId, String targetType, long targetId) {
+        if ("comment".equalsIgnoreCase(targetType)) {
+            Comment comment = commentRepository.findById(targetId)
+                    .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+            if (comment.getUserId() == reporterId) {
+                throw new IllegalArgumentException("You cannot report your own comment");
+            }
+        } else if ("question".equalsIgnoreCase(targetType)) {
+            Question question = questionRepository.findById(targetId)
+                    .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+            if (question.getUserId() == reporterId) {
+                throw new IllegalArgumentException("You cannot report your own question");
+            }
+        } else if ("answer".equalsIgnoreCase(targetType)) {
+            Answer answer = answerRepository.findById(targetId)
+                    .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+            if (answer.getUserId() == reporterId) {
+                throw new IllegalArgumentException("You cannot report your own answer");
+            }
+        }
     }
 
     private void validateReporter(long reporterId) {
