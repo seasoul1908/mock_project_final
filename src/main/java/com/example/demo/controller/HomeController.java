@@ -57,6 +57,8 @@ public class HomeController {
                 System.out.println("Login email = " + email);
 
                 userRepository.findByEmail(email).ifPresent(user -> {
+
+                    model.addAttribute("loggedInUser", user);
         
                 System.out.println("acceptedTerms = " + user.getAcceptedTerms());
                 

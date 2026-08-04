@@ -1,24 +1,25 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Notification;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.entity.Answer;
+import com.example.demo.entity.PostEditHistory;
 import com.example.demo.entity.Question;
 import com.example.demo.entity.Tag;
 import com.example.demo.entity.User;
-import com.example.demo.entity.Answer;
-import com.example.demo.entity.PostEditHistory;
 import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.NotificationRepository;
 import com.example.demo.repository.PostEditHistoryRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import com.example.demo.util.NotificationType;
 
 @Service
 @SuppressWarnings("null")
@@ -41,6 +42,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -229,32 +233,25 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private void createNotifications(User author, Question question) {
-        // 1. User Followers (follower_id)
-        List<Long> authorFollowers = questionRepository.findFollowersByAuthorId(author.getUserId());
-        for (Long followerId : authorFollowers) {
-            if (followerId.equals(author.getUserId())) continue;
-            Notification noti = new Notification(
-                    followerId,
-                    "user_post",
-                    "User " + author.getUsername() + " vừa đăng bài mới"
-            );
-            notificationRepository.save(noti);
-        }
-
-        // 2. Tag Followers (user_id)
+    // Tag Followers (user_id)
         List<Long> tagFollowers = questionRepository.findFollowersByQuestionTags(question.getQuestionId(), author.getUserId());
+
         for (Long followerId : tagFollowers) {
             if (followerId.equals(author.getUserId())) continue;
             // Get which tag(s) this user is following on this question
             List<String> followedTags = questionRepository.findFollowedTagsForQuestion(question.getQuestionId(), followerId);
             if (!followedTags.isEmpty()) {
                 String tagStr = String.join(", ", followedTags);
-                Notification noti = new Notification(
-                        followerId,
-                        "tag_post",
-                        "Có một bài đăng liên quan đến tag " + tagStr
+
+                notificationService.createNotification(
+                followerId,
+                author.getUserId(),
+                NotificationType.TAG_POST,
+                "New question in tag: " + tagStr + ".",
+                question.getQuestionId(),
+                "QUESTION"
                 );
-                notificationRepository.save(noti);
+                
             }
         }
     }
@@ -360,6 +357,24 @@ public class QuestionServiceImpl implements QuestionService {
         question.setBountyStartedAt(new Timestamp(now));
         question.setBountyExpiresAt(new Timestamp(now + (long) days * 24 * 60 * 60 * 1000));
         questionRepository.save(question);
+        List<Long> userIds = userRepository.findAllUserIds();
+
+        for (Long receiverId : userIds) {
+
+        // Không gửi cho chính người treo bounty
+        if (receiverId.equals(userId)) {
+            continue;
+        }
+        
+        notificationService.createNotification(
+            receiverId,                     // người nhận
+            userId,                         // người tạo bounty
+            NotificationType.NEW_BOUNTY,
+            "Has new bounty question: " + question.getTitle(),
+            question.getQuestionId(),
+            "QUESTION"
+        );
+    }   
     }
 
     @Override
@@ -391,6 +406,14 @@ public class QuestionServiceImpl implements QuestionService {
         userRepository.addReputation(authorId, amount);
         userRepository.insertReputationHistory(authorId, amount,
                 "Bounty awarded on answer", "bounty", "answer", answerId, userId);
+        notificationService.createNotification(
+        authorId,                  // người nhận thưởng
+        userId,                    // chủ câu hỏi
+        NotificationType.REPUTATION_CHANGED,
+        "You received +" + amount + " reputation from bounty.",
+        questionId,
+        "QUESTION"
+);
 
         question.setBountyAmount(0);
         question.setBountyAwarderId(null);

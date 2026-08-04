@@ -1,4 +1,5 @@
 package com.example.demo.service;
+import java.util.Date;
 
 import com.example.demo.entity.Answer;
 import com.example.demo.entity.Comment;
@@ -10,19 +11,29 @@ import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.ReportRepository;
 import com.example.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.example.demo.util.NotificationType;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private ReportRepository reportRepository;
+    @Autowired
+private NotificationService notificationService;
+
+@Autowired
+private QuestionRepository questionRepository;
+
+@Autowired
+private AnswerRepository answerRepository;
+@Autowired
+private CommentRepository commentRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -52,7 +63,49 @@ public class ReportServiceImpl implements ReportService {
         report.setNote(note);
         report.setStatus("open");
         report.setCreatedAt(new Date());
-        return reportRepository.save(report);
+        Report saved = reportRepository.save(report);
+        if ("question".equals(targetType)) {
+
+            Question question = questionRepository.findById(targetId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+            notificationService.createNotification(
+                question.getUserId(),
+                reporterId,
+                NotificationType.REPORT_QUESTION,
+            "Someone has reported your question",
+                question.getQuestionId(),
+            "QUESTION"
+    );
+
+        } else if ("answer".equals(targetType)) {
+
+    Answer answer = answerRepository.findById(targetId)
+            .orElseThrow(() -> new IllegalArgumentException("Answer not found"));
+
+    notificationService.createNotification(
+            answer.getUserId(),
+            reporterId,
+            NotificationType.REPORT_ANSWER,
+            "Someone has reported your answer",
+            answer.getQuestionId(),
+            "ANSWER"
+    );
+}else if ("comment".equals(targetType)) {
+
+    Comment comment = commentRepository.findById(targetId)
+            .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+    notificationService.createNotification(
+            comment.getUserId(),          // Chủ comment
+            reporterId,                   // Người report
+            NotificationType.REPORT_COMMENT,
+            "Someone has reported your comment",
+            comment.getCommentId(),      // Redirect về Question
+            "COMMENT"
+    );
+}
+return saved;
     }
 
     @Override

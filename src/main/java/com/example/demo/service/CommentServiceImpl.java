@@ -1,16 +1,20 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Answer;
-import com.example.demo.entity.Comment;
-import com.example.demo.entity.Question;
-import com.example.demo.repository.AnswerRepository;
-import com.example.demo.repository.CommentRepository;
-import com.example.demo.repository.QuestionRepository;
+import java.sql.Timestamp;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import com.example.demo.entity.Answer;
+import com.example.demo.entity.Comment;
+import com.example.demo.entity.Question;
+import com.example.demo.entity.User;
+import com.example.demo.repository.AnswerRepository;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.QuestionRepository;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.util.NotificationType;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -24,11 +28,17 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private AnswerRepository answerRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
+     @Autowired
+    private UserRepository userRepository;
+
     @Override
     @Transactional
     public Comment addQuestionComment(long questionId, long userId, String body) {
         validateBody(body);
-        questionRepository.findById(questionId)
+        Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found"));
 
         Comment comment = new Comment();
@@ -36,7 +46,22 @@ public class CommentServiceImpl implements CommentService {
         comment.setQuestionId(questionId);
         comment.setBody(body.trim());
         comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(comment);
+        if (question.getUserId() != userId) {
+            String commenterUsername = userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElse("");
+        notificationService.createNotification(
+            question.getUserId(),          // người nhận
+            userId,                      // người comment
+            NotificationType.COMMENT_QUESTION,
+            commenterUsername + " has commented on your question",
+            saved.getCommentId(),
+             "COMMENT"
+            );
+        }
+
+        return saved;
     }
 
     @Override
@@ -52,7 +77,22 @@ public class CommentServiceImpl implements CommentService {
         comment.setQuestionId(answer.getQuestionId());
         comment.setBody(body.trim());
         comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(comment);
+        if (answer.getUserId() != userId) {
+            String commenterUsername = userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElse("");
+        notificationService.createNotification(
+            answer.getUserId(),          // người nhận
+            userId,                      // người comment
+            NotificationType.COMMENT_ANSWER,
+            commenterUsername + "has commented on your answer",
+            saved.getCommentId(),
+             "COMMENT"
+            );
+        }
+
+        return saved;
     }
 
     @Override
@@ -70,7 +110,28 @@ public class CommentServiceImpl implements CommentService {
         reply.setAnswerId(parent.getAnswerId());
         reply.setBody(body.trim());
         reply.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        return commentRepository.save(reply);
+        Comment saved = commentRepository.save(reply);
+
+        if (parent.getUserId() != userId) {
+
+        String replierUsername = userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElse("");
+        // Reuse the existing COMMENT_QUESTION/COMMENT_ANSWER types depending on which
+        // thread the parent comment belongs to, so no new NotificationType/schema change is needed.
+        NotificationType type = parent.getAnswerId() != null
+                ? NotificationType.COMMENT_ANSWER
+                : NotificationType.COMMENT_QUESTION;
+        notificationService.createNotification(
+            parent.getUserId(),          // người nhận (tác giả comment cha)
+            userId,                      // người reply
+            type,
+            replierUsername + " has reply your comment.",
+            saved.getCommentId(),
+             "COMMENT"
+            );
+        }
+        return saved;
     }
 
     @Override
@@ -87,6 +148,7 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.nullifyParentReferences(commentId);
         commentRepository.delete(comment);
     }
+    
 
     private void validateBody(String body) {
         if (body == null || body.trim().isEmpty()) {

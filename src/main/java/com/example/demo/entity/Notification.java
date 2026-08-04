@@ -1,8 +1,17 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.*;
 import java.sql.Timestamp;
 
+import com.example.demo.util.NotificationType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 @Entity
 @Table(name = "Notifications")
 public class Notification {
@@ -15,8 +24,9 @@ public class Notification {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String type;
+    private NotificationType type;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String content;
@@ -27,10 +37,22 @@ public class Notification {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @Column(name = "sender_id")
+    private Long senderId;
+
+    @Column(name = "reference_id")
+    private Long referenceId;
+
+    @Column(name = "reference_type", length = 30)
+    private String referenceType;
+
+    @Column(name = "aggregate_count" , nullable = false)
+    private Integer aggregateCount = 1;
+
     public Notification() {
     }
 
-    public Notification(Long userId, String type, String content) {
+    public Notification(Long userId, NotificationType type, String content) {
         this.userId = userId;
         this.type = type;
         this.content = content;
@@ -54,11 +76,11 @@ public class Notification {
         this.userId = userId;
     }
 
-    public String getType() {
+    public NotificationType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(NotificationType type) {
         this.type = type;
     }
 
@@ -85,4 +107,36 @@ public class Notification {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    public Long getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Long referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public String getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(String referenceType) {
+        this.referenceType = referenceType;
+    }
+
+    public Integer getAggregateCount() {
+        return aggregateCount;
+    }
+
+    public void setAggregateCount(Integer aggregateCount) {
+        this.aggregateCount = aggregateCount;
+    }
+    
 }
