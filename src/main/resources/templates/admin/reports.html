@@ -93,6 +93,11 @@
                         </td>
                         <td class="text-muted" th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></td>
                         <td th:if="${r.status == 'open'}">
+                            <button class="btn btn-sm btn-outline-info me-1 view-detail-btn"
+                                    data-bs-toggle="modal"
+                                    th:attr="data-bs-target='#reportDetailModal-' + ${r.reportId}">
+                                <i class="fa-solid fa-eye"></i> View
+                            </button>
                             <button class="btn btn-sm btn-outline-success me-1 resolve-btn" th:data-id="${r.reportId}">
                                 <i class="fa-solid fa-check"></i> Resolve
                             </button>
@@ -100,7 +105,14 @@
                                 <i class="fa-solid fa-xmark"></i> Dismiss
                             </button>
                         </td>
-                        <td th:if="${r.status != 'open'}"><span class="text-muted small actions-placeholder">No action needed</span></td>
+                        <td th:if="${r.status != 'open'}">
+                            <button class="btn btn-sm btn-outline-info me-1 view-detail-btn"
+                                    data-bs-toggle="modal"
+                                    th:attr="data-bs-target='#reportDetailModal-' + ${r.reportId}">
+                                <i class="fa-solid fa-eye"></i> View
+                            </button>
+                            <span class="text-muted small actions-placeholder">No action needed</span>
+                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(reports)}">
                         <td colspan="7" class="text-center text-muted py-4">No reports found</td>
@@ -125,6 +137,59 @@
             </nav>
         </div>
     </main>
+</div>
+
+<!-- Report Detail Modals -->
+<div th:each="r : ${reports}">
+    <div class="modal fade" th:id="'reportDetailModal-' + ${r.reportId}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa-solid fa-circle-info text-primary me-2"></i>Report Details (#<span th:text="${r.reportId}"></span>)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="font-size:14px;">
+                    <div class="mb-2">
+                        <strong>Target Type:</strong>
+                        <span class="badge bg-info text-dark ms-1" th:text="${r.targetType}"></span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Target ID:</strong>
+                        <span class="ms-1" th:text="${r.targetId}"></span>
+                        <a th:if="${r.targetType == 'question'}" th:href="@{/question(id=${r.targetId})}" target="_blank" class="ms-2 small text-primary">View Target <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Reporter ID:</strong>
+                        <span class="ms-1" th:text="${r.reporterId}"></span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Status:</strong>
+                        <span class="badge status-badge ms-1"
+                              th:classappend="${r.status == 'open'} ? 'bg-warning text-dark' : (${r.status == 'resolved'} ? 'bg-success' : 'bg-secondary')"
+                              th:text="${r.status}"></span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Reported At:</strong>
+                        <span class="ms-1 text-muted" th:text="${r.createdAt != null ? #dates.format(r.createdAt, 'dd/MM/yyyy HH:mm:ss') : '—'}"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2">
+                        <strong>Reason:</strong>
+                        <div class="p-2 bg-light rounded mt-1 text-break" th:text="${r.reason}"></div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Note / Description:</strong>
+                        <div class="p-2 bg-light rounded mt-1 text-break"
+                             th:text="${r.note != null and !r.note.isEmpty() ? r.note : '(No additional notes provided)'}"
+                             th:classappend="${r.note == null or r.note.isEmpty()} ? 'text-muted fst-italic' : ''"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Toast -->

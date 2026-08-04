@@ -38,7 +38,7 @@ public class ReportController {
             redirectAttributes.addFlashAttribute("reportSuccess", "Your report has been submitted successfully.");
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("reportError", "Failed to submit report. Please try again.");
+            redirectAttributes.addFlashAttribute("reportError", e.getMessage() != null ? e.getMessage() : "Failed to submit report. Please try again.");
         }
 
         return "redirect:/question?id=" + questionId;

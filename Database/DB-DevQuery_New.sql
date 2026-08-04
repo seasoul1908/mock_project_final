@@ -468,3 +468,13 @@ ALTER TABLE [dbo].[Feedbacks] ADD [title] [nvarchar](255) NOT NULL DEFAULT 'Feed
 GO
 ALTER TABLE Users
 ADD accepted_terms BIT NOT NULL DEFAULT 0;
+
+-- 1. Delete old constraint that allows 'question' and 'answer'
+ALTER TABLE Reports
+DROP CONSTRAINT CK_Reports_target_type;
+
+-- 2. Add new constraint that allows 'question', 'answer', and 'comment'
+ALTER TABLE Reports
+    ADD CONSTRAINT CK_Reports_target_type
+        CHECK (target_type IN ('question', 'answer', 'comment'));
+
