@@ -9,12 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.entity.Answer;
 import com.example.demo.entity.PostEditHistory;
 import com.example.demo.entity.Question;
+import com.example.demo.entity.User;
 import com.example.demo.repository.AnswerRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.PostEditHistoryRepository;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VoteRepository;
+import com.example.demo.util.NotificationType;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
@@ -38,6 +40,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Autowired
     private PostEditHistoryRepository postEditHistoryRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -68,6 +73,17 @@ public class AnswerServiceImpl implements AnswerService {
 
         Answer saved = answerRepository.save(answer);
         questionRepository.touchUpdatedAt(questionId);
+        String answererUsername = userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElse("");
+        notificationService.createNotification(
+        question.getUserId(),              // Người nhận (chủ câu hỏi)
+        userId,                            // Người gửi (người trả lời)
+        NotificationType.NEW_ANSWER,
+        answererUsername + " has answered your question",
+        saved.getAnswerId(),
+        "ANSWER"
+        );
         return saved;
     }
 
@@ -106,6 +122,14 @@ public class AnswerServiceImpl implements AnswerService {
                     answerId,
                     userId
             );
+            notificationService.createNotification(
+            answerAuthorId,                      // người nhận
+            userId,                              // chủ câu hỏi
+            NotificationType.ANSWER_UNACCEPTED,
+    "doesn't longer accepted your answer anymore",
+            answerId,
+    "ANSWER"
+            );
 
         } else {
             // ---- ACCEPT (mới, hoặc chuyển từ answer khác sang) ----
@@ -126,6 +150,7 @@ public class AnswerServiceImpl implements AnswerService {
                             currentAccepted,
                             userId
                     );
+                    
                 }
             }
 
@@ -134,6 +159,14 @@ public class AnswerServiceImpl implements AnswerService {
             question.setAcceptedAnswerId(answerId);
 
             userRepository.addReputation(answerAuthorId, ACCEPTED_ANSWER_REP);
+            notificationService.createNotification(
+            answerAuthorId,               // người nhận
+            userId,                       // người gửi (chủ câu hỏi)
+            NotificationType.ANSWER_ACCEPTED,
+            " has accepted your answer",
+            answerId,
+            "ANSWER"
+            );
             userRepository.insertReputationHistory(
                     answerAuthorId,
                     ACCEPTED_ANSWER_REP,
@@ -144,9 +177,11 @@ public class AnswerServiceImpl implements AnswerService {
                     userId
             );
         }
+        
 
         questionRepository.save(question);
         questionRepository.touchUpdatedAt(questionId);
+        
     }
     @Override
     @Transactional

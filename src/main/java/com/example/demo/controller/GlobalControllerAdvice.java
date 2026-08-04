@@ -22,7 +22,11 @@ public class GlobalControllerAdvice {
     private UserRepository userRepository;
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(Model model, jakarta.servlet.http.HttpServletRequest request) {
+        if (request.getRequestURI() != null && request.getRequestURI().startsWith("/notifications/stream")) {
+            return;
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || 
                 auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {

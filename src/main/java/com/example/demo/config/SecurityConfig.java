@@ -61,7 +61,7 @@ public class SecurityConfig {
                                 "/auth/**", "/assets/**", "/error", "/blog", "/blog/**",
                                 "/forgot-password", "/reset-password", "/system-rules", "/oauth2/**",
                                 "/login/oauth2/**", "/question", "/question/**", "/question-detail",
-                                "/trending", "/accept-terms", "/api/code/**")
+                                "/trending", "/accept-terms", "/api/code/**","/notifications/**")
                         .permitAll()
 
                         // Rules management is restricted to ADMIN only (MODERATOR cannot access)
