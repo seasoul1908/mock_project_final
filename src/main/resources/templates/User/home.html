@@ -562,26 +562,7 @@
             align-items: baseline;
             gap: 12px;
         }
-
-        .terms-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-
-            background: none;
-            border: none;
-
-            color: #b9bec4;
-            font-size: 22px;
-
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .terms-close:hover {
-            color: white;
-        }
-
+        
         .terms-content {
             max-height: 260px;
             overflow-y: auto;
@@ -638,39 +619,14 @@
         const checkbox = document.getElementById("agreeTerms");
         const acceptBtn = document.getElementById("acceptBtn");
         const declineBtn = document.getElementById("declineBtn");
-        const closeBtn = document.getElementById("closeTermsBtn");
-
+        
         // Enable / Disable Accept button
         if (checkbox && acceptBtn) {
             checkbox.addEventListener("change", function () {
                 acceptBtn.disabled = !checkbox.checked;
             });
         }
-
-        function closeTermsModal() {
-            if (modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        // Click X
-        if (closeBtn) {
-            closeBtn.addEventListener("click", closeTermsModal);
-        }
-
-        // Click Decline
-        if (declineBtn) {
-            declineBtn.addEventListener("click", closeTermsModal);
-        }
-
-        // Click outside popup
-        if (modal) {
-            modal.addEventListener("click", function (e) {
-                if (e.target === modal) {
-                    closeTermsModal();
-                }
-            });
-        }
+       
         declineBtn.addEventListener("click", function () {
             window.location.href = "/auth/logout";
         });
@@ -684,9 +640,7 @@
     <!-- Terms Popup -->
     <div th:if="${showTermsPopup}" id="termsModal">
         <div class="terms-card">
-            <button id="closeTermsBtn" class="terms-close" type="button">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            
             <h2 class="terms-title">
                 <img th:src="@{/assets/img/logo-icon.png}" alt="DevQuery Logo" class="terms-logo">
                 <div class="title-group">
