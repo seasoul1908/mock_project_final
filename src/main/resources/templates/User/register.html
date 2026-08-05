@@ -167,6 +167,28 @@
             color: #6a737c;
             margin-top: 6px;
         }
+        .password-wrapper{
+            position:relative;
+        }
+
+        .password-wrapper input{
+            padding-right:45px;
+        }
+
+        .password-toggle{
+            position:absolute;
+            right:14px;
+            top:50%;
+            transform:translateY(-50%);
+            cursor:pointer;
+            color:#6a737c;
+            font-size:18px;
+            transition:.2s;
+        }
+
+        .password-toggle:hover{
+            color:#0a95ff;
+        }
         .password-weak{
             color:#d93025;
         }
@@ -230,21 +252,36 @@
             <input name="email" type="email" placeholder="you@example.com" required th:value="${param.email}">
 
             <label>Password</label>
-            <input id="password"
+            <div class="password-wrapper">
+                 <input id="password"
             name="password" 
             type="password" 
             placeholder="Min 8 characters"
             autocomplete="new-password" 
             required>
+           
+             <i
+                class="fa-solid fa-eye password-toggle"
+                onclick="togglePassword('password',this)">
+            </i>
+
+            </div>
             <div id="passwordStrength" class="hint"></div>
 
             <label>Confirm Password</label>
-            <input id="confirmPassword"
+            <div class="password-wrapper">
+                <input id="confirmPassword"
             name="confirm" 
             type="password" 
             placeholder="Confirm your password"
             autocomplete="new-password" 
             required>
+             <i
+                class="fa-solid fa-eye password-toggle"
+                onclick="togglePassword('confirmPassword',this)">
+            </i>
+            </div>
+            
 
             <div id="confirmMessage" class="hint"></div>
 
