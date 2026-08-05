@@ -1115,20 +1115,7 @@
                     div.setAttribute('data-id', n.notificationId);
                     div.onclick = async function (e) {
                         e.preventDefault();
-                        if (!n.isRead) {
-                            readingNotifications.add(n.notificationId);
-                            n.isRead = true;
-                            div.classList.remove("unread");
-                            decreaseBadge();
-                            setTimeout(() => {
-                                readingNotifications.delete(n.notificationId);
-                            }, 2000);
 
-                            // Gửi request nền, không chờ
-                            fetch('/notifications/' + n.notificationId + '/read', {
-                                method: 'PUT'
-                            }).catch(console.error);
-                        }
                         let url = '/question?id=' + n.questionId;
 
                         if (n.answerId) {
@@ -1139,6 +1126,26 @@
                             url += '#comment-' + n.commentId;
                         }
 
+                        if (!n.isRead) {
+
+                            n.isRead = true;
+
+                            div.classList.remove("unread");
+
+                            decreaseBadge();
+
+                        try {
+                            await fetch('/notifications/' + n.notificationId + '/read', {
+                                method: 'PUT'
+                        });
+                        } catch(e){
+                            console.error(e);
+                        }
+                         setTimeout(() => {
+                            readingNotifications.delete(n.notificationId);
+                        }, 1000);
+                    }
+                        
                         window.location.href = url;
                     };
                     // These types already build "{username} ..." directly inside n.content
@@ -1210,6 +1217,8 @@
 
                     count = Math.max(0, count - 1);
 
+                     badge.textContent = count;
+
                     if (count === 0) {
                         badge.style.display = "none";
                     } else {
@@ -1261,32 +1270,31 @@
                 // Mark all as read
                 const markAllBtn = document.getElementById('noti-mark-all');
                 if (markAllBtn) {
-                    markAllBtn.addEventListener('click', function (e) {
+                    markAllBtn.addEventListener('click', async function (e) {
                         e.preventDefault();
 
-                        const unreadItems = Array.from(document.querySelectorAll('.noti-item.unread'));
+                        try {
 
-                        if (unreadItems.length === 0) return;
-
-                        // Gọi 1 API duy nhất
-                        fetch('/notifications/read-all/' + userId, {
+                        await fetch('/notifications/read-all/' + userId, {
                             method: 'PUT'
-                        })
-                            .then(() => {
+                        });
 
-                                // Update UI ngay
-                                unreadItems.forEach(item => {
-                                    item.classList.remove('unread');
-                                });
+                        document.querySelectorAll('.noti-item').forEach(item => {
+                            item.classList.remove('unread');
+                        });
 
-                                // Xóa badge
-                                const badge = document.getElementById('noti-badge-count');
-                                if (badge) {
-                                    badge.remove();
-                                }
+                        const badge = document.getElementById('noti-badge-count');
 
-                            })
-                            .catch(console.error);
+                        if (badge) {
+                            badge.textContent = "0";
+                            badge.style.display = "none";
+                        }
+
+                        fetchNotifications();
+
+                        } catch (err) {
+                            console.error(err);
+                        }
                     });
                 }
 
@@ -1316,21 +1324,26 @@
                 });
 
                 function incrementBadge() {
-                    var badge = document.getElementById('noti-badge-count');
-                    if (badge) {
-                        var current = parseInt(badge.textContent, 10) || 0;
-                        badge.textContent = current + 1;
-                    } else {
-                        var bellItem = document.getElementById('noti-bell-item');
-                        if (bellItem) {
-                            var anchor = document.getElementById('noti-bell-link');
-                            var newBadge = document.createElement('span');
-                            newBadge.id = 'noti-badge-count';
-                            newBadge.className = 'noti-badge';
-                            newBadge.textContent = '1';
-                            anchor.appendChild(newBadge);
-                        }
+                    let badge = document.getElementById('noti-badge-count');
+
+                    if (!badge) {
+
+                        badge = document.createElement('span');
+
+                        badge.id = 'noti-badge-count';
+
+                        badge.className = 'noti-badge';
+
+                        badge.textContent = '1';
+
+                        document.getElementById('noti-bell-link').appendChild(badge);
+
+                        return;
                     }
+
+                    badge.style.display = "";
+
+                    badge.textContent = (parseInt(badge.textContent) || 0) + 1;
                 }
             })();
         </script>
