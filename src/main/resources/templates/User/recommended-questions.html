@@ -444,7 +444,7 @@
                                 <div class="user-meta">
                                     by
                                     <a th:href="@{/profile(id=${q.userId})}" th:text="${q.authorName}">author</a>
-                                    on <span th:text="${#temporals.format(q.createdAt, 'MMM dd, yyyy')}">date</span>
+                                    on <span th:text="${#dates.format(q.createdAt, 'MMM dd, yyyy')}">date</span>
                                 </div>
                             </div>
                         </div>

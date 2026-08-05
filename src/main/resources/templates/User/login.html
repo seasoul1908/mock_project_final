@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevQuery - Log in</title>
     <link rel="stylesheet" th:href="@{/assets/css/so-auth.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -191,27 +192,28 @@
             color: #3b4045;
             text-decoration: underline;
         }
-        .password-wrapper{
+
+        .password-wrapper {
             position: relative;
         }
 
-        .password-wrapper input{
-            padding-right:45px;
+        .password-wrapper input {
+            padding-right: 45px;
         }
 
-        .password-toggle{
-            position:absolute;
-            right:14px;
-            top:50%;
-            transform:translateY(-50%);
-            cursor:pointer;
-            color:#6a737c;
-            font-size:18px;
-            transition:.2s;
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6a737c;
+            font-size: 18px;
+            transition: .2s;
         }
 
-        .password-toggle:hover{
-            color:#0a95ff;
+        .password-toggle:hover {
+            color: #0a95ff;
         }
     </style>
 </head>
@@ -257,10 +259,7 @@
             <label for="password">Password</label>
             <div class="password-wrapper">
                 <input id="password" name="password" type="password" placeholder="********" required>
-                <i
-                    class="fa-solid fa-eye password-toggle"
-                    onclick="togglePassword('password',this)">
-                </i>
+                <i class="fa-solid fa-eye password-toggle" onclick="togglePassword('password',this)"></i>
             </div>
             
             <div class="forgot-password-row">
@@ -276,26 +275,24 @@
             Don't have an account? <a th:href="@{/auth/register}">Sign up</a>
         </div>
     </div>
-   
-</body>
- <script>
-        function togglePassword(id, icon){
+    
+    <script>
+        function togglePassword(id, icon) {
+            const input = document.getElementById(id);
 
-    const input = document.getElementById(id);
+            if (!input) {
+                console.log("Cannot find input:", id);
+                return;
+            }
 
-    if(!input){
-        console.log("Cannot find input:", id);
-        return;
-    }
-
-    if(input.type === "password"){
-        input.type = "text";
-        icon.classList.replace("fa-eye","fa-eye-slash");
-    }else{
-        input.type = "password";
-        icon.classList.replace("fa-eye-slash","fa-eye");
-    }
-}
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
     </script>
-
+</body>
 </html>
