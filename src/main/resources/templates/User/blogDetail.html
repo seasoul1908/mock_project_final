@@ -77,7 +77,6 @@
         .left-sidebar {
             width: 164px;
             flex-shrink: 0;
-            padding-top: 25px;
             border-right: 1px solid var(--border-color-local);
         }
 
@@ -114,6 +113,7 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
+            aspect-ratio: 1 / 1 !important;
         }
 
         .reply-avatar {
@@ -121,6 +121,7 @@
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
+            aspect-ratio: 1 / 1 !important;
         }
 
         .reply-box {
@@ -134,6 +135,7 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
+            aspect-ratio: 1 / 1 !important;
         }
 
         .form-control {
@@ -251,7 +253,7 @@
                             <span class="badge bg-primary ms-1">Admin</span>
                         </div>
                         <div class="small">
-                            Published on <span th:text="${#temporals.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
+                            Published on <span th:text="${#dates.format(blog.createdAt, 'MMM dd, yyyy')}">Date</span>
                             <span class="ms-3"><i class="fa-solid fa-eye"></i> <span
                                     th:text="${blog.viewCount}">0</span> Views</span>
                         </div>
@@ -275,8 +277,8 @@
                     <input type="hidden" name="action" value="add">
                     <input type="hidden" name="blogId" th:value="${blog.blogId}">
                     <div class="d-flex">
-                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="comment-avatar me-3"
-                            alt="Your Avatar">
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                            class="comment-avatar me-3 align-self-start" alt="Your Avatar">
                         <div class="flex-grow-1">
                             <div class="bg-surface-soft border rounded-top p-1 border-bottom-0 d-flex gap-1">
                                 <button type="button" class="btn btn-sm btn-light text-secondary" title="Bold"
@@ -326,7 +328,7 @@
 
     <!-- Recursive Node Fragment Definition -->
     <div th:fragment="commentNode(node, depth)" th:if="${node != null}" class="d-flex mb-3 mt-2">
-        <img th:src="${node.userAvatar}" class="me-3"
+        <img th:src="${node.userAvatar}" class="me-3 align-self-start"
             th:classappend="${node.parentId == null ? 'comment-avatar' : 'reply-avatar'}" alt="Avatar">
         <div class="flex-grow-1 w-100">
             <div class="bg-light p-3 rounded">
@@ -334,7 +336,7 @@
                     <h6 class="fw-bold mb-0" style="font-size:13px;"
                         th:text="${node.username != null ? node.username : 'Unknown User'}">Username</h6>
                     <span class="text-muted fw-normal small"
-                        th:text="${#temporals.format(node.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                        th:text="${#dates.format(node.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
                 </div>
                 <div th:id="'commentText' + ${node.commentId}" class="comment-text-content mb-0"
                     style="font-size: 14px;" th:text="${node.content}">Content</div>
