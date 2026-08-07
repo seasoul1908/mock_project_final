@@ -123,8 +123,8 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link d-flex align-items-center py-0" th:href="@{/profile}">
-                                <img th:src="${loggedInUser != null and loggedInUser.avatarUrl != null and !#strings.isEmpty(loggedInUser.avatarUrl) ? loggedInUser.avatarUrl : '/assets/img/avatar/default-avatar.jpg'}"
-                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                <img th:src="${loggedInUser != null and loggedInUser.avatarUrl != null and !#strings.isEmpty(loggedInUser.avatarUrl) ? loggedInUser.avatarUrl : '/assets/img/avatar/default_avatar.jpg'}"
+                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default_avatar.jpg';"
                                     alt="Avatar" width="32" height="32"
                                     class="rounded-circle bg-light border avatar-img" />
                                 <span class="ms-2 fw-bold text-dark small"

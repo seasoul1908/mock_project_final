@@ -1,14 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Blog;
-import com.example.demo.repository.BlogRepository;
-import com.example.demo.repository.UserRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.Blog;
+import com.example.demo.repository.BlogRepository;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class BlogServiceImpl implements BlogService {
@@ -65,5 +68,19 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public void increaseViewCount(int id) {
         blogRepository.increaseViewCount(id);
+    }
+    @Override
+    public List<Blog> getNewestBlogs() {
+
+        List<Blog> blogs = blogRepository.findTop3ByStatusOrderByCreatedAtDesc(1);
+
+        for (Blog blog : blogs) {
+            if (blog.getAuthorId() != null) {
+                userRepository.findById(blog.getAuthorId())
+                    .ifPresent(user -> blog.setAuthorName(user.getUsername()));
+            }
+        }
+
+        return blogs;
     }
 }
