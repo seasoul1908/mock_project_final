@@ -296,11 +296,24 @@
             Already have an account? <a th:href="@{/auth/login}">Log in</a>
         </div>
     </div>
-</body>
+   <script>
+        function togglePassword(id, icon) {
 
-</html>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById(id);
+
+                if (!input) return;
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            }
+    document.addEventListener("DOMContentLoaded", () => {
 
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirmPassword");
@@ -423,6 +436,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     password.addEventListener("input", evaluatePassword);
     confirmPassword.addEventListener("input", checkConfirmPassword);
-
+    
 });
 </script>
+    
+</body>
+
+</html>
+

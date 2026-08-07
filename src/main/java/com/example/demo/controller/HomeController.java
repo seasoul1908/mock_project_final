@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.dto.QuestionDTO;
+import com.example.demo.entity.Blog;
 import com.example.demo.repository.QuestionRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.BlogService;
 
 import jakarta.servlet.http.HttpSession;
 @Controller
@@ -31,6 +33,9 @@ public class HomeController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BlogService blogService;
 
     @GetMapping({"/", "/home", "/search", "/SearchController"})
     public String homePage(
@@ -161,6 +166,9 @@ public class HomeController {
         model.addAttribute("currentSort", safeTab);
         model.addAttribute("currentFilter", safeFilter);
         model.addAttribute("currentTag", safeTag);
+
+        List<Blog> newestBlogs = blogService.getNewestBlogs();
+        model.addAttribute("newestBlogs", newestBlogs);
 
         return "User/home";
     }
