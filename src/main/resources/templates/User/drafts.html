@@ -45,18 +45,82 @@
             padding-bottom: 50px;
         }
 
+        .user-name {
+            font-size: 34px;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .user-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+            background-color: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .profile-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+
+        .profile-tabs .nav-link {
+            color: var(--text-secondary);
+            border-radius: 100px;
+            padding: 6px 12px;
+            margin-right: 5px;
+            border: none;
+            font-size: 13px;
+        }
+
+        .profile-tabs .nav-link:hover {
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+        }
+
+        .profile-tabs .nav-link.active {
+            background-color: var(--orange, #f48024);
+            color: white;
+            font-weight: 500;
+        }
+
+        .draft-list-container {
+            border: 1px solid var(--border-color, #d6d9dc);
+            border-radius: 5px;
+            background-color: var(--bg-panel, #fff);
+        }
+
         .draft-card {
             padding: 16px;
             border-bottom: 1px solid var(--border-color, #d6d9dc);
-            background-color: var(--bg-panel, #fff);
-            margin-bottom: 12px;
-            border-radius: 5px;
-            border: 1px solid var(--border-color, #d6d9dc);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.1s;
+            margin-bottom: 0;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            background-color: transparent;
+        }
+
+        .draft-card:last-child {
+            border-bottom: none;
+        }
+
+        .draft-card:hover {
+            background-color: transparent;
         }
 
         .draft-title {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--blue-link, #0074cc);
             text-decoration: none;
             font-weight: 500;
@@ -81,7 +145,7 @@
 
         .draft-meta {
             font-size: 12px;
-            color: var(--text-muted, #6a737c);
+            color: var(--text-secondary, #6a737c);
             transition: color 0.3s ease;
         }
 
@@ -94,17 +158,6 @@
             margin-top: 30px;
             color: var(--text-secondary, #525960);
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
-
-        .btn-outline-primary {
-            color: var(--blue-link, #0074cc);
-            border-color: var(--blue-link, #0074cc);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--blue-link, #0074cc);
-            color: #fff;
-            border-color: var(--blue-link, #0074cc);
         }
     </style>
     <link rel="stylesheet" href="/css/responsive.css">
@@ -132,7 +185,7 @@
                     <p class="text-muted fw-medium">You have no draft posts.</p>
                 </div>
 
-                <div th:unless="${drafts == null or drafts.isEmpty()}">
+                <div th:unless="${drafts == null or drafts.isEmpty()}" class="draft-list-container">
                     <div th:each="draft : ${drafts}" class="draft-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="flex-grow-1">
