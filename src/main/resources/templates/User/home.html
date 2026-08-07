@@ -610,6 +610,82 @@
         .terms-content::-webkit-scrollbar-thumb:hover {
             background: #8c959f;
         }
+        /* ===== Dev Blog  ===== */
+
+        .blog-widget .blog-list {
+            list-style: none;
+            padding: 4px 0;
+            margin: 0;
+        }   
+
+        .blog-widget .blog-list .blog-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 6px 12px;
+            margin: 0;
+            border-bottom: 1px solid var(--border-color);
+            /* .widget-list li might otherwise pass down */
+            gap: 0;
+            color: inherit;
+        }
+
+        .blog-widget .blog-list .blog-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .blog-widget .blog-list .blog-item a {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            width: 100%;
+
+            color: #232629;
+            text-decoration: none;
+            font-size: 13px;
+            line-height: 1.4;
+            font-weight: 500;
+
+            transition: color .2s;
+        }
+
+        .blog-widget .blog-list .blog-item a::before {
+            content: "\f15c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #f48024;
+            flex-shrink: 0;
+        }
+
+        .blog-widget .blog-list .blog-item a:hover {
+            color: #0a95ff;
+        }
+
+        .blog-widget .blog-footer {
+            text-align: center;
+            padding: 10px 0 8px;
+        }
+
+        .blog-widget .blog-footer a {
+            display: inline-block;
+            color: #232629;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 12.5px;
+            opacity: .7;
+            transition: .2s;
+        }
+
+        .blog-widget .blog-footer a::after {
+            content: " →";
+        }
+
+        .blog-widget .blog-footer a:hover {
+            color: #0a95ff;
+             opacity: 1;
+        }
+
     </style>
     <link rel="stylesheet" href="/css/responsive.css">
 </head>
@@ -842,15 +918,23 @@
         </main>
 
         <aside class="right-sidebar d-none d-lg-block">
-            <div class="widget widget-yellow">
+            <div class="widget widget-yellow blog-widget">
                 <div class="widget-header">The Dev Blog</div>
-                <div class="widget-content">
-                    <ul class="widget-list">
-                        <li><span class="widget-icon">📝</span><span>Migrating from Servlets to Spring Boot: A
-                                Guide</span></li>
-                        <li><span class="widget-icon">🚀</span><span>DevQuery V2 Release Notes</span></li>
-                    </ul>
-                </div>
+                    <div class="widget-content">
+                        <ul class="blog-list">
+                            <li th:each="blog : ${newestBlogs}" class="blog-item">
+                                <a th:href="@{/blog/detail(id=${blog.blogId})}"
+                                    th:text="${blog.title}">
+                                </a>
+                            </li>
+                        </ul>
+
+                            <div class="blog-footer">
+                                <a th:href="@{/blog}">
+                                    View all blogs
+                                </a>
+                            </div>
+                    </div>
             </div>
 
             <div class="popular-tags-box">
