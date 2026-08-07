@@ -562,6 +562,7 @@
             margin: 14px 0;
         }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 
 <body>
@@ -632,8 +633,8 @@
                             <a th:href="@{/profile(id=${user.userId})}">
                                 <img class="user-avatar" th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
                             ? user.avatarUrl
-                            : '/assets/img/avatar/default-avatar.jpg'}"
-                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                            : '/assets/img/avatar/default_avatar.jpg'}"
+                                    onerror="this.onerror=null; this.src='/assets/img/avatar/default_avatar.jpg';"
                                     alt="Avatar">
                             </a>
                             <!-- User information -->
@@ -686,8 +687,8 @@
 
                                     <img class="popup-avatar" th:src="${user.avatarUrl != null && !#strings.isEmpty(user.avatarUrl)
                                 ? user.avatarUrl
-                                : '/assets/img/avatar/default-avatar.jpg'}"
-                                        onerror="this.onerror=null; this.src='/assets/img/avatar/default-avatar.jpg';"
+                                : '/assets/img/avatar/default_avatar.jpg'}"
+                                        onerror="this.onerror=null; this.src='/assets/img/avatar/default_avatar.jpg';"
                                         alt="Avatar">
 
                                     <div class="popup-user-info">

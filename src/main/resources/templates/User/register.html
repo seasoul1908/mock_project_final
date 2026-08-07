@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevQuery - Sign up</title>
     <link rel="stylesheet" th:href="@{/assets/css/so-auth.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -166,6 +167,28 @@
             color: #6a737c;
             margin-top: 6px;
         }
+        .password-wrapper{
+            position:relative;
+        }
+
+        .password-wrapper input{
+            padding-right:45px;
+        }
+
+        .password-toggle{
+            position:absolute;
+            right:14px;
+            top:50%;
+            transform:translateY(-50%);
+            cursor:pointer;
+            color:#6a737c;
+            font-size:18px;
+            transition:.2s;
+        }
+
+        .password-toggle:hover{
+            color:#0a95ff;
+        }
         .password-weak{
             color:#d93025;
         }
@@ -195,6 +218,7 @@
             background: #9aa0a6;
         }
     </style>
+    <link rel="stylesheet" href="/css/responsive.css">
 </head>
 
 <body>
@@ -228,21 +252,36 @@
             <input name="email" type="email" placeholder="you@example.com" required th:value="${param.email}">
 
             <label>Password</label>
-            <input id="password"
+            <div class="password-wrapper">
+                 <input id="password"
             name="password" 
             type="password" 
             placeholder="Min 8 characters"
             autocomplete="new-password" 
             required>
+           
+             <i
+                class="fa-solid fa-eye password-toggle"
+                onclick="togglePassword('password',this)">
+            </i>
+
+            </div>
             <div id="passwordStrength" class="hint"></div>
 
             <label>Confirm Password</label>
-            <input id="confirmPassword"
+            <div class="password-wrapper">
+                <input id="confirmPassword"
             name="confirm" 
             type="password" 
             placeholder="Confirm your password"
             autocomplete="new-password" 
             required>
+             <i
+                class="fa-solid fa-eye password-toggle"
+                onclick="togglePassword('confirmPassword',this)">
+            </i>
+            </div>
+            
 
             <div id="confirmMessage" class="hint"></div>
 
@@ -257,11 +296,24 @@
             Already have an account? <a th:href="@{/auth/login}">Log in</a>
         </div>
     </div>
-</body>
+   <script>
+        function togglePassword(id, icon) {
 
-</html>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+            const input = document.getElementById(id);
+
+                if (!input) return;
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            }
+    document.addEventListener("DOMContentLoaded", () => {
 
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirmPassword");
@@ -384,6 +436,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     password.addEventListener("input", evaluatePassword);
     confirmPassword.addEventListener("input", checkConfirmPassword);
-
+    
 });
 </script>
+    
+</body>
+
+</html>
+
