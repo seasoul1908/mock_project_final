@@ -1371,12 +1371,6 @@
                 word-wrap: normal !important;
             }
 
-            table {
-                display: block !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-            }
-
             @media (max-width: 1024px) {
 
                 .main-container,
@@ -1448,6 +1442,12 @@
             }
 
             @media (max-width: 768px) {
+                table {
+                    display: block !important;
+                    overflow-x: auto !important;
+                    -webkit-overflow-scrolling: touch;
+                }
+
                 .navbar-devquery {
                     height: auto !important;
                     min-height: 56px !important;
