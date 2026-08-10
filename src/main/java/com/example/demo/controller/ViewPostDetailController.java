@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import java.util.Optional;                              // ← THÊM
 import com.example.demo.entity.Answer;                    // ← THÊM
+import com.example.demo.entity.Question;
 import com.example.demo.repository.AnswerRepository;      // ← THÊM
+import com.example.demo.repository.QuestionRepository;
 import com.example.demo.dto.AnswerViewDTO;
 import com.example.demo.dto.QuestionDetailDTO;
 import com.example.demo.dto.TrendingQuestionDTO;
@@ -38,6 +40,9 @@ public class ViewPostDetailController {
     @Autowired
     private AnswerRepository answerRepository;   // ← THÊM
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
     @Value("")
     private String baseUrl;
 
@@ -64,14 +69,28 @@ public class ViewPostDetailController {
             return "redirect:/home";
         }
 
+        User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
+        Long currentUserId = currentUser != null ? currentUser.getUserId() : null;
+
+        Optional<Question> rawQuestionOpt = questionRepository.findById(id);
+        if (rawQuestionOpt.isEmpty() || rawQuestionOpt.get().isIsDeleted()) {
+            return "redirect:/home";
+        }
+        Question rawQuestion = rawQuestionOpt.get();
+        if (rawQuestion.isDraft()) {
+            if (currentUser != null && rawQuestion.getUserId() == currentUser.getUserId()) {
+                return "redirect:/questions/ask?draftId=" + id;
+            } else {
+                return "redirect:/home";
+            }
+        }
+
         List<Long> viewedIds = questionViewHistoryService.getViewedQuestionIds(session);
         if (!viewedIds.contains(id)) {
             questionDetailService.incrementViewCount(id);
         }
         questionViewHistoryService.recordViewedQuestion(session, id);
 
-        User currentUser = AuthUtils.getAuthenticatedUser(userRepository);
-        Long currentUserId = currentUser != null ? currentUser.getUserId() : null;
         boolean isAdmin = currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getRole());
 
         QuestionDetailDTO question = questionDetailService.getQuestionDetail(id, currentUserId, isAdmin);

@@ -58,3 +58,16 @@ logs/
 Thumbs.db
 
 application-secrets.properties
+
+# Test files and reports
+test-results/
+playwright-report/
+*.xlsx
+
+# Node modules
+node_modules/
+
+# Agent and MCP files
+.agents/
+.agent/
+.playwright-mcp/

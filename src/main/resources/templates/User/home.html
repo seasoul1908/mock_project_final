@@ -201,6 +201,8 @@
             text-decoration: none;
             margin-bottom: 5px;
             display: block;
+            overflow-wrap: anywhere;
+            word-break: break-word;
             transition: color 0.2s;
         }
 
@@ -212,6 +214,8 @@
             margin-bottom: 8px;
             line-height: 1.4;
             color: var(--text-secondary);
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .meta-container {
@@ -713,9 +717,11 @@
             });
         }
        
-        declineBtn.addEventListener("click", function () {
-            window.location.href = "/auth/logout";
-        });
+        if (declineBtn) {
+            declineBtn.addEventListener("click", function () {
+                window.location.href = "/auth/logout";
+            });
+        }
 
     });
 

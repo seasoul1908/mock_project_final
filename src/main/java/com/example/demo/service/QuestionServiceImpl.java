@@ -72,8 +72,8 @@ public class QuestionServiceImpl implements QuestionService {
         // Save Question
         Question question = new Question();
         question.setUserId(userId);
-        question.setTitle(title.trim());
-        question.setBody(body.trim());
+        question.setTitle(title != null && !title.trim().isEmpty() ? title.trim() : "Untitled Draft");
+        question.setBody(body != null ? body.trim() : "");
         if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
             question.setCodeSnippet(codeSnippet.trim());
         }
@@ -116,7 +116,7 @@ public class QuestionServiceImpl implements QuestionService {
                 }
             }
 
-            if (!invalidTags.isEmpty()) {
+            if (!invalidTags.isEmpty() && !isDraft) {
                 throw new IllegalArgumentException("You need at least 50 reputation to create new tags. Invalid tags: " 
                         + String.join(", ", invalidTags));
             }
@@ -150,19 +150,19 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public void saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft) {
+    public Question saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft) {
         Question question = questionRepository.findById(draftId)
                 .orElseThrow(() -> new IllegalArgumentException("Draft not found"));
 
         if (question.getUserId() != userId) {
-            throw new IllegalStateException("You can only update your own draft");
+            throw new IllegalArgumentException("You can only update your own draft");
         }
-        if (!question.isDraft()) {
-            throw new IllegalStateException("This post is already published and cannot be saved as a draft");
+        if (!question.isDraft() && isDraft) {
+            throw new IllegalArgumentException("This post is already published and cannot be saved as a draft");
         }
 
-        question.setTitle(title.trim());
-        question.setBody(body.trim());
+        question.setTitle(title != null && !title.trim().isEmpty() ? title.trim() : "Untitled Draft");
+        question.setBody(body != null ? body.trim() : "");
         if (codeSnippet != null && !codeSnippet.trim().isEmpty()) {
             question.setCodeSnippet(codeSnippet.trim());
         } else {
@@ -208,7 +208,7 @@ public class QuestionServiceImpl implements QuestionService {
                 }
             }
 
-            if (!invalidTags.isEmpty()) {
+            if (!invalidTags.isEmpty() && !isDraft) {
                 throw new IllegalArgumentException("You need at least 50 reputation to create new tags. Invalid tags: " 
                         + String.join(", ", invalidTags));
             }
@@ -219,12 +219,26 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
 
-        // If transitioning from draft to published, create notifications
+        // If transitioning from draft to published, create notifications and post edit history
         if (!isDraft) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User not found"));
             createNotifications(user, savedQuestion);
+
+            String finalTags = (tagsStr != null) ? tagsStr.trim() : "";
+            postEditHistoryRepository.save(new PostEditHistory(
+                "question",
+                savedQuestion.getQuestionId(),
+                savedQuestion.getTitle(),
+                savedQuestion.getBody(),
+                savedQuestion.getCodeSnippet(),
+                finalTags,
+                userId,
+                new Timestamp(System.currentTimeMillis())
+            ));
         }
+
+        return savedQuestion;
     }
 
     @Override
@@ -309,9 +323,12 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalStateException("You can only delete your own question");
         }
 
-        // Soft-delete: the is_deleted column already exists. Related answers/comments
-        // stay in the DB but become inaccessible because the question is hidden.
-        questionRepository.softDeleteQuestion(questionId, userId);
+        if (question.isDraft()) {
+            questionRepository.deleteQuestionTagsByQuestionId(questionId);
+            questionRepository.deleteById(questionId);
+        } else {
+            questionRepository.softDeleteQuestion(questionId, userId);
+        }
     }
     @Override
     @Transactional

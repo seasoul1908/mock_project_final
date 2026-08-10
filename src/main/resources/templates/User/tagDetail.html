@@ -353,7 +353,7 @@
             <div class="action-bar">
                 <div th:if="${!isLoggedIn}">
                     <a th:href="@{/auth/login}" class="btn-watch not-followed">
-                        <i class="fa-solid fa-eye"></i> Follow Tag
+                        Follow Tag
                     </a>
                 </div>
                 <div th:if="${isLoggedIn}">
@@ -365,7 +365,6 @@
                         <button type="button" class="btn-watch tag-follow-btn"
                             th:classappend="${isFollowed ? 'followed' : 'not-followed'}" th:data-tag-id="${tag.id}"
                             th:data-is-followed="${isFollowed}">
-                            <i class="fa-solid" th:classappend="${isFollowed ? 'fa-eye-slash' : 'fa-eye'}"></i>
                             <span class="follow-text" th:text="${isFollowed ? 'Following' : 'Follow'}">Follow</span>
                         </button>
                     </form>
@@ -421,7 +420,7 @@
                             <div class="q-meta">
                                 asked by <strong th:text="${q.authorName}">Author</strong>
                                 &nbsp;·&nbsp;
-                                <span th:text="${#temporals.format(q.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                                <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'yyyy-MM-dd HH:mm') : ''}">Date</span>
                             </div>
                         </div>
                     </div>
