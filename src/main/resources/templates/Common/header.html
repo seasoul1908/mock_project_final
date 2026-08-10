@@ -1371,12 +1371,6 @@
                 word-wrap: normal !important;
             }
 
-            table {
-                display: block !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-            }
-
             @media (max-width: 1024px) {
 
                 .main-container,
@@ -1448,6 +1442,14 @@
             }
 
             @media (max-width: 768px) {
+                /* Only shrink-wrap/scroll tables on small screens; on desktop keep the
+                   normal table layout so it stretches to fill its container (no dead space). */
+                table {
+                    display: block !important;
+                    overflow-x: auto !important;
+                    -webkit-overflow-scrolling: touch;
+                }
+
                 .navbar-devquery {
                     height: auto !important;
                     min-height: 56px !important;
