@@ -217,6 +217,7 @@
             padding: 8px 0;
             border-bottom: 1px solid #eff0f1;
             font-size: 13px;
+            align-items: flex-start;
         }
 
         .comment-item-so:last-child {
@@ -230,6 +231,8 @@
             object-fit: cover;
             flex-shrink: 0;
             margin-top: 2px;
+            flex-grow: 0;              /* ← THÊM */
+            align-self: flex-start;
         }
 
         .comment-body-so {
