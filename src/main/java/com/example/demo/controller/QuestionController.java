@@ -49,11 +49,14 @@ public class QuestionController {
                 Question q = qOpt.get();
                 model.addAttribute("oldTitle", q.getTitle());
                 model.addAttribute("oldBody", q.getBody());
+                model.addAttribute("oldCodeSnippet", q.getCodeSnippet());
                 model.addAttribute("draftId", q.getQuestionId());
                 List<String> tagsList = questionRepository.findTagsByQuestionId(draftId);
                 if (tagsList != null && !tagsList.isEmpty()) {
                     model.addAttribute("oldTags", String.join(", ", tagsList));
                 }
+            } else {
+                return "redirect:/questions/drafts";
             }
         }
         return "User/askQuestion";
@@ -81,6 +84,7 @@ public class QuestionController {
                 model.addAttribute("error", "Title must be at least 10 characters.");
                 model.addAttribute("oldTitle", title);
                 model.addAttribute("oldBody", body);
+                model.addAttribute("oldCodeSnippet", codeSnippet);
                 model.addAttribute("oldTags", tags);
                 model.addAttribute("draftId", draftId);
                 return "User/askQuestion";
@@ -90,6 +94,7 @@ public class QuestionController {
                 model.addAttribute("error", "Body must be at least 30 characters.");
                 model.addAttribute("oldTitle", title);
                 model.addAttribute("oldBody", body);
+                model.addAttribute("oldCodeSnippet", codeSnippet);
                 model.addAttribute("oldTags", tags);
                 model.addAttribute("draftId", draftId);
                 return "User/askQuestion";
@@ -101,20 +106,22 @@ public class QuestionController {
         }
 
         try {
+            Question savedQuestion;
             if (draftId != null) {
-                questionService.saveOrUpdateDraft(draftId, user.getUserId(), title, body, codeSnippet, tags, isDraft);
+                savedQuestion = questionService.saveOrUpdateDraft(draftId, user.getUserId(), title, body, codeSnippet, tags, isDraft);
             } else {
-                questionService.saveQuestion(user.getUserId(), title, body, codeSnippet, tags, isDraft);
+                savedQuestion = questionService.saveQuestion(user.getUserId(), title, body, codeSnippet, tags, isDraft);
             }
             if (isDraft) {
                 return "redirect:/questions/drafts";
             } else {
-                return "redirect:/home";
+                return "redirect:/question?id=" + savedQuestion.getQuestionId();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("oldTitle", title);
             model.addAttribute("oldBody", body);
+            model.addAttribute("oldCodeSnippet", codeSnippet);
             model.addAttribute("oldTags", tags);
             model.addAttribute("draftId", draftId);
             return "User/askQuestion";

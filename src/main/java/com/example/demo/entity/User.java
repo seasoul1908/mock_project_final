@@ -56,11 +56,9 @@ public class User {
     @Column(table = "User_Profile", name = "avatar_url")
     private String avatarUrl;
 
-    @Nationalized
     @Column(table = "User_Profile", name = "bio")
     private String bio;
 
-    @Nationalized
     @Column(table = "User_Profile", name = "location")
     private String location;
 
