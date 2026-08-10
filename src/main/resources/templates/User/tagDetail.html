@@ -420,7 +420,7 @@
                             <div class="q-meta">
                                 asked by <strong th:text="${q.authorName}">Author</strong>
                                 &nbsp;·&nbsp;
-                                <span th:text="${#temporals.format(q.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+                                <span th:text="${q.createdAt != null ? #dates.format(q.createdAt, 'yyyy-MM-dd HH:mm') : ''}">Date</span>
                             </div>
                         </div>
                     </div>
