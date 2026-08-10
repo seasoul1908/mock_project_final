@@ -13,10 +13,10 @@ public interface QuestionService {
 
     Question saveQuestion(Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft);
 
-    void saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft);
+    Question saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String codeSnippet, String tagsStr, boolean isDraft);
 
-    default void saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String tagsStr, boolean isDraft) {
-        saveOrUpdateDraft(draftId, userId, title, body, null, tagsStr, isDraft);
+    default Question saveOrUpdateDraft(Long draftId, Long userId, String title, String body, String tagsStr, boolean isDraft) {
+        return saveOrUpdateDraft(draftId, userId, title, body, null, tagsStr, isDraft);
     }
 
     java.util.List<Question> getDraftsByUserId(Long userId);

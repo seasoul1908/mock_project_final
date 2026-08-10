@@ -17,9 +17,10 @@ public class Question {
 
     private String title;
 
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String body;
 
-    @Column(name = "code_snippet")
+    @Column(name = "code_snippet", columnDefinition = "NVARCHAR(MAX)")
     private String codeSnippet;
 
     @Column(name = "view_count")

@@ -46,7 +46,7 @@ public class Notification {
     @Column(name = "reference_type", length = 30)
     private String referenceType;
 
-    @Column(name = "aggregate_count" , nullable = false)
+    @Column(name = "aggregate_count")
     private Integer aggregateCount = 1;
 
     public Notification() {

@@ -129,6 +129,8 @@
             line-height: 1.35;
             margin-bottom: 16px;
             color: var(--text-primary);
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .post-text {
@@ -802,7 +804,7 @@
 
                 <div class="post-body">
                     <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
-                        <h1 class="question-title mb-0" th:text="${question.title}" style="flex: 1; min-width: 250px;">
+                        <h1 class="question-title mb-0" th:text="${question.title}" style="flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word;">
                             Question title</h1>
                         <div class="d-flex gap-2">
                             <!-- Share button -->

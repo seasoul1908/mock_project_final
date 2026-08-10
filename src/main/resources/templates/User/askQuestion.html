@@ -245,7 +245,7 @@
                     <p class="hint">Add executable Java source code snippet. Readers can run this snippet directly from the question page.</p>
                     <textarea id="codeSnippet" name="codeSnippet" class="form-control" rows="6"
                               placeholder="Put some code related to the answer here!"
-                              ></textarea>
+                              th:text="${oldCodeSnippet}"></textarea>
                 </div>
 
                 <div class="form-card">
@@ -256,7 +256,7 @@
                 </div>
 
                 <div class="mb-4 d-flex align-items-center">
-                    <button type="submit" name="action" value="publish" class="btn-submit me-2">Post your question</button>
+                    <button type="submit" id="btnPublish" name="action" value="publish" class="btn-submit me-2">Post your question</button>
                     <button type="submit" id="btnSaveDraft" name="action" value="draft" class="btn btn-outline-secondary me-2" style="padding: 10px 16px; font-weight: 500;">Save Draft</button>
                     <button type="button" id="btnPreview" class="btn btn-outline-secondary me-2" style="padding: 10px 16px; font-weight: 500;">Preview</button>
                     <a th:href="@{/home}" class="btn-cancel" style="margin-left: 0;">Cancel</a>
@@ -287,13 +287,27 @@
             const bodyInput = document.querySelector('textarea[name="body"]');
             const tagsInput = document.querySelector('input[name="tags"]');
 
-            // Relax 'required' attribute dynamically when user is saving as a draft
             const btnSaveDraft = document.getElementById("btnSaveDraft");
+            const btnPublish = document.getElementById("btnPublish");
+
+            function removeRequired() {
+                if (titleInput) titleInput.removeAttribute("required");
+                if (bodyInput) bodyInput.removeAttribute("required");
+            }
+
+            function setRequired() {
+                if (titleInput) titleInput.setAttribute("required", "required");
+                if (bodyInput) bodyInput.setAttribute("required", "required");
+            }
+
             if (btnSaveDraft) {
-                btnSaveDraft.addEventListener("mousedown", function() {
-                    titleInput.removeAttribute("required");
-                    bodyInput.removeAttribute("required");
-                });
+                btnSaveDraft.addEventListener("mousedown", removeRequired);
+                btnSaveDraft.addEventListener("click", removeRequired);
+                btnSaveDraft.addEventListener("keydown", removeRequired);
+            }
+
+            if (btnPublish) {
+                btnPublish.addEventListener("click", setRequired);
             }
 
             if (btnPreview) {
